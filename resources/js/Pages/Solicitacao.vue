@@ -23,25 +23,27 @@
 
                         <div class="mb-5 mt-2">
                             <vue3-simple-typeahead
+                            v-model="form.assunto"
+
     class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-    id="assunto_typeahead"
+    id="assunto"
     placeholder="Escolha o assunto..."
     :items="assuntos"
     :minInputLength="1"
-    :itemProjection="itemProjectionFunction"
-    @selectItem="selectItemEventHandler"
-    @onInput="onInputEventHandler"
-    @onFocus="onFocusEventHandler"
-    @onBlur="onBlurEventHandler"
+    @keyup="selectionAssunto()"
+
   ></vue3-simple-typeahead>
                         </div>
                         <div class="mb-5">
-                            <textarea rows="6" class="bg-gray-50  border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full
+                            <textarea      @mouseenter="selectionAssunto()"
+ v-model="form.solicitacao"
+ rows="6" class="bg-gray-50  border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full
         dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Sua Solicitação"></textarea>
                         </div>
 
                         <div class="mb-5">
                             <input
+                            @change="uploadFile"
                                 class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none p-2 dark:placeholder-gray-400"
                                 id="file_input" type="file">
 
@@ -56,8 +58,9 @@
 
                     <div class="mb-5 mt-2 flex gap-2">
                         <vue3-simple-typeahead
+                        input="form.condominio"
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            id="typeahead_id" placeholder="Informe seu condominio..." :items="[
+                            id="condominio" placeholder="Informe seu condominio..." :items="[
                                 'ACACIAS',
                                 'ALAMEDA COTEGIPE',
                                 'ALTO DE ITAQUERA',
@@ -93,21 +96,25 @@
                                 'PRIME LIFE',
                                 'PATIO LUSITANIA'
                             ]
-                                " :minInputLength="1" :itemProjection="itemProjectionFunction"
-                            @selectItem="selectItemEventHandler" @onInput="onInputEventHandler"
-                            @onFocus="onFocusEventHandler" @onBlur="onBlurEventHandler">
+                                " :minInputLength="1"
+                            @selectItem="alert('teste')"
+                            @keyup="selectionCondominio()"
+                            >
                         </vue3-simple-typeahead>
 
-                        <input type="text" placeholder="Sua Unidade"
+                        <input   @mouseenter="selectionCondominio()  "                    v-model="form.unidade"
+ type="text"  placeholder="Sua Unidade"
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
                     </div>
                     <div class="mb-5 ">
-                        <input type="text" placeholder="Seu Nome "
+                        <input type="text"  v-model="form.nome"
+ placeholder="Seu Nome "
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     </div>
                     <div class="mb-5">
-                        <input type="email" placeholder="Seu Email "
+                        <input  v-model="form.email"
+ type="email" placeholder="Seu Email "
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     </div>
@@ -150,7 +157,8 @@
 import logo from "./../../img/logo.png";
 import header from "./../../img/atendimento.png";
 import gif from "./../../img/success.gif";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
+import { router } from "@inertiajs/vue3";
 
 const  assuntos =  [
         'Reclamação',
@@ -172,6 +180,34 @@ const stepTree = ref(false)
 const stepOne = ref(true)
 const Npasso = ref(1)
 
+const form = reactive({
+  assunto: null,
+  solicitacao: null,
+  foto: null,
+  condominio: document.getElementById('condominio'),
+  unidade: null,
+  nome: null,
+  email: null,
+})
+
+
+const uploadFile = (event) => {
+        form.foto= event.target.files[0];
+}
+
+const selectionAssunto = () => {
+
+    form.assunto= document.getElementById('assunto').value
+
+}
+const selectionCondominio = () => {
+
+    form.condominio= document.getElementById('condominio').value
+
+}
+
+
+
 const ShowStep2 = () => {
     stepTree.value = false
     stepOne.value = false
@@ -186,8 +222,15 @@ const ShowStep1 = () => {
     Npasso.value = 1
     finalizar.value = false
 
+    console.log(document.getElementById('assunto_typeahead').value())
+
 }
+
 const ShowStep3 = () => {
+
+    router.post('/solicitacao', form)
+
+
     stepOne.value = false
     stepTwo.value = false
     Npasso.value = 3
