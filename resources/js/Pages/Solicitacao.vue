@@ -230,12 +230,22 @@ const ShowStep3 = () => {
 
     router.post('/solicitacao', form)
 
+    form.assunto = ''
+    form.solicitacao = ''
+    form.nome = ''
+    form.condominio = ''
+    form.unidade = ''
+    form.email = ''
+
 
     stepOne.value = false
     stepTwo.value = false
     Npasso.value = 3
     finalizar.value = false
     stepTree.value = true
+
+
+
 
 }
 </script>

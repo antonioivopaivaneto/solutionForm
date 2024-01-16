@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendEmailQueueJob;
 use App\Mail\Solicitacao as MailSolicitacao;
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
@@ -70,10 +71,11 @@ class SolicitacaoController extends Controller
 
        $solicitacao->save();
 
-       Mail::to('antonioivo.3@gmail.com')->send(new MailSolicitacao($solicitacao));
+      // Mail::to('antonioivo.3@gmail.com')->send(new MailSolicitacao($solicitacao));
 
+      dispatch(new SendEmailQueueJob('antonioivo.3@gmail.com',$solicitacao));
 
-       return redirect()->route('solicitacao.index');
+       return ;
 
 
     }

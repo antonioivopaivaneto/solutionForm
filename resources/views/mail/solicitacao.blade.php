@@ -14,13 +14,12 @@
 <hr>
 
 <b>Condominio:</b> <span>{{$solicitacao->condominio}}</span><br>
-<b>Unidade:</b> <span>{{$solicitacao->undiade}}</span><br>
+<b>Unidade:</b> <span>{{$solicitacao->unidade}}</span><br>
 <b>Morador:</b> <span>{{$solicitacao->nome}}</span><br>
 <b>Assunto:</b> <span>{{$solicitacao->assunto}}</span><br>
 <b>Solicitacao:</b> <span>{{$solicitacao->solicitacao}}</span><br>
 <b>Email para Retorno:</b> <span>{{$solicitacao->email}}</span><br>
 
 
-<img src="{{ asset('logo.png') }}" alt="">
 </body>
 </html>
