@@ -7,6 +7,7 @@ use App\Mail\Solicitacao as MailSolicitacao;
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class SolicitacaoController extends Controller
@@ -48,6 +49,7 @@ class SolicitacaoController extends Controller
         'nome' => 'required|string',
         'email' => 'required|email',
         'foto' => 'nullable',
+        'status' => 'nullable',
        ]);
 
        if($request->file('foto')){
@@ -67,16 +69,34 @@ class SolicitacaoController extends Controller
         'nome' => $request->input('nome'),
         'email' => $request->input('email'),
         'foto' =>  $foto, // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
+        'status' =>  '0', // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
        ]);
 
        $solicitacao->save();
 
-      // Mail::to('antonioivo.3@gmail.com')->send(new MailSolicitacao($solicitacao));
 
-      dispatch(new SendEmailQueueJob('antonioivo.3@gmail.com',$solicitacao));
+
+
+      //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
+
+      $emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
+      dispatch(new SendEmailQueueJob($emails,$solicitacao ));
 
        return ;
 
+
+    }
+
+    public function showImage($filename)
+    {
+
+        $path = storage_path("app/uploads/{$filename}");
+
+        if (!Storage::exists("uploads/{$filename}")) {
+            abort(404);
+        }
+
+        return response()->file($path);
 
     }
 
@@ -122,6 +142,21 @@ class SolicitacaoController extends Controller
      */
     public function destroy($id)
     {
-        //
+
+        $solicitacao = Solicitacao::find($id);
+
+        if($solicitacao){
+
+            $imagePath = $solicitacao->foto;
+
+            $solicitacao->delete();
+
+            if ($imagePath && file_exists($imagePath)) {
+                unlink($imagePath);
+            }
+
+        }
+
+        return redirect()->back();
     }
 }

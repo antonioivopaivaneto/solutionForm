@@ -9,7 +9,6 @@
 <body>
 
     <h1>Nova Solicitacao</h1>
-
     <br>
 <hr>
 
@@ -19,6 +18,12 @@
 <b>Assunto:</b> <span>{{$solicitacao->assunto}}</span><br>
 <b>Solicitacao:</b> <span>{{$solicitacao->solicitacao}}</span><br>
 <b>Email para Retorno:</b> <span>{{$solicitacao->email}}</span><br>
+
+@if($solicitacao->foto)
+<img src="{{url( $solicitacao->foto)}}" alt="Image" width="200"/>
+@else
+<p>Nenhuma foto disponível</p>
+@endif
 
 
 </body>

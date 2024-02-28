@@ -19,5 +19,6 @@ class Solicitacao extends Model
         'nome',
         'email',
         'foto',
+        'status',
     ];
 }

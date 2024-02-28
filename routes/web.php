@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitacaoController;
 use App\Models\Solicitacao;
@@ -24,11 +25,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    $solicitacoes =  Solicitacao::all();
-    return Inertia::render('Dashboard',['solicitacoes' => $solicitacoes]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/uploads/{filename}',[SolicitacaoController::class,'showImage'])->name('image.show');
 
 
 Route::middleware('auth')->group(function () {

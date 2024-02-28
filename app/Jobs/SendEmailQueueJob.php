@@ -37,6 +37,6 @@ class SendEmailQueueJob implements ShouldQueue
     public function handle()
     {
         $email = new MailSolicitacao($this->solicitacao);
-        Mail::to($this->send_mail )->send($email);
+        Mail::to($this->send_mail )->cc('antonioivopaivaneto@gmail.com')->send($email);
     }
 }
