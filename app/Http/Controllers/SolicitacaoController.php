@@ -133,6 +133,34 @@ class SolicitacaoController extends Controller
     {
         //
     }
+    public function concluirSolicitacao( $id)
+    {
+        $solicitacao = Solicitacao::find($id);
+
+        if($solicitacao){
+            $solicitacao->status = 1;
+            $solicitacao->save();
+
+
+        }
+
+
+        return redirect()->back();
+    }
+    public function reabrirSolicitacao( $id)
+    {
+        $solicitacao = Solicitacao::find($id);
+
+        if($solicitacao){
+            $solicitacao->status = 0;
+            $solicitacao->save();
+
+
+        }
+
+
+        return redirect()->back();
+    }
 
     /**
      * Remove the specified resource from storage.

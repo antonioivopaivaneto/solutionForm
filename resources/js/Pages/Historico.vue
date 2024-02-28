@@ -17,7 +17,7 @@ const remover = (id) => {
 const concluir = (id) => {
     if (confirm("Essa solicitação entrara para o histórico, deseja concluir ? ")) {
 
-        router.get(route('concluirSolicitacao', id), {preserveScroll: true})
+        router.get(route('reabrirSolicitacao', id), {preserveScroll: true})
     }
 
 }
@@ -46,117 +46,15 @@ const processarLabel = (label) => {
 
     <AuthenticatedLayout >
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Historico  de Finalizados</h2>
         </template>
 
 
-        <div class="py-12" >
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="grid grid-cols-3 gap-5 ">
-
-
-                    <div
-                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow- sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                        <div class="flex items-center justify-between mb-4">
-                            <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white"><span class="text-4xl">Assuntos</span><br> mais
-                                Solicitados</h5>
-
-                        </div>
-                        <div class="flow-root">
-                            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <li class="py-3 sm:py-4">
-                                    <div class="flex items-center" v-for="condominio in condominios" :key="condominio.id">
-
-                                        <div class="flex-1 min-w-0 ms-4">
-                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {{ condominio.condominio }}
-                                            </p>
-
-                                        </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {{ condominio.total }}
-                                        </div>
-                                    </div>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </div>
-
-
-                    <!-- outro-->
-
-                    <div
-                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                        <div class="flex items-center justify-between mb-4">
-                            <h5 class="text-xl font-bold leading-none text-white-900 dark:text-white"><span class="text-4xl">condominios</span><br> com maior requisicao</h5>
-
-                        </div>
-                        <div class="flow-root">
-                            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <li class="py-3 sm:py-4">
-                                    <div class="flex items-center" v-for="assunto in assuntos" :key="assunto.id">
-
-                                        <div class="flex-1 min-w-0 ms-4">
-                                            <p class="text-sm font-medium text-white truncate dark:text-white">
-                                                {{ assunto.assunto }}
-                                            </p>
-
-                                        </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {{ assunto.total }}
-
-                                        </div>
-                                    </div>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- outro-->
-
-                    <!-- outro-->
-
-                    <div
-                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
-                        <div class="flex items-center justify-between mb-4">
-                            <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white"><span class="text-4xl">condominios</span><br> com maior requisicao</h5>
-
-                        </div>
-                        <div class="flow-root">
-                            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <li class="py-3 sm:py-4">
-                                    <div class="flex items-center" v-for="morador in moradores" :key="morador.id">
-
-                                        <div class="flex-1 min-w-0 ms-4">
-                                            <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {{ morador.nome }}
-                                            </p>
-
-                                        </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {{ morador.total }}
-
-                                        </div>
-                                    </div>
-                                </li>
-
-                            </ul>
-                        </div>
-                    </div>
-                    <!-- outro-->
-
-                </div>
-            </div>
-        </div>
 
 
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
 
@@ -233,10 +131,10 @@ const processarLabel = (label) => {
                                     <td class="w-full py-4 ">
                                         <div class="flex gap-2">
                                             <a @click="concluir(solicitacao.id)"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">✅Concluir</a>
+                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">↩️Reabrir</a>
 
                                         <a @click="remover(solicitacao.id)"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline  cursor-pointer">🗑️Remover</a>
+                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">🗑️Remover</a>
                                         </div>
                                     </td>
                                 </tr>

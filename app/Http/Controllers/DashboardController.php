@@ -38,12 +38,18 @@ class DashboardController extends Controller
     ->get();
 
 
-        $solicitacoes =  Solicitacao::orderBy('created_at','desc')->paginate(15);
+        $solicitacoes =  Solicitacao::orderBy('created_at','desc')->where('status','=',0)->paginate(15);
         return Inertia::render('Dashboard', ['solicitacoes' => $solicitacoes,
         'condominios' =>$condominios,
         'assuntos' =>$assuntos,
         'moradores' => $moradores
     ]);
+    }
+    public function historico()
+    {
+
+        $solicitacoes =  Solicitacao::orderBy('created_at','desc')->where('status','=',1)->paginate(15);
+        return Inertia::render('Historico', ['solicitacoes' => $solicitacoes    ]);
     }
 
     /**
