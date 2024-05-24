@@ -14,11 +14,28 @@ class Solicitacao extends Model
     protected $fillable = [
         'assunto',
         'solicitacao',
-        'condominio',
-        'unidade',
+        'condominio_id',
+        'unidade_id',
         'nome',
         'email',
         'foto',
         'status',
+        'proprietario'
     ];
+
+    public function fotos(){
+        return $this->hasMany(Foto::class,'solicitacao_id','id');
+    }
+
+    public function unidade()
+    {
+        return $this->belongsTo(Unidade::class);
+    }
+
+    public function condominio()
+    {
+        return $this->belongsTo(Condominio::class);
+    }
+
+
 }

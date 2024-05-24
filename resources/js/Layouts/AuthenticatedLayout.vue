@@ -33,9 +33,13 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <NavLink :href="route('condominios.create')" :active="route().current('condominios')">
+                                     Condominios
+                                </NavLink>
                                 <NavLink :href="route('historico')" :active="route().current('historico')">
                                    Historico
                                 </NavLink>
+
                                 <NavLink :href="route('register')" :active="route().current('register')">
                                     Cadastrar ADM
                                 </NavLink>
@@ -122,6 +126,9 @@ const showingNavigationDropdown = ref(false);
                         <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
                             Dashboard
                         </ResponsiveNavLink>
+                        <NavLink :href="route('condominios.create')" :active="route().current('condominios')">
+                                     Condominios
+                                </NavLink>
                         <NavLink :href="route('historico')" :active="route().current('historico')">
                                     Historico
                                 </NavLink>

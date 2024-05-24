@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendEmailQueueJob;
 use App\Mail\Solicitacao as MailSolicitacao;
+use App\Models\Foto;
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -41,42 +42,54 @@ class SolicitacaoController extends Controller
      */
     public function store(Request $request)
     {
+
+
        $request->validate([
         'assunto' => 'required|string',
         'solicitacao' => 'required|string',
-        'condominio' => 'required|string',
-        'unidade' => 'required|string',
         'nome' => 'required|string',
         'email' => 'required|email',
-        'foto' => 'nullable',
         'status' => 'nullable',
        ]);
 
+       /*
+
        if($request->file('foto')){
+
         $foto = $request->file('foto')->store('uploads');
+
        }else{
         $foto = '';
        }
 
-
-
+       */
+      //dd($request->all());
 
        $solicitacao = new Solicitacao([
         'assunto' => $request->input('assunto'),
         'solicitacao' => $request->input('solicitacao'),
-        'condominio' => $request->input('condominio'),
-        'unidade' => $request->input('unidade'),
+        'condominio_id' => $request->input('condominio'),
+        'unidade_id' => $request->input('unidade'),
         'nome' => $request->input('nome'),
+        'telefone' => $request->input('telefone'),
         'email' => $request->input('email'),
-        'foto' =>  $foto, // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
+        'proprietario' => $request->input('proprietario'),
         'status' =>  '0', // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
        ]);
 
        $solicitacao->save();
 
-
-
-
+          // Manipulação do upload das fotos
+    if ($request->hasFile('foto')) {
+        foreach ($request->file('foto') as $file) {
+            $fotoPath = $file->store('uploads');
+            $foto = new Foto([
+                'foto' => $fotoPath,
+                'solicitacao_id' => $solicitacao->id,
+            ]);
+            $foto->save();
+        }
+    }
       //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
 
       $emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];

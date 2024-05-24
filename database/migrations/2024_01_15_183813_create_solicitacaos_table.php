@@ -15,14 +15,17 @@ return new class extends Migration
     {
         Schema::create('solicitacoes', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('condominio_id');
+            $table->unsignedBigInteger('unidade_id');
             $table->string('assunto');
             $table->string('solicitacao');
-            $table->string('condominio');
-            $table->string('unidade');
+            $table->boolean('proprietario');
             $table->string('nome');
             $table->string('email');
-            $table->string('foto');
             $table->timestamps();
+
+            $table->foreign('condominio_id')->references('id')->on('condominios');
+            $table->foreign('unidade_id')->references('id')->on('unidades');
         });
     }
     /**

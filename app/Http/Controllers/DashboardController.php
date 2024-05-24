@@ -17,8 +17,8 @@ class DashboardController extends Controller
     public function index()
     {
         $condominios = DB::table('solicitacoes')
-    ->select('condominio', DB::raw('count(*) as total'))
-    ->groupBy('condominio')
+    ->select('condominio_id', DB::raw('count(*) as total'))
+    ->groupBy('condominio_id')
     ->orderByDesc('total')
     ->limit(5)
     ->get();
@@ -38,7 +38,11 @@ class DashboardController extends Controller
     ->get();
 
 
-        $solicitacoes =  Solicitacao::orderBy('created_at','desc')->where('status','=',0)->paginate(15);
+        $solicitacoes =  Solicitacao::orderBy('created_at','desc')
+        ->where('status','=',0)
+        ->with('fotos','unidade','condominio')
+        ->paginate(15);
+
         return Inertia::render('Dashboard', ['solicitacoes' => $solicitacoes,
         'condominios' =>$condominios,
         'assuntos' =>$assuntos,

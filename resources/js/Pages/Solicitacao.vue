@@ -5,9 +5,9 @@
 
         <div class="p-5 pt-0">
             <div class="">
-            <img :src="logo" class="transition w-36 -ml-7  " alt="">
+                <img :src="logo" class="transition w-36 -ml-7  " alt="">
 
-        </div>
+            </div>
 
 
             <div class="" v-if="!stepTree">
@@ -31,9 +31,9 @@
 
                         <div class="mb-5 mt-2">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Assunto
+                                Tema
                             </label>
-                             <vue3-simple-typeahead :class="{ 'border-red-600': validacao }" v-model="form.assunto"
+                            <vue3-simple-typeahead :class="{ 'border-red-600': validacao }" v-model="form.assunto"
                                 class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 id="assunto" placeholder="Escolha o assunto..." :items="assuntos" :minInputLength="1"
                                 @keyup="selectionAssunto()"></vue3-simple-typeahead>
@@ -42,66 +42,118 @@
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Solicitação
                             </label>
-                            <textarea :class="{ 'border-red-600': validacao }" @mouseenter="selectionAssunto()"
+                            <textarea  :class="{ 'border-red-600': validacao }" @mouseenter="selectionAssunto()"
                                 v-model="form.solicitacao" rows="6" class="bg-gray-50  border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full
         dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Sua Solicitação"></textarea>
                         </div>
 
+
                         <div class="mb-5">
+
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Foto
                             </label>
-                            <input @change="uploadFile"
-                                class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none p-2 dark:placeholder-gray-400"
-                                id="file_input" type="file">
+
+                            <div id="imgResult" :src="camera"
+                                class="text-xs text-gray-700 text-center flex justify-center  p-2 rounded w-full h-30 cursor-pointer bg-blue-800/20">
+                                <span class="p-3" v-if="images.length === 0" @click="chooseImagem()">Clique aqui para
+                                    inserir imagens</span>
+
+                                <div v-for="(image, index) in images" :key="index">
+                                    <div class="image-container" @click="removeImage(index)">
+                                        <div class="">
+                                            <img :src="image" alt="Imagem"
+                                                class="mx-2 w-20 h-20 img-removed rounded-sm z-10 " />
+
+
+                                            <span class="remove-text">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="mt-1" width="18"
+                                                    height="18" viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, .5);transform: ;msFilter:;">
+                                                    <path
+                                                        d="M9.172 16.242 12 13.414l2.828 2.828 1.414-1.414L13.414 12l2.828-2.828-1.414-1.414L12 10.586 9.172 7.758 7.758 9.172 10.586 12l-2.828 2.828z">
+                                                    </path>
+                                                    <path
+                                                        d="M12 22c5.514 0 10-4.486 10-10S17.514 2 12 2 2 6.486 2 12s4.486 10 10 10zm0-18c4.411 0 8 3.589 8 8s-3.589 8-8 8-8-3.589-8-8 3.589-8 8-8z">
+                                                    </path>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <input multiple ref="fileInput" type="file" max="3" id="foto" name="foto[]"
+                                @change="handleFileUpload" @input="onSelectFile"
+                                class="file-input bg-gray-50 hidden border border-gray-500 text-gray-950 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+                                :class="{ 'border-red-500': !form.foto && validacao }" />
+
+
+
 
                         </div>
-
                     </div>
                 </transition>
-
-
                 <div class="" v-if="stepTwo">
 
-
-                    <div class="mb-5 mt-2 flex gap-2">
-                        <div class="">
-                            <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Condominio
-                            </label>
-
-                        <input v-model="form.condominio" :class="{ 'border-red-600': validacao }"
-                            class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                            id="condominio" placeholder="Informe seu condominio..." >
-
-                    </div>
-                    <div class="">
-                            <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Unidade/bloco/torre
-                            </label>
-                        <input @mouseenter="selectionCondominio()" v-model="form.unidade" type="text"
-                            placeholder="Sua Unidade/bloco/torre" :class="{ 'border-red-600': validacao }"
+                    <div class="mb-5 ">
+                        <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                            Seu Nome
+                        </label>
+                        <input type="text"  v-model="form.nome" :class="{ 'border-red-600': validacao }"
+                            placeholder="Seu Nome "
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    </div>
+
                     </div>
                     <div class="mb-5 ">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Seu Nome
-                            </label>
-                        <input type="text" v-model="form.nome" :class="{ 'border-red-600': validacao }"
-                            placeholder="Seu Nome "
+                            Telefone
+                        </label>
+                        <input v-mask="'(##) #####-####'" type="text" v-model="form.telefone" :class="{ 'border-red-600': validacao }"
+                            placeholder="Seu Telefone"
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     </div>
                     <div class="mb-5">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                              Seu  Email
-                            </label>
+                            Seu Email
+                        </label>
                         <input v-model="form.email" :class="{ 'border-red-600': validacaoEmail }" type="email"
                             placeholder="Seu Email " required
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                         <span class="text-red-500 mx-auto text-center text-xs">{{ error }}</span>
+                    </div>
+
+
+                    <div class="mb-5 mt-2">
+                        <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                            Unidade
+                        </label>
+                        <vue3-simple-typeahead :class="{ 'border-red-600': validacao }" v-model="form.assunto"
+                            class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            id="assunto" placeholder="Escolha a Unidade..." :items="assuntos" :minInputLength="1"
+                            @keyup="selectionAssunto()"></vue3-simple-typeahead>
+                    </div>
+                    <div class="mb-5 mt-2 flex gap-20 ">
+                        <div class="flex justify-between items-center gap-2 mx-9">
+                            <input name="proprietario" type="radio" v-model="form.condominio"
+                                :class="{ 'border-red-600': validacao }"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-200 focus:ring-2 dark:bg-gray-200 dark:border-gray-400"
+                                id="condominio" placeholder="Informe seu condominio..." />
+                            <label class="text-gray-700 text-sm font-bold" for="condominio">
+                                Proprietário
+                            </label>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input name="proprietario" @mouseenter="selectionCondominio()" v-model="form.unidade"
+                                type="radio" :class="{ 'border-red-600': validacao }"
+                                class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-200 focus:ring-2 dark:bg-gray-200 dark:border-gray-400"
+                                id="locatario" placeholder="Sua Unidade/bloco/torre" />
+                            <label class="text-gray-700 text-sm font-bold" for="locatario">
+                                Locatário
+                            </label>
+                        </div>
                     </div>
 
                 </div>
@@ -113,7 +165,7 @@
                     </h1>
 
                     <p class="text-gray-700 font-thin  mb-6">
-                       Em breve entraremos em contato pelo E-mail informado.<br> Gestão Eficiênte e Participativa
+                        Em breve entraremos em contato pelo E-mail informado.<br> Gestão Eficiênte e Participativa
                     </p>
 
                 </div>
@@ -123,7 +175,8 @@
                         class="text-white mb-6  bg-green-900 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                         Finalizar
                     </button>
-                    <button :class="{ 'cursor-not-allowed': validacao }" type="button" v-if="stepOne" @click="ShowStep2()"
+                    <button :class="{ 'cursor-not-allowed': validacao }" type="button" v-if="stepOne"
+                        @click="ShowStep2()"
                         class="text-white mb-6  bg-blue-900 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         Proximo
                     </button>
@@ -145,6 +198,16 @@ import header from "./../../img/atendimento.png";
 import gif from "./../../img/success.gif";
 import { reactive, ref } from "vue";
 import { router } from "@inertiajs/vue3";
+import TheMask from 'vue-the-mask'
+
+
+
+function chooseImagem() {
+    const input = document.getElementById('foto')
+    input.click();
+
+}
+
 
 const isEmailValid = (email) => {
 
@@ -180,6 +243,8 @@ const stepTree = ref(false)
 const stepOne = ref(true)
 const Npasso = ref(1)
 
+const formData = new FormData();
+
 const form = reactive({
     assunto: null,
     solicitacao: null,
@@ -188,12 +253,60 @@ const form = reactive({
     unidade: null,
     nome: null,
     email: null,
+    telefone: null,
 })
+
+const images = ref([]);
+
+
+const removeImage = (index) => {
+
+    if (window.confirm("Deseja realmente remover esta imagem? ")) {
+
+
+
+
+        images.value.splice(index, 1);
+
+        formData.delete('foto[]', selectedFiles.value[index]);
+
+        selectedFiles.value.splice(index, 1);
+    }
+}
+
 
 
 const uploadFile = (event) => {
     form.foto = event.target.files[0];
 }
+
+const handleFileUpload = (event) => {
+    const selectedFile = event.target.files[0];
+
+    if (selectedFile) {
+        form.foto = selectedFile;
+    }
+}
+
+
+const onSelectFile = (event) => {
+    images.value = [];
+    const selectedFiles = event.target.files;
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+        const selectedFile = selectedFiles[i];
+        if (selectedFile) {
+            const imgUrl = URL.createObjectURL(selectedFile);
+            images.value.push(imgUrl);
+        }
+    }
+
+
+    for (let i = 0; i < selectedFiles.length; i++) {
+        formData.append('foto[]', selectedFiles[i]);
+    }
+
+};
 
 const selectionAssunto = () => {
 
@@ -281,5 +394,48 @@ const ShowStep3 = () => {
 .fade-enter-from,
 .fade-leave-to {
     opacity: 0;
+}
+
+.image-container {
+    display: inline-block;
+    position: relative;
+}
+
+.file-input {
+    display: none;
+    cursor: pointer;
+}
+
+.remove-text {
+    position: absolute;
+    top: -5px;
+    right: 5px;
+    color: white;
+    padding: 2px 4px;
+    border-radius: 4px 4px 4px 4px;
+    transition: all 0.5s;
+    /* Adicione uma transição de 0.3 segundos para suavizar as mudanças de opacidade */
+    cursor: pointer;
+
+}
+
+.image-container:hover .img-removed {
+    /* Exiba o ícone "X" ao passar o mouse */
+    display: block;
+    opacity: 1;
+    /* Torna o ícone visível ao passar o mouse */
+
+}
+
+.image-container:hover .remove-text {
+    /* Exiba o texto "Remover" ao passar o mouse */
+    display: block;
+    opacity: 1;
+    /* Torna o ícone visível ao passar o mouse */
+
+}
+
+.img-removed {
+    cursor: pointer;
 }
 </style>

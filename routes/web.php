@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\CondominioController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitacaoController;
+use App\Http\Controllers\UnidadeController;
 use App\Models\Solicitacao;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -38,7 +40,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get('solicitar/{condominio}', [CondominioController::class,'Solicitacao'])->name('solicitar');;
+Route::resource('condominios', CondominioController::class)->middleware(['auth']);
 
-Route::resource('solicitacao', SolicitacaoController::class);
+Route::resource('solicitacao', SolicitacaoController::class)->middleware(['auth']);
+Route::delete('unidades/remover-massa/{unidades}', [UnidadeController::class,'destroyMassa'])->middleware(['auth']);
+Route::resource('unidades', UnidadeController::class)->middleware(['auth']);
+Route::get('/condominio/{id}/solicitacao', [CondominioController::class, 'solicitacao']);
 
 require __DIR__.'/auth.php';
