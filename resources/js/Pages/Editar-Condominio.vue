@@ -271,17 +271,20 @@ const urlQRCode = route('solicitar',props.condominio.id);
                                     <th scope="col" class="px-32  py-3">
                                         Unidades
                                     </th>
-                                    <th scope="col" class="px-32  py-3">
+                                    <th scope="col" class="px-14  py-3">
                                         torre
                                     </th>
-                                    <th scope="col" class="px-32  py-3">
+                                    <th scope="col" class="px-14  py-3">
                                         bloco
                                     </th>
-                                    <th scope="col" class="px-32   py-3">
+                                    <th scope="col" class="px-14   py-3">
                                         andar
                                     </th>
+                                    <th scope="col" class="px-3   py-3">
+                                        Solicitações
+                                    </th>
 
-                                    <th scope="col" class="px-16  py-3 ">
+                                    <th scope="col" class="px-5  py-3 ">
                                         Action
                                     </th>
                                 </tr>
@@ -332,8 +335,13 @@ const urlQRCode = route('solicitar',props.condominio.id);
                                         </template>
 
                                     </th>
+                                    <th scope="row" class="px-3 py-4 font-medium cursor-pointer ">
 
-                                    <td class="w-full py-4 ">
+                                        <Link class="text-blue-500 " :href="'/unidades/' + cond.id">
+                                            {{ cond.solicitacoes.length }}
+                                        </Link>
+                                    </th>
+                                    <td class=" py-4 ">
                                         <div class="flex gap-2">
                                             <a @click="editar(cond)"
                                                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">{{

@@ -135,7 +135,11 @@ class CondominioController extends Controller
     $condominio = Condominio::findOrFail($id);
 
     // Paginando as unidades do condomínio
-    $unidades = $condominio->unidades()->paginate(10); // 10 unidades por página
+    $unidades = $condominio->unidades()->with('solicitacoes')->paginate(10); // 10 unidades por página
+
+
+
+
 
 
 

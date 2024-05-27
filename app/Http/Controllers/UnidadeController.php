@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Condominio;
+use App\Models\Solicitacao;
 use App\Models\Unidade;
 use Illuminate\Http\Request;
 
@@ -36,13 +37,12 @@ class UnidadeController extends Controller
      */
     public function store(Request $request)
     {
-        $condominio = Condominio::where('id',$request->input('condominio_id'))->first();
+        $condominio = Condominio::where('id', $request->input('condominio_id'))->first();
 
 
-        if($request->input('condominio_nome') != $condominio->nome){
+        if ($request->input('condominio_nome') != $condominio->nome) {
             $condominio->nome = $request->input('condominio_nome');
             $condominio->save();
-
         }
 
         $nome = $request->input('nome');
@@ -94,9 +94,6 @@ class UnidadeController extends Controller
         Unidade::insert($unidades);
 
         return redirect()->back();
-
-
-
     }
 
     /**
@@ -107,7 +104,15 @@ class UnidadeController extends Controller
      */
     public function show($id)
     {
-        //
+        // Paginando as unidades do condomínio
+        $unidade = Unidade::find($id); // 10 unidades por página
+
+        $solicitacoes = Solicitacao::where('unidade_id',$unidade->id)->with('fotos')->paginate(10);
+
+        // Busca o condomínio sem carregar as unidades
+        $condominio = Condominio::find($unidade->condominio_id);
+
+        return Inertia('Solicitacao-Unidade', compact('condominio', 'unidade','solicitacoes'));
     }
 
     /**
@@ -135,7 +140,6 @@ class UnidadeController extends Controller
         $unidade->update($request->all());
 
         return redirect()->back();
-
     }
 
     /**
@@ -155,9 +159,9 @@ class UnidadeController extends Controller
     public function destroyMassa($unidades)
     {
         // Converta a string de IDs para um array
-    $ids = explode(',', $unidades);
+        $ids = explode(',', $unidades);
 
-         Unidade::whereIn('id', $ids)->delete();
+        Unidade::whereIn('id', $ids)->delete();
 
         return redirect()->back();
     }

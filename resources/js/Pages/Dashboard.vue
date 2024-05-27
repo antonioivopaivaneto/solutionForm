@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, router } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
 
@@ -178,7 +178,10 @@ const toggleShow = (solicitacao) => {
                             <thead class="text-xs  uppercase 0 ">
                                 <tr class="bg-gray-500 text-white">
                                     <th scope="col" class="px-6 py-3">
+
                                         condominio
+
+
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Unidade
@@ -217,10 +220,16 @@ const toggleShow = (solicitacao) => {
                                     class="odd:bg-gray-200   border-b border-gray-00 text-gray-700">
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
+                                        <Link class="text-blue-500 " :href="'/condominios/' + solicitacao.condominio.id">
+
                                         {{ solicitacao.condominio.nome }}
+                                        </Link>
                                     </th>
                                     <td class="px-6 py-4">
+                                        <Link class="text-blue-500 " :href="'/unidades/' + solicitacao.unidade.id">
+
                                         {{ solicitacao.unidade.nome }}
+                                        </Link>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
