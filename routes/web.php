@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
 Route::get('solicitar/{condominio}', [CondominioController::class,'Solicitacao'])->name('solicitar');;
 Route::resource('condominios', CondominioController::class)->middleware(['auth']);
 
+Route::put('atualizarStatus',[ SolicitacaoController::class,'atualizarStatus'])->middleware(['auth'])->name('atualizarStatus');
 Route::resource('solicitacao', SolicitacaoController::class)->middleware(['auth']);
 Route::delete('unidades/remover-massa/{unidades}', [UnidadeController::class,'destroyMassa'])->middleware(['auth']);
 Route::resource('unidades', UnidadeController::class)->middleware(['auth']);

@@ -8,23 +8,25 @@
 </head>
 <body>
 
-    <h1>Nova Solicitacao</h1>
-    <br>
+<h1>Nova Solicitação</h1>
+<br>
 <hr>
 
-<b>Condominio:</b> <span>{{$solicitacao->condominio}}</span><br>
-<b>Unidade:</b> <span>{{$solicitacao->unidade}}</span><br>
-<b>Morador:</b> <span>{{$solicitacao->nome}}</span><br>
-<b>Assunto:</b> <span>{{$solicitacao->assunto}}</span><br>
-<b>Solicitacao:</b> <span>{{$solicitacao->solicitacao}}</span><br>
-<b>Email para Retorno:</b> <span>{{$solicitacao->email}}</span><br>
+<b>Condomínio:</b> <span>{{ $solicitacao->condominio->nome }}</span><br>
+<b>Unidade:</b> <span>{{ $solicitacao->unidade->nome }}</span><br>
+<b>Morador:</b> <span>{{ $solicitacao->nome }}</span><br>
+<b>Responsavel:</b> <span>{{ $solicitacao->proprietario  }}</span><br>
+<b>Assunto:</b> <span>{{ $solicitacao->assunto }}</span><br>
+<b>Solicitação:</b> <span>{{ $solicitacao->solicitacao }}</span><br>
+<b>Email para Retorno:</b> <span>{{ $solicitacao->email }}</span><br>
 
-@if($solicitacao->foto)
-<img src="{{url( $solicitacao->foto)}}" alt="Image" width="200"/>
+@if($solicitacao->fotos->isNotEmpty())
+    @foreach($solicitacao->fotos as $foto)
+        <img src="{{ url($foto->foto) }}" alt="Imagem" width="200"/>
+    @endforeach
 @else
-<p>Nenhuma foto disponível</p>
+    <p>Nenhuma foto disponível</p>
 @endif
-
 
 </body>
 </html>

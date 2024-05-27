@@ -93,7 +93,7 @@ class SolicitacaoController extends Controller
       //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
 
       $emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
-      dispatch(new SendEmailQueueJob($emails,$solicitacao ));
+      dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
 
        return ;
 
@@ -166,6 +166,22 @@ class SolicitacaoController extends Controller
 
         if($solicitacao){
             $solicitacao->status = 0;
+            $solicitacao->save();
+
+
+        }
+
+
+        return redirect()->back();
+    }
+    public function atualizarStatus(Request $request )
+    {
+
+
+        $solicitacao = Solicitacao::find($request->id);
+
+        if($solicitacao){
+            $solicitacao->status = $request->status;
             $solicitacao->save();
 
 

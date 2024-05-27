@@ -17,43 +17,52 @@ class DashboardController extends Controller
     public function index()
     {
         $condominios = DB::table('solicitacoes')
-    ->select('condominio_id', DB::raw('count(*) as total'))
-    ->groupBy('condominio_id')
-    ->orderByDesc('total')
-    ->limit(5)
-    ->get();
-
-    $assuntos = DB::table('solicitacoes')
-    ->select('assunto',DB::raw('count(*) as total'))
-    ->groupBy('assunto')
-    ->orderByDesc('total')
-    ->limit(5)
-    ->get();
-
-    $moradores = DB::table('solicitacoes')
-    ->select('nome',DB::raw('count(*) as total'))
-    ->groupBy('nome')
+    ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
+    ->select('condominios.nome', DB::raw('count(*) as total'))
+    ->groupBy('condominios.nome')
     ->orderByDesc('total')
     ->limit(5)
     ->get();
 
 
-        $solicitacoes =  Solicitacao::orderBy('created_at','desc')
-        ->where('status','=',0)
-        ->with('fotos','unidade','condominio')
-        ->paginate(15);
+        $assuntos = DB::table('solicitacoes')
+            ->select('assunto', DB::raw('count(*) as total'))
+            ->groupBy('assunto')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
-        return Inertia::render('Dashboard', ['solicitacoes' => $solicitacoes,
-        'condominios' =>$condominios,
-        'assuntos' =>$assuntos,
-        'moradores' => $moradores
-    ]);
+       $moradores = DB::table('solicitacoes')
+    ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
+    ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
+    ->groupBy('unidades.nome', 'solicitacoes.nome')
+    ->orderByDesc('total')
+    ->limit(5)
+    ->get();
+
+
+
+
+        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')
+            ->where(function ($query){
+                $query->where('status',0)
+                ->orWhere('status',2);
+            })
+            ->with('fotos', 'unidade', 'condominio')
+            ->paginate(15);
+
+        return Inertia::render('Dashboard', [
+            'solicitacoes' => $solicitacoes,
+            'condominios' => $condominios,
+            'assuntos' => $assuntos,
+            'moradores' => $moradores
+        ]);
     }
     public function historico()
     {
 
-        $solicitacoes =  Solicitacao::orderBy('created_at','desc')->where('status','=',1)->paginate(15);
-        return Inertia::render('Historico', ['solicitacoes' => $solicitacoes    ]);
+        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')->where('status', '=', 1)->paginate(15);
+        return Inertia::render('Historico', ['solicitacoes' => $solicitacoes]);
     }
 
     /**

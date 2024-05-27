@@ -56,6 +56,13 @@ onMounted(() => {
 });
 
 
+const atualizarStatus = (solicitacaoId, novoStatus) => {
+    if(confirm("tem certeza de que deseja alterar o status desta solicitação? ")){
+        router.put(route('atualizarStatus', { id: solicitacaoId }), { status: novoStatus }, { preserveScroll: true })
+    }
+}
+
+
 
 </script>
 
@@ -85,18 +92,17 @@ onMounted(() => {
                         <div class="flow-root">
                             <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <li class="py-3 sm:py-4">
-                                    <div class="flex items-center" v-for="condominio in condominios"
-                                        :key="condominio.id">
+                                    <div class="flex items-center" v-for="assunto in assuntos" :key="assunto.id">
 
                                         <div class="flex-1 min-w-0 ms-4">
                                             <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {{ condominio.condominio }}
+                                                {{ assunto.assunto }}
                                             </p>
 
                                         </div>
                                         <div
                                             class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {{ condominio.total }}
+                                            {{ assunto.total }}
                                         </div>
                                     </div>
                                 </li>
@@ -112,23 +118,24 @@ onMounted(() => {
                         class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
                             <h5 class="text-xl font-bold leading-none text-white-900 dark:text-white"><span
-                                    class="text-4xl">condominios</span><br> com maior requisicao</h5>
+                                    class="text-4xl">Condominios</span><br> com maior requisicao</h5>
 
                         </div>
                         <div class="flow-root">
                             <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                                 <li class="py-3 sm:py-4">
-                                    <div class="flex items-center" v-for="assunto in assuntos" :key="assunto.id">
+                                    <div class="flex items-center" v-for="condominio in condominios"
+                                        :key="condominio.id">
 
                                         <div class="flex-1 min-w-0 ms-4">
                                             <p class="text-sm font-medium text-white truncate dark:text-white">
-                                                {{ assunto.assunto }}
+                                                {{ condominio.nome }}
                                             </p>
 
                                         </div>
                                         <div
                                             class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white">
-                                            {{ assunto.total }}
+                                            {{ condominio.total }}
 
                                         </div>
                                     </div>
@@ -145,7 +152,7 @@ onMounted(() => {
                         class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
                             <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white"><span
-                                    class="text-4xl">condominios</span><br> com maior requisicao</h5>
+                                    class="text-4xl">Unidade</span><br> com maior requisicao</h5>
 
                         </div>
                         <div class="flow-root">
@@ -155,7 +162,7 @@ onMounted(() => {
 
                                         <div class="flex-1 min-w-0 ms-4">
                                             <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
-                                                {{ morador.nome }}
+                                                {{ morador.unidade_nome }}
                                             </p>
 
                                         </div>
@@ -232,14 +239,14 @@ onMounted(() => {
                                         <a class="hover:text-blue-600 underline "
                                             :href="'/condominios/' + solicitacao.condominio.id">
 
-                                        {{ solicitacao.condominio.nome }}
+                                            {{ solicitacao.condominio.nome }}
                                         </a>
                                     </th>
                                     <td class="px-6 py-4">
                                         <a class="hover:text-blue-600 underline "
                                             :href="'/unidades/' + solicitacao.unidade.id">
 
-                                        {{ solicitacao.unidade.nome }}
+                                            {{ solicitacao.unidade.nome }}
                                         </a>
                                     </td>
                                     <td class="px-6 py-4">
@@ -258,8 +265,8 @@ onMounted(() => {
                                             <div class="cursor-pointer text-blue-500" @click="toggleShow(solicitacao)">
                                                 <span v-if="solicitacao.showMore" class="flex justify-center">
 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                        height="24" viewBox="0 0 24 24"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24"
                                                         style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                                         <path
                                                             d="M7.707 14.707 12 10.414l4.293 4.293 1.414-1.414L12 7.586l-5.707 5.707z">
@@ -267,12 +274,11 @@ onMounted(() => {
                                                     </svg>
 
 
-                                                  </span>
+                                                </span>
                                                 <span v-else class="flex justify-center">
 
 
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24"
                                                         style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                                         <path
@@ -309,22 +315,18 @@ onMounted(() => {
                                     </td>
 
                                     <td class="px-6 py-4">
-                                        <span v-if="solicitacao.status == null">Aberto</span>
-                                        <span v-if="solicitacao.status == 0">Aberto</span>
-                                        <span v-if="solicitacao.status == 1">Concluido</span>
+                                        <select v-model="solicitacao.status" @change="atualizarStatus(solicitacao.id,$event.target.value)"
+                                            class="appearance-none bg-transparent border-none">
+                                            <option value="0">Aberto</option>
+                                            <option value="2">Andamento</option>
+                                            <option value="1">Concluído</option>
+                                        </select>
                                     </td>
+
 
                                     <td class="w-full py-4 mx-auto text-center ">
                                         <div class="flex gap-2 justify-center">
-                                            <a @click="concluir(solicitacao.id)"
-                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer"><svg
-                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                    viewBox="0 0 24 24"
-                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
-                                                    <path
-                                                        d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z">
-                                                    </path>
-                                                </svg></a>
+
 
                                             <a @click="remover(solicitacao.id)"
                                                 class="font-medium text-blue-600  dark:text-blue-500 hover:underline  cursor-pointer"><svg
