@@ -4,20 +4,20 @@ import { Head, router } from '@inertiajs/vue3';
 
 
 
-defineProps({ solicitacoes: Array,condominios:Array,moradores:Array,assuntos:Array })
+defineProps({ solicitacoes: Array, condominios: Array, moradores: Array, assuntos: Array })
 
 
 const remover = (id) => {
     if (confirm("Deseja remover esta solicitação ? ")) {
 
-        router.delete(route('solicitacao.destroy', id), {preserveScroll: true})
+        router.delete(route('solicitacao.destroy', id), { preserveScroll: true })
     }
 
 }
 const concluir = (id) => {
     if (confirm("Essa solicitação entrara para o histórico, deseja concluir ? ")) {
 
-        router.get(route('reabrirSolicitacao', id), {preserveScroll: true})
+        router.get(route('reabrirSolicitacao', id), { preserveScroll: true })
     }
 
 }
@@ -36,25 +36,39 @@ const formatarData = (data) => {
 
 
 const processarLabel = (label) => {
-  // Substitua '&laquo;' por 'Previous' e '&raquo;' por 'Next'
-  return label.replace(/&laquo;/g, '').replace('Previous', 'Voltar').replace('Next', 'Proximo').replace(/&raquo;/g, '');
+    // Substitua '&laquo;' por 'Previous' e '&raquo;' por 'Next'
+    return label.replace(/&laquo;/g, '').replace('Previous', 'Voltar').replace('Next', 'Proximo').replace(/&raquo;/g, '');
 };
+
+const Back = () =>{
+    window.history.back()
+}
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
-    <AuthenticatedLayout >
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Historico  de Finalizados</h2>
-        </template>
+    <AuthenticatedLayout>
 
 
 
 
 
         <div class="py-12">
+
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div class="flex mb-3">
+                    <a @click="Back"
+                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
 
@@ -118,39 +132,37 @@ const processarLabel = (label) => {
                                     </td>
                                     <td class="px-6 py-4">
                                         <a target="&_blank" :href="solicitacao.foto">
-                                        <img :src="solicitacao.foto" class="w-12" />
-                                    </a>
+                                            <img :src="solicitacao.foto" class="w-12" />
+                                        </a>
 
                                     </td>
                                     <td class="px-6 py-4">
-                                        <span v-if="solicitacao.status == null ">Aberto</span>
-                                        <span v-if="solicitacao.status == 0 ">Aberto</span>
+                                        <span v-if="solicitacao.status == null">Aberto</span>
+                                        <span v-if="solicitacao.status == 0">Aberto</span>
                                         <span v-if="solicitacao.status == 1">Concluido</span>
                                     </td>
 
                                     <td class="w-full py-4 ">
                                         <div class="flex gap-2">
                                             <a @click="concluir(solicitacao.id)"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">↩️Reabrir</a>
+                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">↩️Reabrir</a>
 
-                                        <a @click="remover(solicitacao.id)"
-                                            class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">🗑️Remover</a>
+                                            <a @click="remover(solicitacao.id)"
+                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">🗑️Remover</a>
                                         </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
 
-<div class="mt-4 flex gap-2 items-center">
-    <a :href="solicitacao.url"
-        v-for="solicitacao in solicitacoes.links"
-        :key="solicitacao.label"
-        class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-        :class="{ 'bg-gray-500': solicitacao.active }"
-    >
-    <span>{{ processarLabel(solicitacao.label) }}</span>
-    </a>
-</div>
+                        <div class="mt-4 flex gap-2 items-center">
+                            <a :href="solicitacao.url" v-for="solicitacao in solicitacoes.links"
+                                :key="solicitacao.label"
+                                class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+                                :class="{ 'bg-gray-500': solicitacao.active }">
+                                <span>{{ processarLabel(solicitacao.label) }}</span>
+                            </a>
+                        </div>
 
 
 

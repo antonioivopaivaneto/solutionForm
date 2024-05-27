@@ -100,6 +100,9 @@ const submit = (unidade) => {
     })
 };
 
+const Back = () =>{
+    window.history.back()
+}
 
 const remover = (id) => {
 
@@ -149,6 +152,8 @@ const urlQRCode = route('solicitar',props.condominio.id);
 
 
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
+
+
             <div class="flex flex-row ">
 
                 <div class=" max-w-md p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg sm:p-8 ">
@@ -237,6 +242,19 @@ const urlQRCode = route('solicitar',props.condominio.id);
 
 
             <div class="py-12 text-center">
+
+                <div class="flex mb-3 ">
+                    <a @click="Back"
+                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de unidades -  Cond.{{ condominio.nome }}</div>
 
@@ -307,7 +325,10 @@ const urlQRCode = route('solicitar',props.condominio.id);
                                             class="bg-gray-50 text-center border border-gray-300 text-gray-900 text-sm rounded-lg  block w-full p-2.5 dark:bg-white dark:border-gray-200 dark:placeholder-gray-400 dark:text-gray-700 dark:focus:ring-gray-400 dark:focus:border-gray-400"
                                             v-if="editLine === cond.id" type="text" v-model="formEditUnidade.nome">
                                         <template v-else>
+                                                                                    <Link class="text-blue-500 " :href="'/unidades/' + cond.id">
+
                                             {{ cond.nome }}
+                                            </Link>
                                         </template>
                                     </th>
                                     <th scope="row" class="px-6 py-4 font-medium ">

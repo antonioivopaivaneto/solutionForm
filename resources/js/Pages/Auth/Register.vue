@@ -20,13 +20,20 @@ const submit = () => {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
+
+const Back = () =>{
+    window.history.back()
+}
+
 </script>
 
 <template>
     <AuthenticatedLayout>
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 mt-9">
+
             <div class="w-full max-w-md p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg sm:p-8 ">
+
 
                 <Head title="Register" />
 

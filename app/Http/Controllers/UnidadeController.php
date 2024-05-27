@@ -107,7 +107,10 @@ class UnidadeController extends Controller
         // Paginando as unidades do condomínio
         $unidade = Unidade::find($id); // 10 unidades por página
 
-        $solicitacoes = Solicitacao::where('unidade_id',$unidade->id)->with('fotos')->paginate(10);
+        $solicitacoes = Solicitacao::where('unidade_id', $unidade->id)
+        ->with('fotos')
+        ->orderByRaw('CASE WHEN status IS NULL OR status = 0 THEN 0 ELSE 1 END ASC')
+        ->paginate(10);
 
         // Busca o condomínio sem carregar as unidades
         $condominio = Condominio::find($unidade->condominio_id);

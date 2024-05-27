@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 
 
@@ -45,7 +45,16 @@ const showMore = ref(false)
 
 const toggleShow = (solicitacao) => {
     solicitacao.showMore = !solicitacao.showMore;
+
 }
+
+// Initialize showMore for each solicitacao
+onMounted(() => {
+    solicitacoes.data.forEach(solicitacao => {
+        solicitacao.showMore = false;
+    });
+});
+
 
 
 </script>
@@ -220,16 +229,18 @@ const toggleShow = (solicitacao) => {
                                     class="odd:bg-gray-200   border-b border-gray-00 text-gray-700">
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
-                                        <Link class="text-blue-500 " :href="'/condominios/' + solicitacao.condominio.id">
+                                        <a class="hover:text-blue-600 underline "
+                                            :href="'/condominios/' + solicitacao.condominio.id">
 
                                         {{ solicitacao.condominio.nome }}
-                                        </Link>
+                                        </a>
                                     </th>
                                     <td class="px-6 py-4">
-                                        <Link class="text-blue-500 " :href="'/unidades/' + solicitacao.unidade.id">
+                                        <a class="hover:text-blue-600 underline "
+                                            :href="'/unidades/' + solicitacao.unidade.id">
 
                                         {{ solicitacao.unidade.nome }}
-                                        </Link>
+                                        </a>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
@@ -242,8 +253,38 @@ const toggleShow = (solicitacao) => {
                                             {{ solicitacao.solicitacao }}
                                         </div>
                                         <div v-else>
-                                            {{ solicitacao.showMore ? solicitacao.solicitacao : solicitacao.solicitacao.substring(0, 10) +' ...'}}
-                                        <div class="cursor-pointer text-blue-500" @click="toggleShow(solicitacao)">{{ solicitacao.showMore ? 'Reduzir' : 'Expandir' }}</div>
+                                            {{ solicitacao.showMore ? solicitacao.solicitacao :
+                                        solicitacao.solicitacao.substring(0, 10) + ' ...' }}
+                                            <div class="cursor-pointer text-blue-500" @click="toggleShow(solicitacao)">
+                                                <span v-if="solicitacao.showMore" class="flex justify-center">
+
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
+                                                        height="24" viewBox="0 0 24 24"
+                                                        style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                        <path
+                                                            d="M7.707 14.707 12 10.414l4.293 4.293 1.414-1.414L12 7.586l-5.707 5.707z">
+                                                        </path>
+                                                    </svg>
+
+
+                                                  </span>
+                                                <span v-else class="flex justify-center">
+
+
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24"
+                                                        style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                        <path
+                                                            d="M16.293 9.293 12 13.586 7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z">
+                                                        </path>
+                                                    </svg>
+
+
+                                                </span>
+
+
+                                            </div>
                                         </div>
 
 
@@ -252,18 +293,20 @@ const toggleShow = (solicitacao) => {
                                         {{ formatarData(solicitacao.created_at) }}
                                     </td>
                                     <td class="w-full border text-center  ">
-                            <div class="flex flex row  p-1">
-                              <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
-                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
-                                  <img :src="fotos.foto" class="rounded-sm mx-0.5 w-8 h-10 mx-2 " alt="">
-                                </a>
-                              </span>
-                              <span v-if="solicitacao.fotos.length > 3" class="w-3 flex items-center justify-center">
-                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
-                              </span>
+                                        <div class="flex flex row  p-1">
+                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
+                                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
+                                                    <img :src="fotos.foto" class="rounded-sm mx-0.5 w-8 h-10 mx-2 "
+                                                        alt="">
+                                                </a>
+                                            </span>
+                                            <span v-if="solicitacao.fotos.length > 3"
+                                                class="w-3 flex items-center justify-center">
+                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+                                            </span>
 
-                            </div>
-                          </td>
+                                        </div>
+                                    </td>
 
                                     <td class="px-6 py-4">
                                         <span v-if="solicitacao.status == null">Aberto</span>
@@ -271,13 +314,28 @@ const toggleShow = (solicitacao) => {
                                         <span v-if="solicitacao.status == 1">Concluido</span>
                                     </td>
 
-                                    <td class="w-full py-4 ">
-                                        <div class="flex gap-2">
+                                    <td class="w-full py-4 mx-auto text-center ">
+                                        <div class="flex gap-2 justify-center">
                                             <a @click="concluir(solicitacao.id)"
-                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">✅</a>
+                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                    <path
+                                                        d="m10 15.586-3.293-3.293-1.414 1.414L10 18.414l9.707-9.707-1.414-1.414z">
+                                                    </path>
+                                                </svg></a>
 
                                             <a @click="remover(solicitacao.id)"
-                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline  cursor-pointer">🗑️</a>
+                                                class="font-medium text-blue-600  dark:text-blue-500 hover:underline  cursor-pointer"><svg
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                    <path
+                                                        d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z">
+                                                    </path>
+                                                    <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
+                                                </svg></a>
                                         </div>
                                     </td>
                                 </tr>

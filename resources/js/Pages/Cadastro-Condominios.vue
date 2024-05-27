@@ -35,6 +35,10 @@ const generateQRCode = (id) => {
     return QRCode.toDataURL(`/condominio/${id}/solicitacao`);
 };
 
+const Back = () =>{
+    window.history.back()
+}
+
 const submit = () => {
     form.post('/condominios',{
   preserveScroll: true,
@@ -60,6 +64,8 @@ const remover = (id) => {
 
 
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
+
+
             <div class="w-full max-w-md p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg sm:p-8 ">
 
                 <Head title="Register" />
@@ -127,6 +133,17 @@ const remover = (id) => {
                 </form>
             </div>
             <div class="py-12 text-center">
+                <div class="flex mb-3">
+                    <a @click="Back"
+                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de condominios</div>
                     <div class=" overflow-x-auto sm:rounded-lg p-5 ">
