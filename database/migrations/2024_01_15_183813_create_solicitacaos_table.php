@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('unidade_id');
             $table->string('assunto');
             $table->string('solicitacao');
-            $table->boolean('proprietario');
+            $table->string('proprietario');
             $table->string('nome');
             $table->string('email');
             $table->timestamps();

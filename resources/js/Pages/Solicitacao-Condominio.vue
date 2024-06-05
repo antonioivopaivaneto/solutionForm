@@ -7,6 +7,8 @@
             <div class="">
                 <img :src="logo" class="transition w-36 -ml-7  " alt="">
 
+
+
             </div>
 
 
@@ -17,6 +19,17 @@
                 </h1>
 
                 <span>{{ Npasso }}º Passo</span>
+                <div class="flex ">
+                    <a @click="ShowStep1()" v-if="stepTwo"
+                        class=" py-2 cursor-pointer  text-gray-800 rounded flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgba(0, 0, 0, 0.6);transform: ;msFilter:;">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
 
             </div>
 
@@ -34,10 +47,10 @@
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Tema
                             </label>
-                            <vue3-simple-typeahead :class="{ 'border-red-600': validacao }" v-model="form.assunto"
-                                class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                id="assunto" placeholder="Escolha o assunto..." :items="assuntos" :minInputLength="1"
-                                @keyup="selectionAssunto()"></vue3-simple-typeahead>
+                            <select v-model="form.assunto" id="assunto" class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                <option disabled selected value="">Escolha o assunto...</option>
+                <option v-for="item in assuntos" :key="item">{{ item }}</option>
+              </select>
                         </div>
                         <div class="mb-5">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
@@ -56,21 +69,22 @@
                             </label>
 
                             <div id="imgResult" :src="camera"
-                                class="text-xs text-gray-700 text-center flex justify-center  p-2 rounded w-full h-30 cursor-pointer bg-blue-800/20">
-                                <span class="p-3" v-if="images.length === 0" @click="chooseImagem()">Clique aqui para
-                                    inserir imagens</span>
+                                class="text-xs text-gray-700 text-center flex justify-center  p-2 rounded w-full h-30  bg-blue-800/20">
+                                <span class="p-7 cursor-pointer "  @click="chooseImagem()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;"><path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z"></path></svg>
+                                </span>
 
                                 <div v-for="(image, index) in images" :key="index">
-                                    <div class="image-container" @click="removeImage(index)">
+                                    <div class="image-container" >
                                         <div class="">
                                             <img :src="image" alt="Imagem"
                                                 class="mx-2 w-20 h-20 img-removed rounded-sm z-10 " />
 
 
-                                            <span class="remove-text">
+                                            <span class="remove-text" @click="removeImage(index)">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="mt-1" width="18"
                                                     height="18" viewBox="0 0 24 24"
-                                                    style="fill: rgba(0, 0, 0, .5);transform: ;msFilter:;">
+                                                    style="fill: rgba(255, 0, 0, .5);transform: ;msFilter:;">
                                                     <path
                                                         d="M9.172 16.242 12 13.414l2.828 2.828 1.414-1.414L13.414 12l2.828-2.828-1.414-1.414L12 10.586 9.172 7.758 7.758 9.172 10.586 12l-2.828 2.828z">
                                                     </path>
@@ -134,13 +148,13 @@
                         <select :class="{ 'border-red-600': validacao }" v-model="form.unidade"
     class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
     id="unidade" placeholder="Escolha a Unidade...">
-    <option disabled value="">Escolha a Unidade...</option>
+    <option disabled selected value="">Escolha a Unidade...</option>
     <option v-for="unidade in unidades" :key="unidade.id" :value="unidade.id">{{ unidade.nome }}</option>
 </select>
 
                     </div>
                     <div class="mb-5 mt-2 flex gap-20 ">
-                        <div class="flex justify-between items-center gap-2 mx-9">
+                        <div class="flex justify-between items-center gap-2 ">
                             <input name="proprietario" type="radio" v-model="form.proprietario"
                             value="proprietario"
                                 :class="{ 'border-red-600': validacao }"
@@ -150,7 +164,7 @@
                                 Proprietário
                             </label>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 mx-8">
                             <input name="proprietario" @mouseenter="selectionCondominio()" v-model="form.proprietario"
                                 type="radio" :class="{ 'border-red-600': validacao }"
                                 value="locatario"
@@ -166,11 +180,11 @@
 
                 <div class="" v-if="stepTree">
 
-                    <h1 class="text-2xl text-gray-900 text-blue-900 mb-2 ">
+                    <h1 class="text-2xl text-gray-900 text-blue-900 mb-2 mt-9 ">
                         <b class="text-5xl font-black ">Sua solicitação foi recebida!</b>
                     </h1>
 
-                    <p class="text-gray-700 font-thin  mb-6">
+                    <p class="text-gray-700 font-thin  mb-6 mt-5 leading-tight">
                         Em breve entraremos em contato pelo E-mail informado.<br> Gestão Eficiênte e Participativa
                     </p>
 
@@ -236,6 +250,7 @@ const assuntos = [
     'Reservas',
     'Administrativo',
     'Financeiro',
+    'Outros',
 ];
 
 const error = ref();
@@ -250,10 +265,10 @@ const Npasso = ref(1);
 const formData = new FormData();
 
 const form = reactive({
-    assunto: null,
+    assunto: '',
     solicitacao: null,
     condominio: document.getElementById('condominio'),
-    unidade: null,
+    unidade: '',
     nome: null,
     email: null,
     telefone: null,
@@ -402,6 +417,6 @@ const ShowStep3 = () => {
 }
 
 .img-removed {
-    cursor: pointer;
+
 }
 </style>

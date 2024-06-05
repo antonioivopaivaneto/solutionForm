@@ -9,6 +9,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import QrCode from 'qrcode';
 import { computed, ref } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 
 
 const props = defineProps({ condominio: Object, unidades: Object });
@@ -20,6 +21,8 @@ const form = useForm({
     andar: '',
     condominio_nome: props.condominio.nome, // Set initial value
     condominio_id: props.condominio.id, // Set initial value
+    endereco: props.condominio.endereco, // Set initial value
+    cnpj: props.condominio.cnpj, // Set initial value
 });
 
 const formEditUnidade = useForm({
@@ -104,10 +107,17 @@ const Back = () =>{
     window.history.back()
 }
 
+const removerTodas = (condominio) =>{
+
+    if(!confirm("Deseja remover Todas unidades deste condominio? ")) {
+        return
+    }
+
+    router.delete(route('unidades.destroyAll', condominio), { preserveScroll: true })
+    msgSucesso.value = true
+
+}
 const remover = (id) => {
-
-
-
 
     if (unidadesSelecionadas.value.length > 0) {
     if (confirm("Deseja remover todas as unidades selecionadas? ")) {
@@ -144,6 +154,25 @@ const selectAllcehckboxes = (event) => {
 
 const urlQRCode = route('solicitar',props.condominio.id);
 
+
+const apName = (torre, unidades, bloco) => {
+    let exampleName = '';
+    if (unidades.includes('-')) {
+        let [inicio] = unidades.split('-').map(Number);
+        exampleName = `${torre}/UND.${inicio}-${bloco}`;
+    } else if (unidades.includes(';')) {
+        let [primeiroNumero] = unidades.split(';').map(Number);
+        exampleName = `${torre}/UND.${primeiroNumero}-${bloco}`;
+    }else{
+        let [inicio] = unidades.split('-').map(Number);
+        exampleName = `${torre}/UND.${inicio}-${bloco}`;
+    }
+    return exampleName;
+};
+
+
+
+
 </script>
 <template>
     <AuthenticatedLayout>
@@ -161,15 +190,37 @@ const urlQRCode = route('solicitar',props.condominio.id);
                     <Head title="Register" />
                     <h2>QRCODE EXCLUSIVO</h2>
 
+                    <figure class="qrcode">
+    <vue-qrcode
+    :value="urlQRCode"
+      tag="svg"
+      :options="{
+        errorCorrectionLevel: 'Q',
+        width: 300,
+      }"
+    ></vue-qrcode>
+    <img
+      class="qrcode__image"
+      src="./../../img/Camada 2.png"
+      alt="Chen Fengyuan"
+    />
+  </figure>
+   <!-- Botão para copiar QRCode -->
+    <button @click="copyQRCode" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+      Copiar QRCode
+    </button>
 
 
-                    <vue-qrcode :value="urlQRCode" :options="{ width: 200 }"></vue-qrcode>
+
+
+
 
                 </div>
 
                 <div class="w-full max-w-md p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg sm:p-8 ">
 
                     <Head title="Register" />
+
 
 
                     <form @submit.prevent="submit">
@@ -182,49 +233,36 @@ const urlQRCode = route('solicitar',props.condominio.id);
 
                             <InputError class="mt-2" :message="form.errors.name" />
                         </div>
-
-                        <div class=" flex gap-5">
-
-                            <div class="mt-4">
-                                <InputLabel for="Bloco" value="Bloco" />
-
-                                <TextInput id="Bloco" type="text" class="mt-1 block w-full" v-model="form.bloco"
-                                    autocomplete="username" />
-
-                                <InputError class="mt-2" :message="form.errors.email" />
-                            </div>
-
-                            <div class="mt-4">
-                                <InputLabel for="Torre" value="Torre" />
-
-                                <TextInput id="Torre" type="text" class="mt-1 block w-full" v-model="form.torre"
-                                    autocomplete="new-password" />
-
-                                <InputError class="mt-2" :message="form.errors.password" />
-                            </div>
+                        <div>
+                        <InputLabel for="cnpj" value="CNPJ" />
+                        <TextInput id="cnpj" type="text" class="mt-1 block w-full" v-model="form.cnpj" required autofocus autocomplete="cnpj" />
+                        <InputError class="mt-2" :message="form.errors.cnpj" />
+                    </div>
+                    <div>
+                        <InputLabel for="endereco" value="Endereço" />
+                        <TextInput id="endereco" type="text" class="mt-1 block w-full" v-model="form.endereco" required autofocus autocomplete="endereco" />
+                        <InputError class="mt-2" :message="form.errors.endereco" />
+                    </div>
+                    <div class="flex gap-5">
+                        <div class="mt-4">
+                            <InputLabel for="Torre" value="Torre" />
+                            <TextInput id="Torre" type="text" class="mt-1 block w-full" v-model="form.torre" autocomplete="new-password" />
+                            <InputError class="mt-2" :message="form.errors.password" />
                         </div>
-
-                        <div class=" flex gap-5">
-
-                            <div class="mt-4">
-                                <InputLabel for="andar" value="andar" />
-
-                                <TextInput id="andar" type="text" class="mt-1 block w-full" v-model="form.andar"
-                                    autocomplete="username" />
-
-                                <InputError class="mt-2" :message="form.errors.email" />
-                            </div>
-
-                            <div class="mt-4">
-                                <InputLabel for="Unidades" value="Unidades" />
-
-                                <TextInput id="Unidades" type="text" class="mt-1 block w-full" v-model="form.unidades"
-                                     autocomplete="new-password" />
-
-                                <InputError class="mt-2" :message="form.errors.password" />
-                            </div>
+                        <div class="mt-4">
+                            <InputLabel for="Bloco" value="Bloco" />
+                            <TextInput id="Bloco" type="text" class="mt-1 block w-full" v-model="form.bloco" autocomplete="username" />
+                            <InputError class="mt-2" :message="form.errors.email" />
                         </div>
-
+                    </div>
+                    <div class="mt-4">
+                        <InputLabel for="unidades_intervalo" value="Unidades (ex: 101-104 ou 101;104)" />
+                        <TextInput id="numeracao" type="text" class="mt-1 block w-full" v-model="form.unidades" required autocomplete="new-password" />
+                        <InputError class="mt-2" :message="form.errors.password" />
+                    </div>
+                    <div>
+                        Exemplo de nomeação: {{ apName(form.torre, form.unidades, form.bloco) }}
+                    </div>
                         <div class="flex items-center justify-end mt-4">
 
 
@@ -241,7 +279,7 @@ const urlQRCode = route('solicitar',props.condominio.id);
 
 
 
-            <div class="py-12 text-center">
+            <div class="py-12">
 
                 <div class="flex mb-3 ">
                     <a @click="Back"
@@ -258,15 +296,21 @@ const urlQRCode = route('solicitar',props.condominio.id);
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de unidades -  Cond.{{ condominio.nome }}</div>
 
+                    <div class="flex justify-between  mx-5">
+                        <div class="">
+                            <SecondaryButton @click="removerTodas(condominio.id)" class="">remover todas unidades</SecondaryButton>
+                        </div>
 
-                    <div class="flex flex-row-reverse mx-5">
+
+
+                    <div class="mx-5">
                         <div v-if="msgSucesso"
-                            class="bg-green-100 border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
+                            class="bg-green-100 border  w-96 border-green-400 text-green-700 px-3 py-2 rounded relative"
                             role="alert">
                             <strong class="font-bold">Sucesso! </strong>
                             <span class="block sm:inline">
                             </span>
-                            <span @click="msgSucesso = false" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                            <span @click="msgSucesso = false" class="absolute top-0 bottom-0 right-0 px-3 py-2">
                                 <svg class="fill-current h-6 w-6 text-green-500" role="button"
                                     xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                     <title>Close</title>
@@ -276,11 +320,12 @@ const urlQRCode = route('solicitar',props.condominio.id);
                             </span>
                         </div>
                     </div>
+                </div>
 
 
                     <div class="relative overflow-x-auto sm:rounded-lg p-5 ">
                         <table class="w-full rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
-                            <thead class="text-xs   uppercase 0 ">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
                                 <tr class="bg-gray-500 text-white">
                                     <th scope="col" class=" py-3">
                                         <input  v-model="selectAllChecked" type="checkbox" @change="selectAllcehckboxes"
@@ -397,3 +442,26 @@ const urlQRCode = route('solicitar',props.condominio.id);
 
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.qrcode {
+  display: inline-block;
+  font-size: 0;
+  margin-bottom: 0;
+  position: relative;
+}
+
+.qrcode__image {
+  background-color: #fff;
+  border: 0.25rem solid #fff;
+  border-radius: 0.25rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.25);
+  height: 15%;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 15%;
+}
+</style>

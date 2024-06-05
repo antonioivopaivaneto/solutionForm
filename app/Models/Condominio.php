@@ -9,7 +9,7 @@ class Condominio extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome'];
+    protected $fillable = ['nome','cnpj','endereco'];
 
 
     public function unidades(){

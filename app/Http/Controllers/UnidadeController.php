@@ -42,6 +42,8 @@ class UnidadeController extends Controller
 
         if ($request->input('condominio_nome') != $condominio->nome) {
             $condominio->nome = $request->input('condominio_nome');
+            $condominio->endereco = $request->input('endereco');
+            $condominio->cnpj = $request->input('cnpj');
             $condominio->save();
         }
 
@@ -52,46 +54,34 @@ class UnidadeController extends Controller
         $totalAndares = $request->input('andar');
 
 
-        // Calcula a quantidade de unidades por andar
-        // Verifica se totalAndares é null ou <= 0 e define como 1 se necessário
-        if (is_null($totalAndares) || $totalAndares <= 0) {
-            $totalAndares = 1;
+        $nome = $request->input('nome');
+        $bloco = $request->input('bloco');
+        $torre = $request->input('torre');
+        $unidadesString = $request->input('unidades');
+
+        // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
+        if (strpos($unidadesString, '-') !== false) {
+            // Se for um intervalo
+            [$inicio, $fim] = explode('-', $unidadesString);
+            $unidades = range($inicio, $fim);
+        } elseif (strpos($unidadesString, ';') !== false) {
+            // Se forem unidades individuais
+            $unidades = explode(';', $unidadesString);
+        } else {
+            // Se o formato for inválido
+            return redirect()->back()->with('error', 'Formato de unidades inválido.');
         }
 
-        $unidadesPorAndar = intval(ceil($totalUnidades / $totalAndares));
-
-        $unidades = [];
-        $unidadeCounter = 1;
-
-        for ($andar = 1; $andar <= $totalAndares; $andar++) {
-            for ($i = 1; $i <= $unidadesPorAndar && $unidadeCounter <= $totalUnidades; $i++) {
-                $unidade_nome = '';
-                if ($bloco) {
-                    $unidade_nome = "B$bloco";
-                }
-                if ($torre) {
-                    $unidade_nome .= "T$torre";
-                }
-                if ($request->input('andar') != null) {
-                    $unidade_nome .= "A$andar";
-                }
-
-                $unidade_nome .= "UNI$unidadeCounter";
-
-                $unidades[] = [
-                    'nome' => "$unidade_nome",
-                    'bloco' => $bloco,
-                    'torre' => $torre,
-                    'andar' => $andar,
-                    'condominio_id' => $condominio->id, // Relaciona a unidade com o condomínio
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-                $unidadeCounter++;
-            }
+        // Criar as unidades com base no formato fornecido
+        foreach ($unidades as $numeroUnidade) {
+            Unidade::create([
+                'nome' => "$torre/UND.$numeroUnidade-$bloco",
+                'bloco' => $bloco,
+                'andar' => '',
+                'torre' => $torre,
+                'condominio_id' => $condominio->id,
+            ]);
         }
-
-        Unidade::insert($unidades);
 
         return redirect()->back();
     }
@@ -165,6 +155,13 @@ class UnidadeController extends Controller
         $ids = explode(',', $unidades);
 
         Unidade::whereIn('id', $ids)->delete();
+
+        return redirect()->back();
+    }
+    public function destroyAll($condominio)
+    {
+
+        Unidade::where('condominio_id', $condominio)->delete();
 
         return redirect()->back();
     }

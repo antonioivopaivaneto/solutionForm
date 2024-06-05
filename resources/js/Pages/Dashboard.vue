@@ -55,12 +55,15 @@ onMounted(() => {
     });
 });
 
+const msgSucesso = ref(false)
 
 const atualizarStatus = (solicitacaoId, novoStatus) => {
     if(confirm("tem certeza de que deseja alterar o status desta solicitação? ")){
         router.put(route('atualizarStatus', { id: solicitacaoId }), { status: novoStatus }, { preserveScroll: true })
+        msgSucesso.value = true
     }
 }
+
 
 
 
@@ -189,10 +192,27 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
+                    <div class="flex flex-row-reverse mx-5">
+                        <div v-if="msgSucesso"
+                            class="bg-green-100 border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
+                            role="alert">
+                            <strong class="font-bold">Sucesso! </strong>
+                            <span class="block sm:inline">
+                            </span>
+                            <span @click="msgSucesso = false" class="absolute top-0 bottom-0 right-0 px-4 py-3">
+                                <svg class="fill-current h-6 w-6 text-green-500" role="button"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                    <title>Close</title>
+                                    <path
+                                        d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
                     <div class=" overflow-x-auto sm:rounded-lg p-5 ">
                         <table class="w-full rounded text-sm text-left text-gray-800 border-2 dark:border-gray-400 ">
-                            <thead class="text-xs  uppercase 0 ">
-                                <tr class="bg-gray-500 text-white">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
+                                <tr class="bg-gray-500 text-white text-nowrap">
                                     <th scope="col" class="px-6 py-3">
 
                                         condominio
@@ -233,7 +253,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
 
                                 <tr v-for="solicitacao in solicitacoes.data" :key="solicitacao.id"
-                                    class="odd:bg-gray-200   border-b border-gray-00 text-gray-700">
+                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap">
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
                                         <a class="hover:text-blue-600 underline "
@@ -315,13 +335,14 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     </td>
 
                                     <td class="px-6 py-4">
-                                        <select v-model="solicitacao.status" @change="atualizarStatus(solicitacao.id,$event.target.value)"
-                                            class="appearance-none bg-transparent border-none">
-                                            <option value="0">Aberto</option>
-                                            <option value="2">Andamento</option>
-                                            <option value="1">Concluído</option>
-                                        </select>
-                                    </td>
+    <select v-model="solicitacao.status" @change="atualizarStatus(solicitacao.id, $event.target.value)"
+        class="appearance-none bg-transparent border-none">
+        <option :value="0" :selected="solicitacao.status == 0">Aberto</option>
+        <option :value="2" :selected="solicitacao.status == 2">Andamento</option>
+        <option :value="1" :selected="solicitacao.status == 1">Concluído</option>
+    </select>
+</td>
+
 
 
                                     <td class="w-full py-4 mx-auto text-center ">

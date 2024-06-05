@@ -9,7 +9,7 @@ class Unidade extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nome','bloco','torre','andar'];
+    protected $fillable = ['nome','bloco','torre','andar','condominio_id'];
 
     public function condominio(){
         return $this->belongsTo(Condominio::class);

@@ -108,7 +108,7 @@ const toggleShow = (solicitacao) => {
 }
 
 
-const urlQRCode = route('solicitar',props.condominio.id);
+const urlQRCode = route('solicitar', props.condominio.id);
 
 
 const formatarData = (data) => {
@@ -141,13 +141,21 @@ const concluir = (id) => {
 const reabrir = (id) => {
     if (confirm("Essa solicitação Sairá histórico, deseja Reabrir ? ")) {
 
-router.get(route('reabrirSolicitacao', id), {preserveScroll: true})
-}
+        router.get(route('reabrirSolicitacao', id), { preserveScroll: true })
+    }
 
 }
 
-const Back = () =>{
+const Back = () => {
     window.history.back()
+}
+
+
+const atualizarStatus = (solicitacaoId, novoStatus) => {
+    if(confirm("tem certeza de que deseja alterar o status desta solicitação? ")){
+        router.put(route('atualizarStatus', { id: solicitacaoId }), { status: novoStatus }, { preserveScroll: true })
+        msgSucesso.value = true
+    }
 }
 </script>
 <template>
@@ -158,21 +166,21 @@ const Back = () =>{
 
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
             <div class="flex ">
-                    <a @click="Back"
-                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
-                            <path
-                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
-                            </path>
-                        </svg>
-                    </a>
-                </div>
+                <a @click="Back"
+                    class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                        style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
+                        <path d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                        </path>
+                    </svg>
+                </a>
+            </div>
 
             <div class="py-12 text-center">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="pt-6 text-gray-900 uppercase font-bold">Condominio: {{ condominio.nome }}</div>
-                    <div class="pb-6 text-gray-900 uppercase font-bold">Lista de Solicitações por Unidade: {{ unidade.nome }}</div>
+                    <div class="pb-6 text-gray-900 uppercase font-bold">Lista de Solicitações por Unidade: {{
+                    unidade.nome }}</div>
 
 
                     <div class="flex flex-row-reverse mx-5">
@@ -196,7 +204,7 @@ const Back = () =>{
 
                     <div class="relative overflow-x-auto sm:rounded-lg p-5 ">
                         <table class="w-full rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
-                            <thead class="text-xs   uppercase 0 ">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
                                 <tr class="bg-gray-500 text-white">
                                     <th scope="col" class="px-6 py-3">
                                         Morador
@@ -226,7 +234,7 @@ const Back = () =>{
 
 
                                 <tr v-for="solicitacao in  solicitacoes.data" :key="solicitacao.id"
-                                    class="odd:bg-gray-200   border-b border-gray-00 text-gray-700">
+                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap">
 
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
@@ -240,12 +248,12 @@ const Back = () =>{
                                         </div>
                                         <div v-else>
                                             {{ solicitacao.showMore ? solicitacao.solicitacao :
-                                        solicitacao.solicitacao.substring(0, 10) + ' ...' }}
+                    solicitacao.solicitacao.substring(0, 10) + ' ...' }}
                                             <div class="cursor-pointer text-blue-500" @click="toggleShow(solicitacao)">
                                                 <span v-if="solicitacao.showMore" class="flex justify-center">
 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24"
-                                                        height="24" viewBox="0 0 24 24"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                        viewBox="0 0 24 24"
                                                         style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                                         <path
                                                             d="M7.707 14.707 12 10.414l4.293 4.293 1.414-1.414L12 7.586l-5.707 5.707z">
@@ -253,12 +261,11 @@ const Back = () =>{
                                                     </svg>
 
 
-                                                  </span>
+                                                </span>
                                                 <span v-else class="flex justify-center">
 
 
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                         viewBox="0 0 24 24"
                                                         style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                                         <path
@@ -278,32 +285,38 @@ const Back = () =>{
                                     <td class="px-6 py-4">
                                         {{ formatarData(solicitacao.created_at) }}
                                     </td>
-                                    <td class="w-full border text-center  ">
-                            <div class="flex flex row  p-1">
-                              <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
-                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
-                                  <img :src="folderImg +fotos.foto" class="rounded-sm mx-0.5 w-8 h-10 mx-2 " alt="">
-                                </a>
-                              </span>
-                              <span v-if="solicitacao.fotos.length > 3" class="w-3 flex items-center justify-center">
-                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
-                              </span>
+                                    <td class=" border text-center  ">
+                                        <div class="flex flex row  p-1">
+                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
+                                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
+                                                    <img :src="folderImg + fotos.foto"
+                                                        class="rounded-sm mx-0.5 w-8 h-10 mx-2 " alt="">
+                                                </a>
+                                            </span>
+                                            <span v-if="solicitacao.fotos.length > 3"
+                                                class="w-3 flex items-center ">
+                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+                                            </span>
 
-                            </div>
-                          </td>
+                                        </div>
+                                    </td>
 
                                     <td class="px-6 py-4">
-                                        <span v-if="solicitacao.status == null">Aberto</span>
-                                        <span v-if="solicitacao.status == 0">Aberto</span>
-                                        <span v-if="solicitacao.status == 1">Concluido</span>
+                                        <select v-model="solicitacao.status"
+                                            @change="atualizarStatus(solicitacao.id, $event.target.value)"
+                                            class="appearance-none bg-transparent border-none">
+                                            <option :value="0" :selected="solicitacao.status == 0">Aberto</option>
+                                            <option :value="2" :selected="solicitacao.status == 2">Andamento</option>
+                                            <option :value="1" :selected="solicitacao.status == 1">Concluído</option>
+                                        </select>
                                     </td>
                                     <td class="w-full py-4 mx-auto text-center ">
                                         <div class="flex gap-2 justify-center">
+                                            <!--
                                             <a v-if="solicitacao.status == 0" @click="concluir(solicitacao.id)"
                                                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">
 
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     viewBox="0 0 24 24"
                                                     style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                                     <path
@@ -314,8 +327,16 @@ const Back = () =>{
                                             <a v-if="solicitacao.status == 1" @click="reabrir(solicitacao.id)"
                                                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline mx-4 cursor-pointer">
 
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;"><path d="M19.89 10.105a8.696 8.696 0 0 0-.789-1.456l-1.658 1.119a6.606 6.606 0 0 1 .987 2.345 6.659 6.659 0 0 1 0 2.648 6.495 6.495 0 0 1-.384 1.231 6.404 6.404 0 0 1-.603 1.112 6.654 6.654 0 0 1-1.776 1.775 6.606 6.606 0 0 1-2.343.987 6.734 6.734 0 0 1-2.646 0 6.55 6.55 0 0 1-3.317-1.788 6.605 6.605 0 0 1-1.408-2.088 6.613 6.613 0 0 1-.382-1.23 6.627 6.627 0 0 1 .382-3.877A6.551 6.551 0 0 1 7.36 8.797 6.628 6.628 0 0 1 9.446 7.39c.395-.167.81-.296 1.23-.382.107-.022.216-.032.324-.049V10l5-4-5-4v2.938a8.805 8.805 0 0 0-.725.111 8.512 8.512 0 0 0-3.063 1.29A8.566 8.566 0 0 0 4.11 16.77a8.535 8.535 0 0 0 1.835 2.724 8.614 8.614 0 0 0 2.721 1.833 8.55 8.55 0 0 0 5.061.499 8.576 8.576 0 0 0 6.162-5.056c.22-.52.389-1.061.5-1.608a8.643 8.643 0 0 0 0-3.45 8.684 8.684 0 0 0-.499-1.607z"></path></svg>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                    <path
+                                                        d="M19.89 10.105a8.696 8.696 0 0 0-.789-1.456l-1.658 1.119a6.606 6.606 0 0 1 .987 2.345 6.659 6.659 0 0 1 0 2.648 6.495 6.495 0 0 1-.384 1.231 6.404 6.404 0 0 1-.603 1.112 6.654 6.654 0 0 1-1.776 1.775 6.606 6.606 0 0 1-2.343.987 6.734 6.734 0 0 1-2.646 0 6.55 6.55 0 0 1-3.317-1.788 6.605 6.605 0 0 1-1.408-2.088 6.613 6.613 0 0 1-.382-1.23 6.627 6.627 0 0 1 .382-3.877A6.551 6.551 0 0 1 7.36 8.797 6.628 6.628 0 0 1 9.446 7.39c.395-.167.81-.296 1.23-.382.107-.022.216-.032.324-.049V10l5-4-5-4v2.938a8.805 8.805 0 0 0-.725.111 8.512 8.512 0 0 0-3.063 1.29A8.566 8.566 0 0 0 4.11 16.77a8.535 8.535 0 0 0 1.835 2.724 8.614 8.614 0 0 0 2.721 1.833 8.55 8.55 0 0 0 5.061.499 8.576 8.576 0 0 0 6.162-5.056c.22-.52.389-1.061.5-1.608a8.643 8.643 0 0 0 0-3.45 8.684 8.684 0 0 0-.499-1.607z">
+                                                    </path>
+                                                </svg>
                                             </a>
+
+                                            -->
 
 
 
