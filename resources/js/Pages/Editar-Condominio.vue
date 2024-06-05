@@ -10,7 +10,7 @@ import QrCode from 'qrcode';
 import { computed, ref } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-
+import { toPng } from 'html-to-image';
 
 const props = defineProps({ condominio: Object, unidades: Object });
 
@@ -33,6 +33,20 @@ const formEditUnidade = useForm({
     andar: '',
 
 });
+
+const downloadQRCode = () => {
+  const qrcodeElement = document.querySelector('.qrcode');
+  toPng(qrcodeElement)
+    .then((dataUrl) => {
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'qrcode.png';
+      link.click();
+    })
+    .catch((error) => {
+      console.error('Erro ao gerar a imagem:', error);
+    });
+};
 
 const unidadesSelecionadas = ref([])
 
@@ -182,6 +196,18 @@ const apName = (torre, unidades, bloco) => {
 
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
 
+            <div class="flex mb-3 ">
+                    <a @click="Back"
+                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
+                            <path
+                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+
 
             <div class="flex flex-row ">
 
@@ -205,11 +231,10 @@ const apName = (torre, unidades, bloco) => {
       alt="Chen Fengyuan"
     />
   </figure>
-   <!-- Botão para copiar QRCode -->
-    <button @click="copyQRCode" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
-      Copiar QRCode
-    </button>
 
+  <button @click="downloadQRCode" class="download-button">
+      Download QR Code
+    </button>
 
 
 
@@ -279,19 +304,8 @@ const apName = (torre, unidades, bloco) => {
 
 
 
-            <div class="py-12">
+            <div class="py-9">
 
-                <div class="flex mb-3 ">
-                    <a @click="Back"
-                        class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                            style="fill: rgba(255, 255, 255, 0.8);transform: ;msFilter:;">
-                            <path
-                                d="M21 11H6.414l5.293-5.293-1.414-1.414L2.586 12l7.707 7.707 1.414-1.414L6.414 13H21z">
-                            </path>
-                        </svg>
-                    </a>
-                </div>
 
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de unidades -  Cond.{{ condominio.nome }}</div>
@@ -463,5 +477,23 @@ const apName = (torre, unidades, bloco) => {
   top: 50%;
   transform: translate(-50%, -50%);
   width: 15%;
+}
+
+qrcode-container {
+  text-align: center;
+}
+
+.download-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.download-button:hover {
+  background-color: #45a049;
 }
 </style>

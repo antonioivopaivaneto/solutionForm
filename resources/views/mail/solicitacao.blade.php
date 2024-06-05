@@ -15,6 +15,7 @@
 <b>Condomínio:</b> <span>{{ $solicitacao->condominio->nome }}</span><br>
 <b>Unidade:</b> <span>{{ $solicitacao->unidade->nome }}</span><br>
 <b>Morador:</b> <span>{{ $solicitacao->nome }}</span><br>
+<b>Telefone:</b> <span>{{ $solicitacao->telefone }}</span><br>
 <b>Responsavel:</b> <span>{{ $solicitacao->proprietario  }}</span><br>
 <b>Assunto:</b> <span>{{ $solicitacao->assunto }}</span><br>
 <b>Solicitação:</b> <span>{{ $solicitacao->solicitacao }}</span><br>

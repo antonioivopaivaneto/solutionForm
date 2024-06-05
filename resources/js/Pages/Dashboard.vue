@@ -209,20 +209,20 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                             </span>
                         </div>
                     </div>
-                    <div class=" overflow-x-auto sm:rounded-lg p-5 ">
-                        <table class="w-full rounded text-sm text-left text-gray-800 border-2 dark:border-gray-400 ">
+                    <div class=" overflow-x-auto sm:rounded-lg p-5 mr-5 ">
+                        <table class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
                                 <tr class="bg-gray-500 text-white text-nowrap">
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-4 py-3">
 
                                         condominio
 
 
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-4 py-3">
                                         Unidade
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-4 py-3">
                                         Morador
                                     </th>
                                     <th scope="col" class="px-6 py-3">
@@ -234,13 +234,13 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <th scope="col" class="px-6 py-3">
                                         data e hora
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <th scope="col" class="px-16">
                                         foto
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         Status
                                     </th>
-                                    <th scope="col" class="px-16 py-3 ">
+                                    <th scope="col" class="px-4 py-3 ">
                                         Action
                                     </th>
                                 </tr>
@@ -272,10 +272,10 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-4">
                                         {{ solicitacao.assunto }}
                                     </td>
-                                    <td class="text-center py-4">
+                                    <td class="text-center py-2">
                                         <div v-if="solicitacao.solicitacao.length < 10">
                                             {{ solicitacao.solicitacao }}
                                         </div>
@@ -315,24 +315,21 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
 
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-4 py-2">
                                         {{ formatarData(solicitacao.created_at) }}
                                     </td>
-                                    <td class="w-full border text-center  ">
-                                        <div class="flex flex row  p-1">
-                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
-                                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
-                                                    <img :src="fotos.foto" class="rounded-sm mx-0.5 w-8 h-10 mx-2 "
-                                                        alt="">
-                                                </a>
-                                            </span>
-                                            <span v-if="solicitacao.fotos.length > 3"
-                                                class="w-3 flex items-center justify-center">
-                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
-                                            </span>
-
-                                        </div>
-                                    </td>
+                                    <td class="w-full border text-center">
+  <div class="flex flex-row justify-center p-1">
+    <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id" class="flex-shrink-0 mx-2">
+      <a class="cursor-pointer" :href="fotos.foto" target="_blank">
+        <img :src="fotos.foto" class="rounded-sm w-10 h-10" alt="">
+      </a>
+    </span>
+    <span v-if="solicitacao.fotos.length > 3" class="flex items-center justify-center w-12">
+      <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+    </span>
+  </div>
+</td>
 
                                     <td class="px-6 py-4">
     <select v-model="solicitacao.status" @change="atualizarStatus(solicitacao.id, $event.target.value)"

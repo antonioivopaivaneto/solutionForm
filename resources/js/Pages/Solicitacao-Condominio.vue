@@ -45,7 +45,7 @@
 
                         <div class="mb-5 mt-2">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Tema
+                                Tema*
                             </label>
                             <select v-model="form.assunto" id="assunto" class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option disabled selected value="">Escolha o assunto...</option>
@@ -54,7 +54,7 @@
                         </div>
                         <div class="mb-5">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                                Solicitação
+                                Solicitação*
                             </label>
                             <textarea  :class="{ 'border-red-600': validacao }" @mouseenter="selectionAssunto()"
                                 v-model="form.solicitacao" rows="6" class="bg-gray-50  border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full
@@ -113,7 +113,7 @@
 
                     <div class="mb-5 ">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Seu Nome
+                            Seu Nome*
                         </label>
                         <input type="text"  v-model="form.nome" :class="{ 'border-red-600': validacao }"
                             placeholder="Seu Nome "
@@ -122,7 +122,7 @@
                     </div>
                     <div class="mb-5 ">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Telefone
+                            Telefone*
                         </label>
                         <input v-mask="'(##) #####-####'" type="text" v-model="form.telefone" :class="{ 'border-red-600': validacao }"
                             placeholder="Seu Telefone"
@@ -131,7 +131,7 @@
                     </div>
                     <div class="mb-5">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Seu Email
+                            Seu Email*
                         </label>
                         <input v-model="form.email" :class="{ 'border-red-600': validacaoEmail }" type="email"
                             placeholder="Seu Email " required
@@ -143,7 +143,7 @@
 
                     <div class="mb-5 mt-2">
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Unidade
+                            Unidade*
                         </label>
                         <select :class="{ 'border-red-600': validacao }" v-model="form.unidade"
     class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -153,7 +153,11 @@
 </select>
 
                     </div>
+                    <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                            Responsavel*
+                        </label>
                     <div class="mb-5 mt-2 flex gap-20 ">
+
                         <div class="flex justify-between items-center gap-2 ">
                             <input name="proprietario" type="radio" v-model="form.proprietario"
                             value="proprietario"
@@ -317,6 +321,24 @@ const ShowStep2 = () => {
     finalizar.value = true;
 }
 
+const resetForm = () => {
+    form.assunto = '';
+    form.solicitacao = '';
+    form.foto = [];
+    form.nome = '';
+    form.telefone = '';
+    form.email = '';
+    form.unidade = '';
+    images.length = 0;
+    stepOne.value = true;
+    stepTwo.value = false;
+    stepTree.value = false;
+    validacao.value = false;
+    validacaoEmail.value = false;
+    error.value = '';
+    Npasso.value = 1;
+};
+
 const ShowStep1 = () => {
     stepOne.value = true;
     stepTwo.value = false;
@@ -350,12 +372,8 @@ const ShowStep3 = () => {
 
     router.post('/solicitacao', formData);
 
-    form.assunto = '';
-    form.solicitacao = '';
-    form.nome = '';
-    form.condominio = '';
-    form.unidade = '';
-    form.email = '';
+    resetForm();
+
 
     stepOne.value = false;
     stepTwo.value = false;

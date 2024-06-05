@@ -285,21 +285,20 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <td class="px-6 py-4">
                                         {{ formatarData(solicitacao.created_at) }}
                                     </td>
-                                    <td class=" border text-center  ">
-                                        <div class="flex flex row  p-1">
-                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id">
-                                                <a class="cursor-pointer" :href="fotos.foto" target="&_blank">
-                                                    <img :src="folderImg + fotos.foto"
-                                                        class="rounded-sm mx-0.5 w-8 h-10 mx-2 " alt="">
-                                                </a>
-                                            </span>
-                                            <span v-if="solicitacao.fotos.length > 3"
-                                                class="w-3 flex items-center ">
-                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
-                                            </span>
 
-                                        </div>
-                                    </td>
+                                    <td class="w-full border text-center">
+  <div class="flex flex-row justify-center p-1">
+    <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id" class="flex-shrink-0 mx-2">
+      <a class="cursor-pointer" :href="fotos.foto" target="_blank">
+        <img :src="folderImg + fotos.foto" class="rounded-sm w-10 h-10" alt="">
+      </a>
+    </span>
+    <span v-if="solicitacao.fotos.length > 3" class="flex items-center justify-center w-12">
+      <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+    </span>
+  </div>
+</td>
+
 
                                     <td class="px-6 py-4">
                                         <select v-model="solicitacao.status"
