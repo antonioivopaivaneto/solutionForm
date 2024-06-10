@@ -46,6 +46,7 @@ class SolicitacaoController extends Controller
 
        $request->validate([
         'assunto' => 'required|string',
+        'telefone' => 'required|string',
         'solicitacao' => 'required|string',
         'nome' => 'required|string',
         'email' => 'required|email',

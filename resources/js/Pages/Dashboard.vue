@@ -65,6 +65,11 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 }
 
 
+  // Função para formatar o número de telefone
+  function formatarNumero(telefone) {
+        // Remove os traços e parênteses do número de telefone
+        return telefone.replace(/[-()\s]/g, '');
+         }
 
 
 </script>
@@ -225,6 +230,12 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <th scope="col" class="px-4 py-3">
                                         Morador
                                     </th>
+                                    <th scope="col" class="px-4 py-3">
+                                        Email
+                                    </th>
+                                    <th scope="col" class="px-4 py-3">
+                                        Telefone
+                                    </th>
                                     <th scope="col" class="px-6 py-3">
                                         Assunto
                                     </th>
@@ -272,9 +283,14 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
                                     </td>
-                                    <td class="px-4 py-4">
+                                    <td class="px-6 py-4">
+                                        <a class="cursor-pointer hover:underline" :href="'mailto:' + solicitacao.email + '?subject=Referente a ' + solicitacao.assunto">{{ solicitacao.email }}</a>                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a class="cursor-pointer hover:underline text-green-700" target="&_blank" :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto '+ solicitacao.assunto">{{solicitacao.telefone}}</a>                                    </td>
+                                    <td class="px-6 py-4">
                                         {{ solicitacao.assunto }}
                                     </td>
+
                                     <td class="text-center py-2">
                                         <div v-if="solicitacao.solicitacao.length < 10">
                                             {{ solicitacao.solicitacao }}

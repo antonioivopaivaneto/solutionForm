@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('proprietario');
             $table->string('nome');
             $table->string('email');
+            $table->string('telefone');
             $table->timestamps();
 
             $table->foreign('condominio_id')->references('id')->on('condominios');

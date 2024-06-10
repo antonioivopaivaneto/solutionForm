@@ -152,10 +152,16 @@ const Back = () => {
 
 
 const atualizarStatus = (solicitacaoId, novoStatus) => {
-    if(confirm("tem certeza de que deseja alterar o status desta solicitação? ")){
+    if (confirm("tem certeza de que deseja alterar o status desta solicitação? ")) {
         router.put(route('atualizarStatus', { id: solicitacaoId }), { status: novoStatus }, { preserveScroll: true })
         msgSucesso.value = true
     }
+}
+
+// Função para formatar o número de telefone
+function formatarNumero(telefone) {
+    // Remove os traços e parênteses do número de telefone
+    return telefone.replace(/[-()\s]/g, '');
 }
 </script>
 <template>
@@ -210,6 +216,12 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                         Morador
                                     </th>
                                     <th scope="col" class="px-6 py-3">
+                                        Email
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Telefone
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Assunto
                                     </th>
                                     <th scope="col" class="px-44 py-3">
@@ -238,6 +250,15 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a class="cursor-pointer hover:underline"
+                                            :href="'mailto:' + solicitacao.email + '?subject=Referente a ' + solicitacao.assunto">{{
+                    solicitacao.email }}</a>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <a class="cursor-pointer hover:underline text-green-700" target="&_blank"
+                                            :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">{{ solicitacao.telefone }}</a>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.assunto }}
@@ -287,17 +308,20 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     </td>
 
                                     <td class="w-full border text-center">
-  <div class="flex flex-row justify-center p-1">
-    <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id" class="flex-shrink-0 mx-2">
-      <a class="cursor-pointer" :href="fotos.foto" target="_blank">
-        <img :src="folderImg + fotos.foto" class="rounded-sm w-10 h-10" alt="">
-      </a>
-    </span>
-    <span v-if="solicitacao.fotos.length > 3" class="flex items-center justify-center w-12">
-      <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
-    </span>
-  </div>
-</td>
+                                        <div class="flex flex-row justify-center p-1">
+                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
+                                                class="flex-shrink-0 mx-2">
+                                                <a class="cursor-pointer" :href="fotos.foto" target="_blank">
+                                                    <img :src="folderImg + fotos.foto" class="rounded-sm w-10 h-10"
+                                                        alt="">
+                                                </a>
+                                            </span>
+                                            <span v-if="solicitacao.fotos.length > 3"
+                                                class="flex items-center justify-center w-12">
+                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+                                            </span>
+                                        </div>
+                                    </td>
 
 
                                     <td class="px-6 py-4">

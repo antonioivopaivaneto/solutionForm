@@ -6,9 +6,9 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-
+import validaCNPJ from '@/Helpers/validaCNPJ.js'
 import VueQrcode from '@chenfengyuan/vue-qrcode';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 defineProps({ condominios: Object });
 
@@ -17,6 +17,8 @@ const form = useForm({
     bloco: '',
     torre: '',
     unidades: '',
+    qtd_andares: '',
+    qtd_total: '',
     endereco: '',
     cnpj: '',
 });
@@ -60,8 +62,35 @@ const remover = (id) => {
         router.delete(route('condominios.destroy', id), { preserveScroll: true });
     }
 };
-</script>
 
+const validadoCnpj = ref(true)
+
+const validarCnpj = async () => {
+    const resultado = await validaCNPJ(form.cnpj);
+    validadoCnpj.value = resultado ? true : false;
+};
+
+
+watch(() => form.qtd_andares, (newVal) =>{
+    if (newVal) {
+        form.qtd_total = '';
+        form.qtd_total_disabled = true;
+    } else {
+        form.qtd_total_disabled = false;
+    }
+})
+
+watch(() => form.qtd_total, (newVal) =>{
+    if (newVal) {
+        form.qtd_andares = '';
+        form.qtd_andares_disabled = true;
+    } else {
+        form.qtd_andares_disabled = false;
+    }
+})
+
+
+</script>
 <template>
     <AuthenticatedLayout>
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
@@ -75,15 +104,16 @@ const remover = (id) => {
                     </div>
                     <div>
                         <InputLabel for="cnpj" value="CNPJ" />
-                        <TextInput v-mask="'##.###.###/####-##'"  id="cnpj" type="text" class="mt-1 block w-full" v-model="form.cnpj" required autofocus autocomplete="cnpj" />
+                        <TextInput @blur="validarCnpj()" v-mask="'##.###.###/####-##'"  id="cnpj" type="text" class="mt-1 block w-full " v-model="form.cnpj" required  autocomplete="cnpj"
+                        :class="{ 'border-gray-100': validadoCnpj === true,   'border-red-500': validadoCnpj === false }"  />
                         <InputError class="mt-2" :message="form.errors.cnpj" />
                     </div>
                     <div>
                         <InputLabel for="endereco" value="Endereço" />
-                        <TextInput id="endereco" type="text" class="mt-1 block w-full" v-model="form.endereco" required autofocus autocomplete="endereco" />
+                        <TextInput id="endereco" type="text" class="mt-1 block w-full" v-model="form.endereco" required  autocomplete="endereco" />
                         <InputError class="mt-2" :message="form.errors.endereco" />
                     </div>
-                    <div class="flex gap-5">
+                    <div class="grid grid-cols-2 gap-3">
                         <div class="mt-4">
                             <InputLabel for="Torre" value="Torre" />
                             <TextInput id="Torre" type="text" class="mt-1 block w-full" v-model="form.torre" autocomplete="new-password" />
@@ -95,10 +125,25 @@ const remover = (id) => {
                             <InputError class="mt-2" :message="form.errors.email" />
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="mt-4">
+                            <InputLabel for="Torre" value="QTD andares" />
+                            <TextInput  :class="{'bg-gray-200 cursor-not-allowed':form.qtd_andares_disabled}" :disabled="form.qtd_andares_disabled" id="Torre" type="text" class="mt-1 block w-full" v-model="form.qtd_andares" autocomplete="new-password" />
+                            <InputError class="mt-2" :message="form.errors.qtd_andares" />
+                        </div>
                     <div class="mt-4">
-                        <InputLabel for="unidades_intervalo" value="Unidades (ex: 101-104 ou 101;104)" />
+                        <InputLabel for="unidades_intervalo" value="Numeração Andar" />
                         <TextInput id="numeracao" type="text" class="mt-1 block w-full" v-model="form.unidades" required autocomplete="new-password" />
                         <InputError class="mt-2" :message="form.errors.password" />
+                    </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="mt-4">
+                            <InputLabel for="Torre" value="Quantidade Total" />
+                            <TextInput :class="{'bg-gray-200 cursor-not-allowed':form.qtd_total_disabled}" :disabled="form.qtd_total_disabled"  id="Torre" type="text" class="mt-1 block w-full" v-model="form.qtd_total" autocomplete="new-password" />
+                            <InputError class="mt-2" :message="form.errors.qtd_total" />
+                        </div>
+
                     </div>
                     <div>
                         Exemplo de nomeação: {{ apName(form.torre, form.unidades, form.bloco) }}

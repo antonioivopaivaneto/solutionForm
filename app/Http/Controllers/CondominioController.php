@@ -52,53 +52,77 @@ class CondominioController extends Controller
      */
     public function store(Request $request)
     {
+        // Validação dos dados de entrada
         $request->validate([
             'nome' => 'required|string',
             'bloco' => 'required|string',
             'torre' => 'required|string',
-            'unidades' => 'required|string', // Mudança para string em vez de integer
+            'unidades' => 'required|string',
             'endereco' => 'required|string',
             'cnpj' => 'required|string',
         ]);
 
-        // Crie o condomínio primeiro e obtenha o ID
+        // Criação do condomínio
         $condominio = Condominio::create([
             'nome' => $request->input('nome'),
             'endereco' => $request->input('endereco'),
             'cnpj' => $request->input('cnpj'),
         ]);
 
+        // Captura dos parâmetros
         $nome = $request->input('nome');
         $bloco = $request->input('bloco');
         $torre = $request->input('torre');
         $unidadesString = $request->input('unidades');
+        $qtdAndares = (int) $request->input('qtd_andares');
+        $qtdTotal = $request->input('qtd_total');
 
-        // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
-        if (strpos($unidadesString, '-') !== false) {
-            // Se for um intervalo
-            [$inicio, $fim] = explode('-', $unidadesString);
-            $unidades = range($inicio, $fim);
-        } elseif (strpos($unidadesString, ';') !== false) {
-            // Se forem unidades individuais
-            $unidades = explode(';', $unidadesString);
+        if($qtdTotal === null){
+            // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
+            if (strpos($unidadesString, '-') !== false) {
+                // Se for um intervalo
+                [$inicio, $fim] = explode('-', $unidadesString);
+                $unidades = range((int)$inicio, (int)$fim);
+            } elseif (strpos($unidadesString, ';') !== false) {
+                // Se forem unidades individuais
+                $unidades = explode(';', $unidadesString);
+                $unidades = array_map('intval', $unidades);
+            } else {
+                // Se o formato for inválido
+                return redirect()->back()->with('error', 'Formato de unidades inválido.');
+            }
+
+             // Criar as unidades com base no formato fornecido e no número de andares
+            foreach (range(1, $qtdAndares) as $andar) {
+                foreach ($unidades as $numeroUnidade) {
+                    // Adiciona o número do andar ao início do número da unidade, mas preservando a parte fixa da unidade
+                    $unidadeComAndar = $andar . substr($numeroUnidade, -2);
+                    Unidade::create([
+                        'nome' => "$torre/UND.$unidadeComAndar-$bloco",
+                        'bloco' => $bloco,
+                        'andar' => $andar,
+                        'torre' => $torre,
+                        'condominio_id' => $condominio->id,
+                    ]);
+                }
+            }
         } else {
-            // Se o formato for inválido
-            return redirect()->back()->with('error', 'Formato de unidades inválido.');
-        }
-
-        // Criar as unidades com base no formato fornecido
-        foreach ($unidades as $numeroUnidade) {
+             // Criar unidades sequenciais com base na quantidade total fornecida
+        $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
+        foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
             Unidade::create([
                 'nome' => "$torre/UND.$numeroUnidade-$bloco",
                 'bloco' => $bloco,
-                'andar' => '',
+                'andar' => '', // Calcular o andar
                 'torre' => $torre,
                 'condominio_id' => $condominio->id,
             ]);
         }
-
-        return redirect()->route('condominios.create');
     }
+
+        return redirect()->route('condominios.create')->with('success', 'Condomínio e unidades cadastrados com sucesso!');
+    }
+
 
     /**
      * Display the specified resource.
@@ -112,7 +136,7 @@ class CondominioController extends Controller
     $condominio = Condominio::findOrFail($id);
 
     // Paginando as unidades do condomínio
-    $unidades = $condominio->unidades()->with('solicitacoes')->orderBy('torre','desc')->paginate(10); // 10 unidades por página
+    $unidades = $condominio->unidades()->with('solicitacoes')->orderBy('nome','asc')->paginate(10); // 10 unidades por página
 
         return Inertia('Editar-Condominio',compact('condominio','unidades'));
     }
@@ -135,9 +159,17 @@ class CondominioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $condominio = Condominio::where('id', $request->input('condominio_id'))->first();
+
+            $condominio->nome = $request->input('condominio_nome');
+            $condominio->endereco = $request->input('endereco');
+            $condominio->cnpj = $request->input('cnpj');
+            $condominio->save();
+
+
+        return redirect()->back();
     }
 
     /**

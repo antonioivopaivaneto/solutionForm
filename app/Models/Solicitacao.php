@@ -20,7 +20,8 @@ class Solicitacao extends Model
         'email',
         'foto',
         'status',
-        'proprietario'
+        'proprietario',
+        'telefone',
     ];
 
     public function fotos(){

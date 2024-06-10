@@ -40,12 +40,7 @@ class UnidadeController extends Controller
         $condominio = Condominio::where('id', $request->input('condominio_id'))->first();
 
 
-        if ($request->input('condominio_nome') != $condominio->nome) {
-            $condominio->nome = $request->input('condominio_nome');
-            $condominio->endereco = $request->input('endereco');
-            $condominio->cnpj = $request->input('cnpj');
-            $condominio->save();
-        }
+
 
         $nome = $request->input('nome');
         $bloco = $request->input('bloco');
@@ -54,34 +49,56 @@ class UnidadeController extends Controller
         $totalAndares = $request->input('andar');
 
 
-        $nome = $request->input('nome');
-        $bloco = $request->input('bloco');
-        $torre = $request->input('torre');
-        $unidadesString = $request->input('unidades');
+          // Captura dos parâmetros
+          $nome = $request->input('nome');
+          $bloco = $request->input('bloco');
+          $torre = $request->input('torre');
+          $unidadesString = $request->input('unidades');
+          $qtdAndares = (int) $request->input('qtd_andares');
+          $qtdTotal = $request->input('qtd_total');
 
-        // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
-        if (strpos($unidadesString, '-') !== false) {
-            // Se for um intervalo
-            [$inicio, $fim] = explode('-', $unidadesString);
-            $unidades = range($inicio, $fim);
-        } elseif (strpos($unidadesString, ';') !== false) {
-            // Se forem unidades individuais
-            $unidades = explode(';', $unidadesString);
-        } else {
-            // Se o formato for inválido
-            return redirect()->back()->with('error', 'Formato de unidades inválido.');
-        }
+          if($qtdTotal === null){
+              // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
+              if (strpos($unidadesString, '-') !== false) {
+                  // Se for um intervalo
+                  [$inicio, $fim] = explode('-', $unidadesString);
+                  $unidades = range((int)$inicio, (int)$fim);
+              } elseif (strpos($unidadesString, ';') !== false) {
+                  // Se forem unidades individuais
+                  $unidades = explode(';', $unidadesString);
+                  $unidades = array_map('intval', $unidades);
+              } else {
+                  // Se o formato for inválido
+                  return redirect()->back()->with('error', 'Formato de unidades inválido.');
+              }
 
-        // Criar as unidades com base no formato fornecido
-        foreach ($unidades as $numeroUnidade) {
-            Unidade::create([
-                'nome' => "$torre/UND.$numeroUnidade-$bloco",
-                'bloco' => $bloco,
-                'andar' => '',
-                'torre' => $torre,
-                'condominio_id' => $condominio->id,
-            ]);
-        }
+               // Criar as unidades com base no formato fornecido e no número de andares
+              foreach (range(1, $qtdAndares) as $andar) {
+                  foreach ($unidades as $numeroUnidade) {
+                      // Adiciona o número do andar ao início do número da unidade, mas preservando a parte fixa da unidade
+                      $unidadeComAndar = $andar . substr($numeroUnidade, -2);
+                      Unidade::create([
+                          'nome' => "$torre/UND.$unidadeComAndar-$bloco",
+                          'bloco' => $bloco,
+                          'andar' => $andar,
+                          'torre' => $torre,
+                          'condominio_id' => $condominio->id,
+                      ]);
+                  }
+              }
+          } else {
+               // Criar unidades sequenciais com base na quantidade total fornecida
+          $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
+          foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
+              Unidade::create([
+                  'nome' => "$torre/UND.$numeroUnidade-$bloco",
+                  'bloco' => $bloco,
+                  'andar' => '', // Calcular o andar
+                  'torre' => $torre,
+                  'condominio_id' => $condominio->id,
+              ]);
+          }
+      }
 
         return redirect()->back();
     }
