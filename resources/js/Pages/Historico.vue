@@ -40,7 +40,7 @@ const processarLabel = (label) => {
     return label.replace(/&laquo;/g, '').replace('Previous', 'Voltar').replace('Next', 'Proximo').replace(/&raquo;/g, '');
 };
 
-const Back = () =>{
+const Back = () => {
     window.history.back()
 }
 </script>
@@ -70,12 +70,12 @@ const Back = () =>{
                     </a>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
+                    <div class="p-6 text-gray-900 uppercase font-bold">Histórico  de Solicitacoes  Finalizada</div>
 
                     <div class="p-10   shadow-md sm:rounded-lg">
-                        <table class="w-full text-sm text-left rtl:text-right ">
-                            <thead class="text-xs  uppercase 0 ">
-                                <tr>
+                        <table class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
+                                <tr class="bg-gray-500 text-white text-nowrap">
                                     <th scope="col" class="px-6 py-3">
                                         condominio
                                     </th>
@@ -110,13 +110,17 @@ const Back = () =>{
 
 
                                 <tr v-for="solicitacao in solicitacoes.data" :key="solicitacao.id"
-                                    class="odd:bg-white   border-b dark:border-gray-200 text-gray-700">
+                                class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap ">
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
-                                        {{ solicitacao.condominio }}
+                                        <a class="hover:text-blue-600 underline "
+                                            :href="'/condominios/' + solicitacao.condominio.id">
+
+                                            {{ solicitacao.condominio.nome }}
+                                        </a>
                                     </th>
-                                    <td class="px-6 py-4">
-                                        {{ solicitacao.unidade }}
+                                    <td class="px-6 py-4 text-nowrap">
+                                        {{ solicitacao.unidade.nome }}
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
@@ -127,14 +131,22 @@ const Back = () =>{
                                     <td class="px-6 py-4">
                                         {{ solicitacao.solicitacao }}
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-4 text-nowrap">
                                         {{ formatarData(solicitacao.created_at) }}
                                     </td>
-                                    <td class="px-6 py-4">
-                                        <a target="&_blank" :href="solicitacao.foto">
-                                            <img :src="solicitacao.foto" class="w-12" />
-                                        </a>
-
+                                    <td class="w-full border text-center">
+                                        <div class="flex flex-row justify-center p-1">
+                                            <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
+                                                class="flex-shrink-0 mx-2">
+                                                <a class="cursor-pointer" :href="fotos.foto" target="_blank">
+                                                    <img :src="fotos.foto" class="rounded-sm w-10 h-10" alt="">
+                                                </a>
+                                            </span>
+                                            <span v-if="solicitacao.fotos.length > 3"
+                                                class="flex items-center justify-center w-12">
+                                                <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4">
                                         <span v-if="solicitacao.status == null">Aberto</span>

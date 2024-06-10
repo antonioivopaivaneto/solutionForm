@@ -36,6 +36,8 @@ Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSoli
 
 Route::get('/uploads/{filename}',[SolicitacaoController::class,'showImage'])->name('image.show');
 
+Route::get('solicitar/{condominio}', [CondominioController::class,'Solicitacao'])->name('solicitar');
+Route::post('nova-solicitacao',[SolicitacaoController::class,'store'])->name('nova-solicitacao');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -43,7 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::delete('/removeUser', [ProfileController::class, 'removeUser'])->name('removeUser');
 });
-Route::get('solicitar/{condominio}', [CondominioController::class,'Solicitacao'])->name('solicitar');;
 Route::resource('condominios', CondominioController::class)->middleware(['auth']);
 
 Route::put('atualizarStatus',[ SolicitacaoController::class,'atualizarStatus'])->middleware(['auth'])->name('atualizarStatus');

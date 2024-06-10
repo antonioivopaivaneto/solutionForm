@@ -70,7 +70,7 @@ class SolicitacaoController extends Controller
         'assunto' => $request->input('assunto'),
         'solicitacao' => $request->input('solicitacao'),
         'condominio_id' => $request->input('condominio'),
-        'unidade_id' => $request->input('unidade'),
+        'unidade_id' => (int) $request->input('unidade'),
         'nome' => $request->input('nome'),
         'telefone' => $request->input('telefone'),
         'email' => $request->input('email'),
@@ -93,10 +93,14 @@ class SolicitacaoController extends Controller
     }
       //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
 
-      $emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
-      dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
+      //$emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
+     // dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
 
-       return ;
+
+
+
+
+       return redirect()->route('solicitar', $request->input('solicitacao'));
 
 
     }

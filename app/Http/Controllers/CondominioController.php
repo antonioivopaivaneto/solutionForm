@@ -23,9 +23,6 @@ class CondominioController extends Controller
     public function Solicitacao($condominio)
     {
         $condominio = Condominio::with('unidades')->find($condominio);
-
-
-
         return Inertia::render('Solicitacao-Condominio',compact('condominio'));
             //
     }

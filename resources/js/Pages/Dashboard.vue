@@ -79,9 +79,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-        </template>
+
 
 
         <div class="py-12">
@@ -193,7 +191,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
 
 
-        <div class="py-12">
+        <div class="py-1">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
@@ -239,7 +237,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     <th scope="col" class="px-6 py-3">
                                         Assunto
                                     </th>
-                                    <th scope="col" class="px-44 py-3">
+                                    <th scope="col" class="px-6 py-3">
                                         solicitacao
                                     </th>
                                     <th scope="col" class="px-6 py-3">
@@ -264,10 +262,12 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
 
                                 <tr v-for="solicitacao in solicitacoes.data" :key="solicitacao.id"
-                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap">
+                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap "
+                                    :class="{'font-extrabold ':solicitacao.status == 0,'font-normal ':solicitacao.status == 1 }"
+                                    >
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
-                                        <a class="hover:text-blue-600 underline "
+                                        <a  class="hover:text-blue-600 underline "
                                             :href="'/condominios/' + solicitacao.condominio.id">
 
                                             {{ solicitacao.condominio.nome }}
@@ -292,43 +292,8 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
                                     </td>
 
                                     <td class="text-center py-2">
-                                        <div v-if="solicitacao.solicitacao.length < 10">
-                                            {{ solicitacao.solicitacao }}
-                                        </div>
-                                        <div v-else>
-                                            {{ solicitacao.showMore ? solicitacao.solicitacao :
-                                        solicitacao.solicitacao.substring(0, 10) + ' ...' }}
-                                            <div class="cursor-pointer text-blue-500" @click="toggleShow(solicitacao)">
-                                                <span v-if="solicitacao.showMore" class="flex justify-center">
 
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                        viewBox="0 0 24 24"
-                                                        style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
-                                                        <path
-                                                            d="M7.707 14.707 12 10.414l4.293 4.293 1.414-1.414L12 7.586l-5.707 5.707z">
-                                                        </path>
-                                                    </svg>
-
-
-                                                </span>
-                                                <span v-else class="flex justify-center">
-
-
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                                        viewBox="0 0 24 24"
-                                                        style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
-                                                        <path
-                                                            d="M16.293 9.293 12 13.586 7.707 9.293l-1.414 1.414L12 16.414l5.707-5.707z">
-                                                        </path>
-                                                    </svg>
-
-
-                                                </span>
-
-
-                                            </div>
-                                        </div>
-
+                                        ver
 
                                     </td>
                                     <td class="px-4 py-2">
@@ -349,7 +314,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
                                     <td class="px-6 py-4">
     <select v-model="solicitacao.status" @change="atualizarStatus(solicitacao.id, $event.target.value)"
-        class="appearance-none bg-transparent border-none">
+        class="appearance-none bg-transparent border-none ">
         <option :value="0" :selected="solicitacao.status == 0">Aberto</option>
         <option :value="2" :selected="solicitacao.status == 2">Andamento</option>
         <option :value="1" :selected="solicitacao.status == 1">Concluído</option>

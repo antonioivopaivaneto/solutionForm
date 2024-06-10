@@ -177,7 +177,7 @@ watch(() => form.qtd_total, (newVal) =>{
                             <tbody>
                                 <tr v-for="condominio in condominios.data" :key="condominio.id" class="odd:bg-gray-200 border-b border-gray-00 text-gray-700">
                                     <th scope="row" class="px-6 text-center py-4 font-medium">
-                                        <Link :href="'/condominios/' + condominio.id">{{ condominio.nome }}</Link>
+                                        <a class="hover:underline cursor-pointer" :href="'/condominios/' + condominio.id">{{ condominio.nome }}</a>
                                     </th>
                                     <th scope="row" class="px-6 py-4 text-center font-medium">
                                         {{ condominio.unidades_count }}

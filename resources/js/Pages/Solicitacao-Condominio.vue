@@ -20,8 +20,7 @@
 
                 <span>{{ Npasso }}º Passo</span>
                 <div class="flex ">
-                    <a @click="ShowStep1()" v-if="stepTwo"
-                        class=" py-2 cursor-pointer  text-gray-800 rounded flex">
+                    <a @click="ShowStep1()" v-if="stepTwo" class=" py-2 cursor-pointer  text-gray-800 rounded flex">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                             style="fill: rgba(0, 0, 0, 0.6);transform: ;msFilter:;">
                             <path
@@ -30,33 +29,26 @@
                         </svg>
                     </a>
                 </div>
-
             </div>
-
             <form class="max-w-sm mx-auto fade">
-
-
                 <img :src="header" v-if="!stepTree" class="transition w-80 mx-auto" alt="">
-
                 <transition>
-
                     <div class="" v-if="stepOne">
-
-
                         <div class="mb-5 mt-2">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Tema*
                             </label>
-                            <select v-model="form.assunto" id="assunto" class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option disabled selected value="">Escolha o assunto...</option>
-                <option v-for="item in assuntos" :key="item">{{ item }}</option>
-              </select>
+                            <div>
+                                <multiselect v-model="value" :options="assuntos" placeholder="Selecione uma opção"
+                                    label="assunto" track-by="assunto" :searchable="true" @update:modelValue="onSelect">
+                                </multiselect>
+                            </div>
                         </div>
                         <div class="mb-5">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Solicitação*
                             </label>
-                            <textarea  :class="{ 'border-red-600': validacao }" @mouseenter="selectionAssunto()"
+                            <textarea :class="{ 'border-red-600': validacao }"
                                 v-model="form.solicitacao" rows="6" class="bg-gray-50  border-gray-300 text-gray-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full
         dark:focus:ring-blue-500 dark:focus:border-blue-500" required placeholder="Sua Solicitação"></textarea>
                         </div>
@@ -70,14 +62,23 @@
 
                             <div id="imgResult" :src="camera"
                                 class="text-xs text-gray-700 text-center flex justify-center  p-2 rounded w-full h-30  bg-blue-800/10">
-                                <span class="p-7 cursor-pointer "  >
-                                    <svg  @click="chooseImagem()" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;"><path d="M12 8c-2.168 0-4 1.832-4 4s1.832 4 4 4 4-1.832 4-4-1.832-4-4-4zm0 6c-1.065 0-2-.935-2-2s.935-2 2-2 2 .935 2 2-.935 2-2 2z"></path><path d="M20 5h-2.586l-2.707-2.707A.996.996 0 0 0 14 2h-4a.996.996 0 0 0-.707.293L6.586 5H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2zM4 18V7h3c.266 0 .52-.105.707-.293L10.414 4h3.172l2.707 2.707A.996.996 0 0 0 17 7h3l.002 11H4z"></path></svg>
+                                <span class="p-7 cursor-pointer ">
+                                    <svg @click="chooseImagem()" xmlns="http://www.w3.org/2000/svg" width="24"
+                                        height="24" viewBox="0 0 24 24"
+                                        style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                        <path
+                                            d="M12 8c-2.168 0-4 1.832-4 4s1.832 4 4 4 4-1.832 4-4-1.832-4-4-4zm0 6c-1.065 0-2-.935-2-2s.935-2 2-2 2 .935 2 2-.935 2-2 2z">
+                                        </path>
+                                        <path
+                                            d="M20 5h-2.586l-2.707-2.707A.996.996 0 0 0 14 2h-4a.996.996 0 0 0-.707.293L6.586 5H4c-1.103 0-2 .897-2 2v11c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2zM4 18V7h3c.266 0 .52-.105.707-.293L10.414 4h3.172l2.707 2.707A.996.996 0 0 0 17 7h3l.002 11H4z">
+                                        </path>
+                                    </svg>
 
                                 </span>
 
 
                                 <div v-for="(image, index) in images" :key="index">
-                                    <div class="image-container" >
+                                    <div class="image-container">
                                         <div class="">
                                             <img :src="image" alt="Imagem"
                                                 class="mx-2 w-20 h-20 img-removed rounded-sm z-10 " />
@@ -117,7 +118,7 @@
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                             Seu Nome*
                         </label>
-                        <input type="text"  v-model="form.nome" :class="{ 'border-red-600': validacao }"
+                        <input type="text" v-model="form.nome" :class="{ 'border-red-600': validacao }"
                             placeholder="Seu Nome "
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
@@ -126,8 +127,8 @@
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                             Telefone*
                         </label>
-                        <input v-mask="'(##) #####-####'" type="text" v-model="form.telefone" :class="{ 'border-red-600': validacao }"
-                            placeholder="Seu Telefone"
+                        <input v-mask="'(##) #####-####'" type="text" v-model="form.telefone"
+                            :class="{ 'border-red-600': validacao }" placeholder="Seu Telefone"
                             class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
                     </div>
@@ -147,22 +148,29 @@
                         <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                             Unidade*
                         </label>
-                        <select :class="{ 'border-red-600': validacao }" v-model="form.unidade"
-    class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-    id="unidade" placeholder="Escolha a Unidade...">
-    <option disabled selected value="">Escolha a Unidade...</option>
-    <option v-for="unidade in unidades" :key="unidade.id" :value="unidade.id">{{ unidade.nome }}</option>
-</select>
+
+
+
+                        <div>
+
+                            <multiselect v-model="value2" :searchable="true" :options="unidadesFormatadas" placeholder="Selecione uma opção"
+    :custom-label="customLabel" @update:modelValue="onSelectUnidade">
+</multiselect>
+
+
+                        </div>
+
+
+
 
                     </div>
                     <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Responsavel*
-                        </label>
+                        Responsavel*
+                    </label>
                     <div class="mb-5 mt-2 flex gap-20 ">
 
                         <div class="flex justify-between items-center gap-2 ">
-                            <input name="proprietario" type="radio" v-model="form.proprietario"
-                            value="proprietario"
+                            <input name="proprietario" type="radio" v-model="form.proprietario" value="proprietario"
                                 :class="{ 'border-red-600': validacao }"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-200 focus:ring-2 dark:bg-gray-200 dark:border-gray-400"
                                 id="condominio" placeholder="Informe seu condominio..." />
@@ -172,8 +180,7 @@
                         </div>
                         <div class="flex items-center gap-2 mx-8">
                             <input name="proprietario" @mouseenter="selectionCondominio()" v-model="form.proprietario"
-                                type="radio" :class="{ 'border-red-600': validacao }"
-                                value="locatario"
+                                type="radio" :class="{ 'border-red-600': validacao }" value="locatario"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-200 focus:ring-2 dark:bg-gray-200 dark:border-gray-400"
                                 id="locatario" placeholder="Sua Unidade/bloco/torre" />
                             <label class="text-gray-700 text-sm font-bold" for="locatario">
@@ -222,12 +229,17 @@
 import logo from "./../../img/logo.png";
 import header from "./../../img/atendimento.png";
 import gif from "./../../img/success.gif";
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { router } from "@inertiajs/vue3";
 import TheMask from 'vue-the-mask';
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
+import axios from "axios";
 
-const props = defineProps({  condominio: Object });
+
+const props = defineProps({ condominio: Object });
 const selectedFiles = ref([]);
+
 
 const unidades = props.condominio.unidades;
 const unidadeNames = ref(unidades.map(unidade => unidade.nome));
@@ -242,7 +254,7 @@ const isEmailValid = (email) => {
     return emailRegex.test(email);
 }
 
-const assuntos = [
+const assuntos = ref([
     'Reclamação',
     'Sugestão',
     'Elogio',
@@ -257,7 +269,7 @@ const assuntos = [
     'Administrativo',
     'Financeiro',
     'Outros',
-];
+]);
 
 const error = ref();
 const validacaoEmail = ref(false);
@@ -281,6 +293,14 @@ const form = reactive({
     proprietario: null,
 });
 
+
+const onSelect = (value) => {
+    form.assunto = value;
+};
+const onSelectUnidade = (value) => {
+    form.unidade = value;
+};
+
 const images = ref([]);
 
 const removeImage = (index) => {
@@ -302,9 +322,8 @@ const handleFileUpload = (event) => {
     });
 };
 
-const selectionAssunto = () => {
-    form.assunto = document.getElementById('assunto').value;
-}
+
+
 
 const selectionCondominio = () => {
     form.condominio = document.getElementById('condominio').value;
@@ -354,7 +373,7 @@ const ShowStep3 = () => {
     form.condominio = props.condominio.id
 
 
-    if (!form.assunto || !form.solicitacao  || !form.nome) {
+    if (!form.assunto || !form.solicitacao || !form.nome) {
         validacao.value = true;
         return;
     }
@@ -372,8 +391,20 @@ const ShowStep3 = () => {
         formData.append(key, form[key]);
     });
 
-    router.post('/solicitacao', formData);
+    console.log(formData);
 
+    axios.post('/nova-solicitacao', formData)
+  .then(response => {
+    // Manipule a resposta aqui, se necessário
+    console.log(response.data);
+    // Reinicie o formulário ou faça outras ações após o envio bem-sucedido
+  })
+  .catch(error => {
+    // Manipule os erros aqui, se necessário
+    console.error('Erro ao enviar formulário:', error);
+  });
+
+    //router.post('/solicitacao', formData);
     resetForm();
 
 
@@ -382,7 +413,37 @@ const ShowStep3 = () => {
     Npasso.value = 3;
     finalizar.value = false;
     stepTree.value = true;
+
 }
+const searchQuery = ref('');
+
+const filteredOptions = computed(() => {
+    if (searchQuery.value) {
+        return assuntos.value.filter(option =>
+            option.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
+    }
+    return assuntos.value;
+});
+
+const onSearch = query => {
+    searchQuery.value = query;
+};
+
+
+// Converter o array de unidades para um formato adequado para o multiselect
+const unidadesFormatadas = unidades.map(unidade => ({
+  value: unidade.id, // Usar o ID como valor
+  label: unidade.nome // Usar o nome como texto exibido
+}));
+
+const customLabel = (option) => {
+  // Normalizar o texto da opção para ignorar caracteres especiais
+  const normalizedLabel = option.label.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  return normalizedLabel;
+};
+
+
 </script>
 
 
@@ -436,7 +497,5 @@ const ShowStep3 = () => {
 
 }
 
-.img-removed {
-
-}
+.img-removed {}
 </style>

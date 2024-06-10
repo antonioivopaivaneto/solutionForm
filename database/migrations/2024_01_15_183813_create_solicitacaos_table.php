@@ -25,8 +25,8 @@ return new class extends Migration
             $table->string('telefone');
             $table->timestamps();
 
-            $table->foreign('condominio_id')->references('id')->on('condominios');
-            $table->foreign('unidade_id')->references('id')->on('unidades');
+            $table->foreign('condominio_id')->references('id')->on('condominios')->onDelete('cascade');
+            $table->foreign('unidade_id')->references('id')->on('unidades')->onDelete('cascade');
         });
     }
     /**

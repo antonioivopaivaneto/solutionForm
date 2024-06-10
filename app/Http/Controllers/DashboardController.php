@@ -61,7 +61,9 @@ class DashboardController extends Controller
     public function historico()
     {
 
-        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')->where('status', '=', 1)->paginate(15);
+        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')->where('status', '=', 1)
+        ->with('fotos', 'unidade', 'condominio')
+        ->paginate(15);
         return Inertia::render('Historico', ['solicitacoes' => $solicitacoes]);
     }
 
