@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\CondominioController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExcelController;
+use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SolicitacaoController;
 use App\Http\Controllers\UnidadeController;
@@ -23,9 +25,7 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-
-    ]);
+    return redirect()->route('login');
 });
 Route::post('novoUser', [UserController::class, 'store'])->middleware(['auth'])->name('novoUser');
 
@@ -34,6 +34,9 @@ Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 
+Route::get('/preview-pdf/{id}', 'PdfController@previewPdf')->name('preview.pdf');
+Route::get('/exportToPdf/{id}',[PdfController::class,'exportToPdf'])->name('exportToPdf');
+Route::get('/download-excel/{id}',[ExcelController::class,'downloadExcel'])->name('downloadExcel');
 Route::get('/uploads/{filename}',[SolicitacaoController::class,'showImage'])->name('image.show');
 
 Route::get('solicitar/{condominio}', [CondominioController::class,'Solicitacao'])->name('solicitar');

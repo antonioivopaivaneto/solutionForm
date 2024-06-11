@@ -293,7 +293,7 @@ const atualizarStatus = (solicitacaoId, novoStatus) => {
 
                                     <td class="text-center py-2">
 
-                                        ver
+                                      <a class="hover:underline"  :href="'/solicitacao/' + solicitacao.id">Ver</a>
 
                                     </td>
                                     <td class="px-4 py-2">

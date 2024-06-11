@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Jobs\SendEmailQueueJob;
 use App\Mail\Solicitacao as MailSolicitacao;
+use App\Models\Condominio;
 use App\Models\Foto;
 use App\Models\Solicitacao;
+use App\Models\Unidade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -126,7 +128,11 @@ class SolicitacaoController extends Controller
      */
     public function show($id)
     {
-        //
+        $solicitacao = Solicitacao::find($id)->with('fotos', 'unidade', 'condominio')->first();
+        ;
+        $unidade = Unidade::find($solicitacao->unidade_id);
+        $condominio = Condominio::find($solicitacao->condominio_id);
+        return Inertia::render('Solicitacao-Show',compact('solicitacao','condominio','unidade'));
     }
 
     /**

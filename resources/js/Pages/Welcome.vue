@@ -1,15 +1,14 @@
 <template>
     <div class="relative h-screen overflow-hidden">
         <!-- Background image -->
-        <div class="absolute inset-0 z-0 h-screen bg-cover" style="background-image: url('https://static.vecteezy.com/ti/vetor-gratis/p2/7677101-fundo-branco-com-azul-geometrico-gratis-vetor.jpg');">
+        <div class="absolute inset-0 z-0 h-screen bg-cover" >
         </div>
 
         <!-- Dark overlay -->
-        <div class="absolute inset-0 bg-black opacity-50 z-10"></div>
 
         <!-- Centered content -->
         <div class="relative z-20 flex flex-col items-center justify-center h-full text-center text-white">
-            <h1 class="text-6xl font-bold mb-4">Solution Form Helper</h1>
+            <h1 class="text-6xl font-bold mb-4 ">Solution Form Helper</h1>
             <div class="flex space-x-4">
                 <a href="login" class="bg-blue-700 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded">
                     Entrar
