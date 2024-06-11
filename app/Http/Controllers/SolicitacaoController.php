@@ -128,8 +128,7 @@ class SolicitacaoController extends Controller
      */
     public function show($id)
     {
-        $solicitacao = Solicitacao::find($id)->with('fotos', 'unidade', 'condominio')->first();
-        ;
+        $solicitacao = Solicitacao::where('id',$id)->with('fotos', 'unidade', 'condominio')->first();
         $unidade = Unidade::find($solicitacao->unidade_id);
         $condominio = Condominio::find($solicitacao->condominio_id);
         return Inertia::render('Solicitacao-Show',compact('solicitacao','condominio','unidade'));

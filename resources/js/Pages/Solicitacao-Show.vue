@@ -260,12 +260,11 @@ function formatarNumero(telefone) {
       </div>
       <div>
         <strong>Foto:</strong>
-        <div class="flex flex-row justify-center p-1">
-            <div class="flex flex-row justify-center p-1">
+        <div class="flex flex-row">
                                             <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
-                                                class="flex-shrink-0 mx-2">
-                                                <a class="cursor-pointer" :href="fotos.foto" target="_blank">
-                                                    <img :src="folderImg + fotos.foto" class="rounded-sm w-10 h-10"
+                                                class="flex-shrink-0  mr-3">
+                                                <a class="cursor-pointer" :href="folderImg + fotos.foto" target="_blank">
+                                                    <img :src="folderImg + fotos.foto" class="rounded-sm w-36 h-auto "
                                                         alt="">
                                                 </a>
                                             </span>
@@ -274,7 +273,6 @@ function formatarNumero(telefone) {
                                                 <box-icon name='plus-medical' color="#0072bb" size="sx"></box-icon>
                                             </span>
                                         </div>
-        </div>
       </div>
       <div>
         <strong>Status:</strong>
@@ -296,15 +294,13 @@ function formatarNumero(telefone) {
 
           <a   :href="'/download-excel/' + solicitacao.id" class="mx-8">
 
-            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" style="st0{fill:#515151;stroke:#515151;stroke-width:0.9276;stroke-miterlimit:10;}" xmlns:svg="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" version="1.1" xml:space="preserve">
+            <svg width="21" height="21" xmlns="http://www.w3.org/2000/svg" style="st0{fill:#515151;stroke:#515151;stroke-width:0.9276;stroke-miterlimit:10;}" xmlns:svg="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" version="1.1" xml:space="preserve">
 
  <g class="layer">
   <title>Layer 1</title>
   <path class="st0" d="m13.7,0.7c0,0 0,0 0,0l-12.5,2.4c-0.2,0 -0.4,0.2 -0.3,0.5l0,16.6c0,0.2 0.1,0.4 0.4,0.4l12.4,2.4c0.1,0 0.3,0 0.4,-0.1c0.1,-0.1 0.2,-0.2 0.2,-0.3l0,-2.2l7.6,0c0.5,0 0.9,-0.4 0.9,-0.9l0,-15.2c0,-0.5 -0.4,-0.9 -0.9,-0.9l-7.6,0l0,-2.2c0,-0.1 -0.1,-0.3 -0.1,-0.3c-0.2,-0.1 -0.4,-0.2 -0.5,-0.2zm-0.4,1l0,1.9c-0.1,0.1 -0.1,0.3 0,0.4l0,15.8c0,0.1 0,0.1 0,0.2l0,2l-11.6,-2.2l0,-15.9l11.6,-2.2zm0.9,2.6l7.6,0l0,15.1l-7.6,0l0,-2.2l1.8,0l0,-0.9l-1.8,0l0,-2.7l1.8,0l0,-0.9l-1.8,0l0,-2.2l1.8,0l0,-0.9l-1.8,0l0,-2.2l1.8,0l0,-0.9l-1.8,0l0,-2.2zm2.7,2.2l0,0.9l3.6,0l0,-0.9l-3.6,0zm-13.1,1.2l2.4,4.2l-2.6,4.1l2.2,0l1.4,-2.7c0.1,-0.3 0.2,-0.5 0.2,-0.6l0,0c0.1,0.3 0.1,0.5 0.2,0.6l1.5,2.7l2.2,0l-2.6,-4.2l2.5,-4.1l-2,0l-1.3,2.5c-0.1,0.3 -0.2,0.6 -0.3,0.7l0,0c-0.1,-0.3 -0.2,-0.5 -0.3,-0.7l-1.2,-2.5l-2.3,0zm13.1,1.9l0,0.9l3.6,0l0,-0.9l-3.6,0zm0,3.1l0,0.9l3.6,0l0,-0.9l-3.6,0zm0,3.6l0,0.9l3.6,0l0,-0.9l-3.6,0z" id="svg_1"/>
  </g>
 </svg>
-
-
           </a>
           <a  target="&_Blank"  :href="'/exportToPdf/' + solicitacao.id" class="mx-4">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;"><path d="M19 7h-1V2H6v5H5c-1.654 0-3 1.346-3 3v7c0 1.103.897 2 2 2h2v3h12v-3h2c1.103 0 2-.897 2-2v-7c0-1.654-1.346-3-3-3zM8 4h8v3H8V4zm8 16H8v-4h8v4zm4-3h-2v-3H6v3H4v-7c0-.551.449-1 1-1h14c.552 0 1 .449 1 1v7z"></path><path d="M14 10h4v2h-4z"></path></svg>

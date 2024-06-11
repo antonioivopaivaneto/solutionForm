@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ExcelController extends Controller
@@ -52,6 +53,24 @@ class ExcelController extends Controller
         $sheet->setCellValue('M2', '');
         $sheet->setCellValue('N1', 'Prazo Fim');
         $sheet->setCellValue('N2', '');
+
+        // Adicione a imagem na célula I1
+        $row = 2;
+
+        foreach ($solicitacao->fotos as $foto) {
+            $imagePath =  Storage::path($foto->foto); // Caminho absoluto para a imagem com barras invertidas corrigidas
+            if ($solicitacao->fotos->isNotEmpty()) {
+                $drawing = new Drawing();
+                $drawing->setPath($imagePath); // Caminho para a imagem
+                $drawing->setCoordinates('I' . $row); // Célula onde a imagem será inserida
+                $drawing->setWidth(100); // Largura da imagem
+                $drawing->setHeight(100); // Altura da imagem
+                $drawing->setWorksheet($sheet);
+                $row++;
+            } else {
+                $sheet->setCellValue('I2' . $row, 'Image Not Found');            }
+        }
+
 
         // Adicionando margem entre as células
         $sheet->getStyle('A1:N2')->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_TOP);
