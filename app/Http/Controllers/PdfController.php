@@ -31,6 +31,7 @@ class PdfController extends Controller
     $html .= '<p><strong>Email:</strong> ' . $solicitacao->email . '</p>';
     $html .= '<p><strong>Telefone:</strong> ' . $solicitacao->telefone . '</p>';
     $html .= '<p><strong>Assunto:</strong> ' . $solicitacao->assunto . '</p>';
+    $html .= '<p><strong>local:</strong> ' . $solicitacao->local . '</p>';
     $html .= '<p><strong>Solicitação:</strong> ' . $solicitacao->solicitacao . '</p>';
     $html .= '<p><strong>Data e Hora:</strong> ' . $solicitacao->created_at->format('d/m/Y, H:i') . '</p>';
     $html .= '<p><strong>Status:</strong> ' . ($solicitacao->status == 0 ? 'Aberto' : ($solicitacao->status == 2 ? 'Andamento' : 'Concluido')) . '</p>';

@@ -24,35 +24,49 @@ class ExcelController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Definir os dados da solicitação nas células da planilha
         $sheet->setCellValue('A1', 'Condomínio:');
-        $sheet->setCellValue('A2', $solicitacao->condominio->nome);
-        $sheet->setCellValue('B1', 'Unidade:');
-        $sheet->setCellValue('B2', $solicitacao->unidade->nome);
-        $sheet->setCellValue('C1', 'Morador:');
-        $sheet->setCellValue('C2', $solicitacao->morador);
-        $sheet->setCellValue('D1', 'Email:');
-        $sheet->setCellValue('D2', $solicitacao->email);
-        $sheet->setCellValue('E1', 'Telefone:');
-        $sheet->setCellValue('E2', $solicitacao->telefone);
-        $sheet->setCellValue('F1', 'Assunto:');
-        $sheet->setCellValue('F2', $solicitacao->assunto);
-        $sheet->setCellValue('G1', 'Solicitação:');
-        $sheet->setCellValue('G2', $solicitacao->solicitacao);
-        $sheet->setCellValue('H1', 'Data e Hora:');
-        $sheet->setCellValue('H2', $solicitacao->created_at->format('d/m/Y, H:i'));
-        $sheet->setCellValue('I1', 'Foto:');
-        $sheet->setCellValue('I2', ''); // Você precisará lidar com as fotos aqui, conforme necessário
-        $sheet->setCellValue('J1', 'Status:');
-        $sheet->setCellValue('J2', $solicitacao->status == 0 ? 'Aberto' : ($solicitacao->status == 2 ? 'Andamento' : 'Concluido')); // Adicione a lógica para o status, se necessário
-        $sheet->setCellValue('k1', 'Local');
-        $sheet->setCellValue('k2', '');
-        $sheet->setCellValue('L1', 'Responsavel');
-        $sheet->setCellValue('L2', '');
-        $sheet->setCellValue('M1', 'Prazo Inicio');
-        $sheet->setCellValue('M2', '');
-        $sheet->setCellValue('N1', 'Prazo Fim');
-        $sheet->setCellValue('N2', '');
+$sheet->setCellValue('A2', $solicitacao->condominio->nome);
+
+$sheet->setCellValue('B1', 'Unidade:');
+$sheet->setCellValue('B2', $solicitacao->unidade->nome);
+
+$sheet->setCellValue('C1', 'Morador:');
+$sheet->setCellValue('C2', $solicitacao->nome);
+
+$sheet->setCellValue('D1', 'Email:');
+$sheet->setCellValue('D2', $solicitacao->email);
+
+$sheet->setCellValue('E1', 'Telefone:');
+$sheet->setCellValue('E2', $solicitacao->telefone);
+
+$sheet->setCellValue('F1', 'Assunto:');
+$sheet->setCellValue('F2', $solicitacao->assunto);
+
+$sheet->setCellValue('G1', 'Local:');
+$sheet->setCellValue('G2', $solicitacao->local);
+
+$sheet->setCellValue('H1', 'Solicitação:');
+$sheet->setCellValue('H2', $solicitacao->solicitacao);
+
+$sheet->setCellValue('I1', 'Data e Hora:');
+$sheet->setCellValue('I2', $solicitacao->created_at->format('d/m/Y, H:i'));
+
+$sheet->setCellValue('J1', 'Foto:');
+$sheet->setCellValue('J2', ''); // Você precisará lidar com as fotos aqui, conforme necessário
+
+$sheet->setCellValue('K1', 'Status:');
+$sheet->setCellValue('K2', $solicitacao->status == 0 ? 'Aberto' : ($solicitacao->status == 2 ? 'Andamento' : 'Concluído'));
+
+$sheet->setCellValue('L1', 'Responsável:');
+$sheet->setCellValue('L2', ''); // Deve ser ajustado conforme necessário
+
+$sheet->setCellValue('M1', 'Prazo Início:');
+$sheet->setCellValue('M2', ''); // Deve ser ajustado conforme necessário
+
+$sheet->setCellValue('N1', 'Prazo Fim:');
+$sheet->setCellValue('N2', ''); // Deve ser ajustado conforme necessário
+
+
 
         // Adicione a imagem na célula I1
         $row = 2;
@@ -62,13 +76,13 @@ class ExcelController extends Controller
             if ($solicitacao->fotos->isNotEmpty()) {
                 $drawing = new Drawing();
                 $drawing->setPath($imagePath); // Caminho para a imagem
-                $drawing->setCoordinates('I' . $row); // Célula onde a imagem será inserida
+                $drawing->setCoordinates('J' . $row); // Célula onde a imagem será inserida
                 $drawing->setWidth(100); // Largura da imagem
                 $drawing->setHeight(100); // Altura da imagem
                 $drawing->setWorksheet($sheet);
                 $row++;
             } else {
-                $sheet->setCellValue('I2' . $row, 'Image Not Found');            }
+                $sheet->setCellValue('J2' . $row, 'Image Not Found');            }
         }
 
 
@@ -79,23 +93,24 @@ class ExcelController extends Controller
 
         // Ajustando o tamanho das colunas
         $sheet->getColumnDimension('A')->setWidth(15);
-        $sheet->getColumnDimension('B')->setWidth(15);
+        $sheet->getColumnDimension('B')->setWidth(20);
         $sheet->getColumnDimension('C')->setWidth(10);
-        $sheet->getColumnDimension('D')->setWidth(20);
-        $sheet->getColumnDimension('E')->setWidth(10);
-        $sheet->getColumnDimension('F')->setWidth(15);
-        $sheet->getColumnDimension('G')->setWidth(40);
-        $sheet->getColumnDimension('H')->setWidth(20);
-        $sheet->getColumnDimension('I')->setWidth(10);
+        $sheet->getColumnDimension('D')->setWidth(25);
+        $sheet->getColumnDimension('E')->setWidth(20);
+        $sheet->getColumnDimension('F')->setWidth(20);
+        $sheet->getColumnDimension('G')->setWidth(20);
+        $sheet->getColumnDimension('H')->setWidth(40);
+        $sheet->getColumnDimension('I')->setWidth(15);
         $sheet->getColumnDimension('J')->setWidth(15);
         $sheet->getColumnDimension('K')->setWidth(10);
         $sheet->getColumnDimension('L')->setWidth(15);
         $sheet->getColumnDimension('M')->setWidth(15);
         $sheet->getColumnDimension('N')->setWidth(15);
+        $sheet->getColumnDimension('O')->setWidth(15);
 
 
       // Definir títulos em negrito na linha 1, com aumento de fonte, texto em maiúsculas e centralização do conteúdo
-$sheet->getStyle('A1:N1')->applyFromArray([
+$sheet->getStyle('A1:O1')->applyFromArray([
     'font' => [
         'bold' => true,
         'size' => 12, // Ajuste o tamanho da fonte conforme necessário

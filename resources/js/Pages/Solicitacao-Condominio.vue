@@ -44,6 +44,15 @@
                                 </multiselect>
                             </div>
                         </div>
+                        <div class="mb-5 ">
+                        <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                            Local
+                        </label>
+                        <input type="text" v-model="form.local" :class="{ 'border-red-600': validacao }"
+                            placeholder="Local da Solicitação"
+                            class="bg-gray-50 border text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                    </div>
                         <div class="mb-5">
                             <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
                                 Solicitação*
@@ -284,6 +293,7 @@ const formData = new FormData();
 
 const form = reactive({
     assunto: '',
+    local: '',
     solicitacao: null,
     condominio: document.getElementById('condominio'),
     unidade: '',
@@ -349,6 +359,7 @@ const resetForm = () => {
     form.nome = '';
     form.telefone = '';
     form.email = '';
+    form.local = '';
     form.unidade = '';
     images.length = 0;
     stepOne.value = true;

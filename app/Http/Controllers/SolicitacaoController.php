@@ -53,6 +53,7 @@ class SolicitacaoController extends Controller
         'nome' => 'required|string',
         'email' => 'required|email',
         'status' => 'nullable',
+        'local' => 'nullable',
        ]);
 
        /*
@@ -70,6 +71,7 @@ class SolicitacaoController extends Controller
 
        $solicitacao = new Solicitacao([
         'assunto' => $request->input('assunto'),
+        'local' => $request->input('local'),
         'solicitacao' => $request->input('solicitacao'),
         'condominio_id' => $request->input('condominio'),
         'unidade_id' => (int) $request->input('unidade'),

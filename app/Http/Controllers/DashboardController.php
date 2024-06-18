@@ -40,6 +40,15 @@ class DashboardController extends Controller
     ->limit(5)
     ->get();
 
+      // Total de solicitações por status
+      $totalPorStatus = Solicitacao::select('status', DB::raw('count(*) as total'))
+      ->groupBy('status')
+      ->get();
+
+
+
+
+
 
 
 
@@ -55,7 +64,8 @@ class DashboardController extends Controller
             'solicitacoes' => $solicitacoes,
             'condominios' => $condominios,
             'assuntos' => $assuntos,
-            'moradores' => $moradores
+            'moradores' => $moradores,
+            'totalPorStatus' => $totalPorStatus
         ]);
     }
     public function historico()

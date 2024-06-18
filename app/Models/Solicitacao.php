@@ -22,6 +22,7 @@ class Solicitacao extends Model
         'status',
         'proprietario',
         'telefone',
+        'local',
     ];
 
     public function fotos(){
