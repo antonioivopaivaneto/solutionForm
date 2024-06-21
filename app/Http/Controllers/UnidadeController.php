@@ -57,6 +57,10 @@ class UnidadeController extends Controller
           $qtdAndares = (int) $request->input('qtd_andares');
           $qtdTotal = $request->input('qtd_total');
 
+
+          $nomeBloco = $bloco ? "-" . $bloco : '';
+          $nomeTorre = $torre ? $torre . "/" : '';
+
           if($qtdTotal === null){
               // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
               if (strpos($unidadesString, '-') !== false) {
@@ -72,13 +76,16 @@ class UnidadeController extends Controller
                   return redirect()->back()->with('error', 'Formato de unidades inválido.');
               }
 
+
+
+
                // Criar as unidades com base no formato fornecido e no número de andares
               foreach (range(1, $qtdAndares) as $andar) {
                   foreach ($unidades as $numeroUnidade) {
-                      // Adiciona o número do andar ao início do número da unidade, mas preservando a parte fixa da unidade
-                      $unidadeComAndar = $andar . substr($numeroUnidade, -2);
+
+                    $unidadeComAndar = $andar . substr($numeroUnidade, -2);
                       Unidade::create([
-                          'nome' => "$torre/UND.$unidadeComAndar-$bloco",
+                        'nome' => "{$nomeTorre}UND.{$unidadeComAndar}{$nomeBloco}",
                           'bloco' => $bloco,
                           'andar' => $andar,
                           'torre' => $torre,
@@ -91,7 +98,7 @@ class UnidadeController extends Controller
           $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
           foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
               Unidade::create([
-                  'nome' => "$torre/UND.$numeroUnidade-$bloco",
+                  'nome' => "{$nomeTorre}UND.{$numeroUnidade}{$nomeBloco}",
                   'bloco' => $bloco,
                   'andar' => '', // Calcular o andar
                   'torre' => $torre,

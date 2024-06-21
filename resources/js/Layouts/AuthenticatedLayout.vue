@@ -33,7 +33,7 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink :href="route('condominios.create')" :active="route().current('condominios')">
+                                <NavLink :href="route('condominios.index')" :active="route().current('condominios')">
                                      Condominios
                                 </NavLink>
                                 <NavLink :href="route('historico')" :active="route().current('historico')">
@@ -165,7 +165,7 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Page Content -->
             <main   >
-                <img :src="logo" class="absolute opacity-10 mt-32" alt="Background Image">
+                <img :src="logo" class="fixed opacity-10 mt-32" alt="Background Image">
     <div class="relative z-10">
         <!-- Your other content goes here -->
         <slot />

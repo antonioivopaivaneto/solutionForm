@@ -85,6 +85,32 @@ const getStatusLabel = (status) => {
     }
 }
 
+const orderArrow = ref(true);
+
+const filtro = (filtro,order) =>{
+
+    router.get(route('dashboard', {'filtro':filtro , 'order':order}))
+
+    if (order === 'asc') {
+        orderArrow.value = true;
+    } else {
+        orderArrow.value = false;
+    }
+}
+
+const pesquisaText = ref();
+
+
+const pesquisa = () =>{
+
+
+
+    router.get(route('dashboard', {'pesquisa':pesquisaText.value}),{ preserveScroll: true })
+
+
+
+}
+
 </script>
 
 <template>
@@ -258,6 +284,17 @@ const getStatusLabel = (status) => {
                         </div>
                     </div>
                     <div class=" overflow-x-auto sm:rounded-lg p-5 mr-5 ">
+                        <div class="mb-5 w-80 ">
+                        <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                            Pesquisar por Morador
+                        </label>
+                        <input type="text"
+                        @keyup.enter="pesquisa()"
+                        v-model="pesquisaText"
+                            placeholder="Seu Nome "
+                            class="bg-gray-50 border w text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+
+                    </div>
                         <table
                             class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
@@ -272,7 +309,14 @@ const getStatusLabel = (status) => {
                                         Unidade
                                     </th>
                                     <th scope="col" class="px-4 py-3">
-                                        Morador
+                                        Local
+                                    </th>
+                                    <th scope="col" class="px-4 py-3 flex gap-2">
+
+                                        <a>     Morador</a>
+
+                                        <svg v-if="orderArrow" @click="filtro('nome','asc')"   xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z"></path></svg>
+                                        <svg v-else  @click="filtro('nome','desc')"  xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
                                     </th>
                                     <th scope="col" class="px-4 py-3">
                                         Email
@@ -280,8 +324,12 @@ const getStatusLabel = (status) => {
                                     <th scope="col" class="px-4 py-3">
                                         Telefone
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
-                                        Assunto
+                                    <th scope="col" class="px-6 py-3 flex justify-center gap-2 cursor-pointer ">
+
+                                       <a @click="filtro('assunto')">Assunto</a>
+                                        <svg v-if="true"  xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z"></path></svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
+
                                     </th>
                                     <th scope="col" class="px-6 py-3">
                                         solicitacao
@@ -326,6 +374,11 @@ const getStatusLabel = (status) => {
                                         </a>
                                     </td>
                                     <td class="px-6 py-4">
+
+
+                                            {{ solicitacao.local }}
+                                    </td>
+                                    <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
                                     </td>
                                     <td class="px-6 py-4">
@@ -343,7 +396,7 @@ const getStatusLabel = (status) => {
 
                                     <td class="text-center py-2">
 
-                                        <a class="hover:underline" :href="'/solicitacao/' + solicitacao.id">Ver</a>
+                                        <a class="hover:underline text-blue-800" :href="'/solicitacao/' + solicitacao.id">Ver</a>
 
                                     </td>
                                     <td class="px-4 py-2">

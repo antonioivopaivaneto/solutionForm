@@ -30,11 +30,10 @@ Route::get('/', function () {
 Route::post('novoUser', [UserController::class, 'store'])->middleware(['auth'])->name('novoUser');
 
 Route::get('/historico',[DashboardController::class,'Historico'])->middleware(['auth', 'verified'])->name('historico');
-Route::get('/dashboard',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 
-Route::get('/preview-pdf/{id}', 'PdfController@previewPdf')->name('preview.pdf');
 Route::get('/exportToPdf/{id}',[PdfController::class,'exportToPdf'])->name('exportToPdf');
 Route::get('/download-excel/{id}',[ExcelController::class,'downloadExcel'])->name('downloadExcel');
 Route::get('/uploads/{filename}',[SolicitacaoController::class,'showImage'])->name('image.show');

@@ -14,8 +14,9 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request )
     {
+
         $condominios = DB::table('solicitacoes')
     ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
     ->select('condominios.nome', DB::raw('count(*) as total'))
@@ -47,18 +48,39 @@ class DashboardController extends Controller
 
 
 
+// Iniciando a consulta das solicitações
+$query = Solicitacao::query();
+
+// Aplicando filtro por status (aberto ou em andamento)
+$query->where(function ($query) {
+    $query->where('status', 0)
+          ->orWhere('status', 2);
+});
+
+// Carregando relacionamentos
+$query->with('fotos', 'unidade', 'condominio');
+
+// Verificando e aplicando filtros adicionais, se existirem
+if ($request->filtro && $request->order) {
+
+    $filtro = $request->filtro;
+    $order = $request->order;
+
+        $query->orderBy($filtro,$order);
+
+
+}
+
+if($request->pesquisa){
+    $query->where('nome', $request->pesquisa);
+
+}
 
 
 
 
+    $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
 
-        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')
-            ->where(function ($query){
-                $query->where('status',0)
-                ->orWhere('status',2);
-            })
-            ->with('fotos', 'unidade', 'condominio')
-            ->paginate(15);
 
         return Inertia::render('Dashboard', [
             'solicitacoes' => $solicitacoes,

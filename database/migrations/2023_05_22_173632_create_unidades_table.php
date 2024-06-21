@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('unidades', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('condominio_id');
-            $table->string('nome')->unique();
+            $table->string('nome');
             $table->string('bloco')->nullable();
             $table->string('torre')->nullable();
             $table->string('andar')->nullable();

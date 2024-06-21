@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import logo from "@/../img/fundo.jpeg"
 
 defineProps({
     canResetPassword: Boolean,
@@ -33,6 +34,15 @@ const submit = () => {
             {{ status }}
         </div>
 
+
+<Link href="/">
+                <img :src="logo" class="w-full  fill-current text-gray-500 rounded-sm" />
+            </Link>
+
+            <h1 class="text-2xl text-center p-3">Bem vindo!
+
+            </h1>
+
         <form @submit.prevent="submit">
             <div>
                 <InputLabel for="email" value="Email" />
@@ -51,7 +61,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Senha" />
 
                 <TextInput
                     id="password"
@@ -76,7 +86,7 @@ const submit = () => {
 
 
                 <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
+                    Entrar
                 </PrimaryButton>
             </div>
         </form>

@@ -17,14 +17,18 @@ class CondominioController extends Controller
      */
     public function index()
     {
-        //
+
+        $condominios = Condominio::with('solicitacoes','unidades')->orderBy('nome', 'asc')->paginate(10);
+
+
+        return Inertia('Condominios', compact('condominios'));
     }
 
     public function Solicitacao($condominio)
     {
         $condominio = Condominio::with('unidades')->find($condominio);
-        return Inertia::render('Solicitacao-Condominio',compact('condominio'));
-            //
+        return Inertia::render('Solicitacao-Condominio', compact('condominio'));
+        //
     }
 
     /**
@@ -38,7 +42,7 @@ class CondominioController extends Controller
 
 
 
-        return Inertia('Cadastro-Condominios',compact('condominios'));
+        return Inertia('Cadastro-Condominios', compact('condominios'));
     }
 
     /**
@@ -52,11 +56,24 @@ class CondominioController extends Controller
         // Validação dos dados de entrada
         $request->validate([
             'nome' => 'required|string',
-            'bloco' => 'required|string',
-            'torre' => 'required|string',
+            'bloco' => 'nullable|string',
+            'torre' => 'nullable|string',
             'unidades' => 'required|string',
             'endereco' => 'required|string',
-            'cnpj' => 'required|string',
+            'cnpj' => 'required|string|unique:condominios,cnpj',
+        ],[
+            'nome.required' => 'O campo nome é obrigatório.',
+            'nome.string' => 'O campo nome deve ser uma string.',
+            'bloco.string' => 'O campo bloco deve ser uma string.',
+            'torre.string' => 'O campo torre deve ser uma string.',
+            'unidades.required' => 'O campo unidades é obrigatório.',
+            'unidades.string' => 'O campo unidades deve ser uma string.',
+            'endereco.required' => 'O campo endereço é obrigatório.',
+            'endereco.string' => 'O campo endereço deve ser uma string.',
+            'cnpj.required' => 'O campo CNPJ é obrigatório.',
+            'cnpj.string' => 'O campo CNPJ deve ser uma string.',
+            'cnpj.unique' => 'O CNPJ informado já está cadastrado.',
+
         ]);
 
         // Criação do condomínio
@@ -74,10 +91,8 @@ class CondominioController extends Controller
         $qtdAndares = (int) $request->input('qtd_andares');
         $qtdTotal = $request->input('qtd_total');
 
-        if($qtdTotal === null){
-            // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
+        if ($qtdTotal === null) {
             if (strpos($unidadesString, '-') !== false) {
-                // Se for um intervalo
                 [$inicio, $fim] = explode('-', $unidadesString);
                 $unidades = range((int)$inicio, (int)$fim);
             } elseif (strpos($unidadesString, ';') !== false) {
@@ -85,17 +100,21 @@ class CondominioController extends Controller
                 $unidades = explode(';', $unidadesString);
                 $unidades = array_map('intval', $unidades);
             } else {
-                // Se o formato for inválido
                 return redirect()->back()->with('error', 'Formato de unidades inválido.');
             }
 
-             // Criar as unidades com base no formato fornecido e no número de andares
+
+
+
             foreach (range(1, $qtdAndares) as $andar) {
                 foreach ($unidades as $numeroUnidade) {
-                    // Adiciona o número do andar ao início do número da unidade, mas preservando a parte fixa da unidade
+
+                    $nomeBloco = $bloco ? "-" . $bloco : '';
+                    $nomeTorre = $torre ? $torre . "/" : '';
+
                     $unidadeComAndar = $andar . substr($numeroUnidade, -2);
                     Unidade::create([
-                        'nome' => "$torre/UND.$unidadeComAndar-$bloco",
+                        'nome' => "{$nomeTorre}UND.{$unidadeComAndar}{$nomeBloco}",
                         'bloco' => $bloco,
                         'andar' => $andar,
                         'torre' => $torre,
@@ -104,18 +123,18 @@ class CondominioController extends Controller
                 }
             }
         } else {
-             // Criar unidades sequenciais com base na quantidade total fornecida
-        $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
-        foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
-            Unidade::create([
-                'nome' => "$torre/UND.$numeroUnidade-$bloco",
-                'bloco' => $bloco,
-                'andar' => '', // Calcular o andar
-                'torre' => $torre,
-                'condominio_id' => $condominio->id,
-            ]);
+            $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
+
+            foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
+                Unidade::create([
+                    'nome' => $torre . "UND." . $numeroUnidade . $bloco,
+                    'bloco' => $bloco,
+                    'andar' => '', // Calcular o andar
+                    'torre' => $torre,
+                    'condominio_id' => $condominio->id,
+                ]);
+            }
         }
-    }
 
         return redirect()->route('condominios.create')->with('success', 'Condomínio e unidades cadastrados com sucesso!');
     }
@@ -129,13 +148,13 @@ class CondominioController extends Controller
      */
     public function show($id)
     {
-       // Busca o condomínio sem carregar as unidades
-    $condominio = Condominio::findOrFail($id);
+        // Busca o condomínio sem carregar as unidades
+        $condominio = Condominio::findOrFail($id);
 
-    // Paginando as unidades do condomínio
-    $unidades = $condominio->unidades()->with('solicitacoes')->orderBy('nome','asc')->paginate(10); // 10 unidades por página
+        // Paginando as unidades do condomínio
+        $unidades = $condominio->unidades()->with('solicitacoes')->orderBy('nome', 'asc')->paginate(10); // 10 unidades por página
 
-        return Inertia('Editar-Condominio',compact('condominio','unidades'));
+        return Inertia('Editar-Condominio', compact('condominio', 'unidades'));
     }
 
     /**
@@ -160,10 +179,10 @@ class CondominioController extends Controller
     {
         $condominio = Condominio::where('id', $request->input('condominio_id'))->first();
 
-            $condominio->nome = $request->input('condominio_nome');
-            $condominio->endereco = $request->input('endereco');
-            $condominio->cnpj = $request->input('cnpj');
-            $condominio->save();
+        $condominio->nome = $request->input('condominio_nome');
+        $condominio->endereco = $request->input('endereco');
+        $condominio->cnpj = $request->input('cnpj');
+        $condominio->save();
 
 
         return redirect()->back();
@@ -176,26 +195,24 @@ class CondominioController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-{
-    $condominio = Condominio::find($id);
+    {
+        $condominio = Condominio::find($id);
 
-    if (!$condominio) {
-        return redirect()->route('condominios.create')->with('error', 'Condomínio não encontrado.');
+        if (!$condominio) {
+            return redirect()->route('condominios.create')->with('error', 'Condomínio não encontrado.');
+        }
+
+
+        // Excluir todas as solicitações relacionadas ao condomínio
+        // Verificar se há solicitações relacionadas
+        if (method_exists($condominio, 'solicitacoes') && method_exists($condominio, 'unidades')) {
+            // Excluir todas as solicitações relacionadas ao condomínio
+            $condominio->solicitacoes()->delete();
+            $condominio->unidades()->delete();
+        }
+        // Excluir o condomínio
+        $condominio->delete();
+
+        return redirect()->route('condominios.create')->with('success', 'Condomínio e suas unidades foram excluídas com sucesso.');
     }
-
-    // Excluir todas as unidades associadas ao condomínio
-    $condominio->unidades()->delete();
-
-    // Excluir todas as solicitações relacionadas ao condomínio
-  // Verificar se há solicitações relacionadas
-  if (method_exists($condominio, 'solicitacoes')) {
-    // Excluir todas as solicitações relacionadas ao condomínio
-    $condominio->solicitacoes()->delete();
-}
-    // Excluir o condomínio
-    $condominio->delete();
-
-    return redirect()->route('condominios.create')->with('success', 'Condomínio e suas unidades foram excluídas com sucesso.');
-}
-
 }
