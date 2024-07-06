@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ExcelController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RespostaSolicitacaoController;
 use App\Http\Controllers\SolicitacaoController;
 use App\Http\Controllers\UnidadeController;
 use App\Http\Controllers\UserController;
@@ -29,8 +30,9 @@ Route::get('/', function () {
 });
 Route::post('novoUser', [UserController::class, 'store'])->middleware(['auth'])->name('novoUser');
 
+Route::get('/resposta/{id}',[RespostaSolicitacaoController::class,'show'])->middleware(['auth'])->name('resposta');
 Route::get('/historico',[DashboardController::class,'Historico'])->middleware(['auth', 'verified'])->name('historico');
-Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified','role:admin'])->name('dashboard');
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 

@@ -19,6 +19,7 @@ const form = useForm({
     password: '',
     password_confirmation: '',
     terms: false,
+    role: '',
 });
 
 const submit = () => {
@@ -30,7 +31,7 @@ const submit = () => {
 
 };
 
-const Back = () =>{
+const Back = () => {
     window.history.back()
 }
 
@@ -55,7 +56,7 @@ const processarLabel = (label) => {
 const remover = (id) => {
     if (confirm("Deseja remover esta solicitação ? ")) {
 
-        router.delete(route('removeUser', {id:id}), { preserveScroll: true })
+        router.delete(route('removeUser', { id: id }), { preserveScroll: true })
         msgSucesso.value = true
     }
 
@@ -77,8 +78,8 @@ const remover = (id) => {
                     <div>
                         <InputLabel for="name" value="Name" />
 
-                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required autofocus
-                            autocomplete="name" />
+                        <TextInput id="name" type="text" class="mt-1 block w-full" v-model="form.name" required
+                            autofocus autocomplete="name" />
 
                         <InputError class="mt-2" :message="form.errors.name" />
                     </div>
@@ -93,10 +94,23 @@ const remover = (id) => {
                     </div>
 
                     <div class="mt-4">
+                        <InputLabel for="role" value="Acesso" />
+
+                        <select id="role" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" v-model="form.role" required>
+                            <option value="">Selecione</option>
+                            <option value="admin">Admin</option>
+                            <option value="manutence">Manutence</option>
+                        </select>
+
+                        <InputError class="mt-2" :message="form.errors.role" />
+                    </div>
+
+
+                    <div class="mt-4">
                         <InputLabel for="password" value="Senha" />
 
-                        <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required
-                            autocomplete="new-password" />
+                        <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password"
+                            required autocomplete="new-password" />
 
                         <InputError class="mt-2" :message="form.errors.password" />
                     </div>
@@ -113,7 +127,8 @@ const remover = (id) => {
                     <div class="flex items-center justify-end mt-4">
 
 
-                        <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                        <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }"
+                            :disabled="form.processing">
                             Registrar
                         </PrimaryButton>
                     </div>
@@ -173,6 +188,9 @@ const remover = (id) => {
 
 
                                     <th scope="col" class="px-6 py-3">
+                                        Acesso
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Email
                                     </th>
 
@@ -188,17 +206,14 @@ const remover = (id) => {
                             <tbody>
 
 
-
-
-
-
                                 <tr v-for="user in users.data" :key="user.id"
                                     class="odd:bg-gray-200   border-b border-gray-00 text-gray-700">
 
-
-
                                     <td class="px-6 py-4">
                                         {{ user.name }}
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ user.role }}
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ user.email }}
@@ -232,8 +247,7 @@ const remover = (id) => {
                         </table>
 
                         <div class="mt-4 flex gap-2 items-center">
-                            <a :href="user.url" v-for="user in users.links"
-                                :key="user.label"
+                            <a :href="user.url" v-for="user in users.links" :key="user.label"
                                 class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
                                 :class="{ 'bg-gray-500': user.active }">
                                 <span>{{ processarLabel(user.label) }}</span>
