@@ -8,67 +8,101 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="font-sans antialiased bg-gray-100" onload="window.print()">
+<!--<body class="font-sans antialiased " onload="window.print()">-->
 
-    <h1 class="text-2xl font-bold uppercase mb-3">Solicitação</h1>
-    <table class="w-full rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
-            <tr class="bg-gray-500 text-white text-nowrap">
-                <th scope="col" class=" ">Condomínio</th>
-                <th scope="col" class=" ">Unidade</th>
-                <th scope="col" class=" ">Morador</th>
-                <th scope="col" class=" ">Email</th>
-                <th scope="col" class=" ">Telefone</th>
-                <th scope="col" class=" ">Assunto</th>
-                <th scope="col" class=" ">Solicitação</th>
-                <th scope="col" class=" ">Data e Hora</th>
-                <th scope="col" class=" ">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="">{{ $solicitacao->condominio->nome }}</td>
-                <td class="">{{ $solicitacao->unidade->nome }}</td>
-                <td class="">{{ $solicitacao->morador }}</td>
-                <td class="">{{ $solicitacao->email }}</td>
-                <td class="">{{ $solicitacao->telefone }}</td>
-                <td class="">{{ $solicitacao->assunto }}</td>
-                <td class="">{{ $solicitacao->solicitacao }}</td>
-                <td class="">{{ $solicitacao->created_at->format('d/m/Y, H:i') }}</td>
+<body class="font-sans antialiased p-5 ">
 
-                <td class="">
-                    <select class="appearance-none bg-transparent border-none">
-                        <option value="0" {{ $solicitacao->status == 0 ? 'selected' : '' }}>Aberto</option>
-                        <option value="2" {{ $solicitacao->status == 2 ? 'selected' : '' }}>Andamento</option>
-                        <option value="1" {{ $solicitacao->status == 1 ? 'selected' : '' }}>Concluído</option>
-                    </select>
-                </td>
+    <div class="flex   ">
+        <div class="">
+            <h1 class="text-2xl font-bold uppercase  text-white bg-black p-5">Solicitação -
+                {{ $solicitacao->condominio->nome }} </h1>
 
-            </tr>
-        </tbody>
-    </table>
-
-    <p class="mt-5">Fotos</p>
-
-    @foreach ($solicitacao->fotos->slice(0, 3) as $foto)
-    <a href="{{ asset($foto->foto) }}" target="_blank">
-        <img src="{{ asset($foto->foto) }}" width="180px" class="rounded-sm  " alt="">
-    </a>
-@endforeach
+            <div class="w-full  text-sm text-gray-800  border-r-2 border-l-2 border-b-2 border-black p-4">
+                <h2 class="text-gray-600 text-sm font-bold mb-4">HORÁRIO E LOCAL</h2>
+                <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->created_at->format('d/m/Y, H:i') }}
+                    <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->condominio->nome }}
+                    </div>
+                    <h2 class="text-gray-600 text-sm font-bold mb-4 mt-5 uppercase">{{ $solicitacao->assunto }}</h2>
+                        <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->solicitacao }}
+                        </div>
 
 
 
-    <script>
-        function formatarNumero(numero) {
-            // Implemente a lógica de formatação do número de telefone, se necessário
-            return numero;
-        }
+                </div>
 
-        function formatarData(data) {
-            // Implemente a lógica de formatação da data, se necessário
-            return data;
-        }
-    </script>
+
+                <div class="mt-5">
+                    <h2 class="text-gray-600 text-sm font-bold  uppercase ">Solicitante</h2>
+                    <div class="font-semibold ">{{ $solicitacao->nome }}</div>
+                    <div class="font-semibold"> {{ $solicitacao->unidade->nome }}</div>
+                    <div class="font-semibold"> {{ $solicitacao->telefone }}</div>
+
+                </div>
+
+
+            </div>
+        </div>
+        <div class="w-40 text-center  border-r-2 border-b-2 border-black">
+            <div class="text-sm font-bold uppercase  text-white bg-black p-4 ">
+                <span>Nº da OS</span>
+                <div class="">{{ $solicitacao->id }}</div>
+            </div>
+
+            <div class="text-center h-  text-sm text-gray-800 p-4  ">
+                <div class="mx-auto mb-5 text-center">
+                    <h2 class="text-gray-600 text-xs font-bold mt-4 mb-2">STATUS</h2>
+                    <span class="text-gray-800 text-sm font-bold mt-3 ">
+                        @if ($solicitacao->status == 0)
+                            Aberto
+                        @elseif($solicitacao->status == 2)
+                            Andamento
+                        @elseif($solicitacao->status == 1)
+                            Concluído
+                        @else
+                            Desconhecido
+                        @endif
+                    </span>
+                </div>
+                <div class="text-center  mx-auto flex justify-center items-center  ">
+                    {!! $qrcode !!}
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
+        <div class="">
+
+            <h3 class="mt-5 font-bold uppercase text-gray-700">Fotos</h3>
+            @if ($solicitacao->fotos->isEmpty())
+                <span>Não Consta</span>
+            @endif
+            <div class="flex space-x-4">
+                @foreach ($solicitacao->fotos->slice(0, 3) as $foto)
+                    <a href="{{ asset($foto->foto) }}" target="_blank">
+                        <img src="{{ asset($foto->foto) }}" width="200px" class="rounded-sm" alt="">
+                    </a>
+                @endforeach
+            </div>
+        </div>
+
+
+
+
+
+        <script>
+            function formatarNumero(numero) {
+                // Implemente a lógica de formatação do número de telefone, se necessário
+                return numero;
+            }
+
+            function formatarData(data) {
+                // Implemente a lógica de formatação da data, se necessário
+                return data;
+            }
+        </script>
 </body>
 
 </html>

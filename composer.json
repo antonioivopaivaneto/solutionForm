@@ -13,7 +13,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.7",
         "phpoffice/phpspreadsheet": "^1.18",
-        "simplesoftwareio/simple-qrcode": "*",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "tightenco/ziggy": "^1.0"
     },
     "require-dev": {

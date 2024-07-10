@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Solicitacao;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Http\Request;
 use Dompdf\Dompdf;
 
@@ -54,7 +55,10 @@ class PdfController extends Controller
     // Renderize o PDF
     $dompdf->render();
 
-    return view('pdf.solicitacao', compact('solicitacao'));
+    $qrcodeUrl = route('resposta', ['id' => $id]); // Substitua 'solicitacao.show' pela sua rota
+    $qrcode = QrCode::size(100)->generate($qrcodeUrl); // Ajuste o tamanho conforme necessário
+
+    return view('pdf.solicitacao', compact('solicitacao','qrcode'));
 
 
     //return view('pdf.solicitacao')->with('html', $html);
