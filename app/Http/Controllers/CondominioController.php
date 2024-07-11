@@ -23,6 +23,14 @@ class CondominioController extends Controller
 
         return Inertia('Condominios', compact('condominios'));
     }
+    public function condominiosManutencista()
+    {
+
+        $condominios = Condominio::with('solicitacoesAbertas','unidades','solicitacoesFechada','solicitacoesAndamento')->orderBy('nome', 'asc')->paginate(10);
+
+
+        return Inertia('manutencao/AllCondominios', compact('condominios'));
+    }
 
     public function Solicitacao($condominio)
     {

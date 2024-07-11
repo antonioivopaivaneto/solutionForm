@@ -28,6 +28,9 @@ class Solicitacao extends Model
     public function fotos(){
         return $this->hasMany(Foto::class,'solicitacao_id','id');
     }
+    public function resposta(){
+        return $this->hasMany(RespostaSolicitacao::class,'solicitacao_id','id');
+    }
 
     public function unidade()
     {

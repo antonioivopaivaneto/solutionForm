@@ -30,18 +30,21 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-                                <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                                <NavLink v-if="$page.props.auth.user.role=='admin'"  :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink :href="route('condominios.index')" :active="route().current('condominios')">
+                                <NavLink v-if="$page.props.auth.user.role=='admin'" :href="route('condominios.index')" :active="route().current('condominios')">
                                      Condominios
                                 </NavLink>
-                                <NavLink :href="route('historico')" :active="route().current('historico')">
+                                <NavLink v-if="$page.props.auth.user.role=='manutence'"  :href="route('condominios.manutencao')" :active="route().current('condominios.manutencao')">
+                                     Condominios
+                                </NavLink>
+                                <NavLink v-if="$page.props.auth.user.role=='admin'"  :href="route('historico')" :active="route().current('historico')">
                                    Historico
                                 </NavLink>
 
-                                <NavLink :href="route('register')" :active="route().current('register')">
-                                    Cadastrar ADM
+                                <NavLink v-if="$page.props.auth.user.role=='admin'"  :href="route('users')" :active="route().current('users')">
+                                    Usuarios
                                 </NavLink>
                             </div>
                         </div>
@@ -129,6 +132,7 @@ const showingNavigationDropdown = ref(false);
                         <NavLink :href="route('condominios.create')" :active="route().current('condominios')">
                                      Condominios
                                 </NavLink>
+
                         <NavLink :href="route('historico')" :active="route().current('historico')">
                                     Historico
                                 </NavLink>

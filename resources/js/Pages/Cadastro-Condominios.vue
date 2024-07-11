@@ -119,7 +119,7 @@ watch(() => form.qtd_total, (newVal) =>{
 
 
 
-                            <div v-if="true"
+                            <div v-if="msgSucesso"
                                 class="bg-green-100 border  w-96 border-green-400 text-green-700 px-3 py-2 rounded relative"
                                 role="alert">
                                 <strong class="font-bold">Sucesso! <Link :href="route('condominios.index')"> ver condominios</Link> </strong>

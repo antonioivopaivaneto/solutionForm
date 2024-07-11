@@ -8,9 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<!--<body class="font-sans antialiased " onload="window.print()">-->
+<body class="font-sans antialiased " onload="window.print()">
 
-<body class="font-sans antialiased p-5 ">
 
     <div class="flex   ">
         <div class="">
@@ -82,7 +81,7 @@
             <div class="flex space-x-4">
                 @foreach ($solicitacao->fotos->slice(0, 3) as $foto)
                     <a href="{{ asset($foto->foto) }}" target="_blank">
-                        <img src="{{ asset($foto->foto) }}" width="200px" class="rounded-sm" alt="">
+                        <img src="{{ asset($foto->foto) }}" class="rounded-sm h-36 w-36" alt="">
                     </a>
                 @endforeach
             </div>

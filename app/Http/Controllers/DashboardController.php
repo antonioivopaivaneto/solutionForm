@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -16,6 +17,11 @@ class DashboardController extends Controller
      */
     public function index(Request $request )
     {
+
+        if(Auth::user()->role ==='manutence'){
+            return redirect()->route('condominios.manutencao');
+
+        }
 
         $condominios = DB::table('solicitacoes')
     ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
@@ -164,4 +170,5 @@ if($request->pesquisa){
     {
         //
     }
+
 }

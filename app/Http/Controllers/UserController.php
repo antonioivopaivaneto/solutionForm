@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Condominio;
 use App\Models\User;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
     //
+
+    public function index(){
+
+        $users = User::paginate();
+        return Inertia::render('Users',compact('users'));
+
+    }
 
     public function store(Request $request){
         $request->validate([

@@ -20,4 +20,16 @@ class Condominio extends Model
     {
         return $this->hasMany(Solicitacao::class);
     }
+    public function solicitacoesAbertas()
+    {
+        return $this->hasMany(Solicitacao::class)->where('status', 0);
+    }
+    public function solicitacoesAndamento()
+    {
+        return $this->hasMany(Solicitacao::class)->where('status', 2);
+    }
+    public function solicitacoesFechada()
+    {
+        return $this->hasMany(Solicitacao::class)->where('status', 1);
+    }
 }

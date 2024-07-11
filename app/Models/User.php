@@ -54,4 +54,8 @@ class User extends Authenticatable
 
 
     }
+
+    public function resposta(){
+        return $this->hasMany(RespostaSolicitacao::class,'resposta_id','id');
+    }
 }

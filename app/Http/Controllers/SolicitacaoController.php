@@ -23,7 +23,6 @@ class SolicitacaoController extends Controller
     public function index()
     {
         return Inertia::render('Solicitacao');
-
     }
 
     /**
@@ -46,17 +45,17 @@ class SolicitacaoController extends Controller
     {
 
 
-       $request->validate([
-        'assunto' => 'required|string',
-        'telefone' => 'required|string',
-        'solicitacao' => 'required|string',
-        'nome' => 'required|string',
-        'email' => 'required|email',
-        'status' => 'nullable',
-        'local' => 'nullable',
-       ]);
+        $request->validate([
+            'assunto' => 'required|string',
+            'telefone' => 'required|string',
+            'solicitacao' => 'required|string',
+            'nome' => 'required|string',
+            'email' => 'required|email',
+            'status' => 'nullable',
+            'local' => 'nullable',
+        ]);
 
-       /*
+        /*
 
        if($request->file('foto')){
 
@@ -67,46 +66,44 @@ class SolicitacaoController extends Controller
        }
 
        */
-      //dd($request->all());
+        //dd($request->all());
 
-       $solicitacao = new Solicitacao([
-        'assunto' => $request->input('assunto'),
-        'local' => $request->input('local'),
-        'solicitacao' => $request->input('solicitacao'),
-        'condominio_id' => $request->input('condominio'),
-        'unidade_id' => (int) $request->input('unidade'),
-        'nome' => $request->input('nome'),
-        'telefone' => $request->input('telefone'),
-        'email' => $request->input('email'),
-        'proprietario' => $request->input('proprietario'),
-        'status' =>  '0', // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
-       ]);
+        $solicitacao = new Solicitacao([
+            'assunto' => $request->input('assunto'),
+            'local' => $request->input('local'),
+            'solicitacao' => $request->input('solicitacao'),
+            'condominio_id' => $request->input('condominio'),
+            'unidade_id' => (int) $request->input('unidade'),
+            'nome' => $request->input('nome'),
+            'telefone' => $request->input('telefone'),
+            'email' => $request->input('email'),
+            'proprietario' => $request->input('proprietario'),
+            'status' =>  '0', // Salva o arquivo na pasta 'uploads' (você pode ajustar conforme necessário)
+        ]);
 
-       $solicitacao->save();
+        $solicitacao->save();
 
-          // Manipulação do upload das fotos
-    if ($request->hasFile('foto')) {
-        foreach ($request->file('foto') as $file) {
-            $fotoPath = $file->store('uploads');
-            $foto = new Foto([
-                'foto' => $fotoPath,
-                'solicitacao_id' => $solicitacao->id,
-            ]);
-            $foto->save();
+        // Manipulação do upload das fotos
+        if ($request->hasFile('foto')) {
+            foreach ($request->file('foto') as $file) {
+                $fotoPath = $file->store('uploads');
+                $foto = new Foto([
+                    'foto' => $fotoPath,
+                    'solicitacao_id' => $solicitacao->id,
+                ]);
+                $foto->save();
+            }
         }
-    }
-      //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
+        //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
 
-      //$emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
-     // dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
-
+        //$emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
+        // dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
 
 
 
 
-       return redirect()->route('solicitar', $request->input('solicitacao'));
 
-
+        return redirect()->route('solicitar', $request->input('solicitacao'));
     }
 
     public function showImage($filename)
@@ -119,7 +116,6 @@ class SolicitacaoController extends Controller
         }
 
         return response()->file($path);
-
     }
 
     /**
@@ -130,12 +126,12 @@ class SolicitacaoController extends Controller
      */
     public function show($id)
     {
-        $solicitacao = Solicitacao::where('id',$id)->with('fotos', 'unidade', 'condominio')->first();
+        $solicitacao = Solicitacao::where('id', $id)->with('fotos', 'unidade', 'condominio','resposta.user','resposta.fotos')->first();
 
 
         $unidade = Unidade::find($solicitacao->unidade_id);
         $condominio = Condominio::find($solicitacao->condominio_id);
-        return Inertia::render('Solicitacao-Show',compact('solicitacao','condominio','unidade'));
+        return Inertia::render('Solicitacao-Show', compact('solicitacao', 'condominio', 'unidade'));
     }
 
     /**
@@ -160,45 +156,39 @@ class SolicitacaoController extends Controller
     {
         //
     }
-    public function concluirSolicitacao( $id)
+    public function concluirSolicitacao($id)
     {
         $solicitacao = Solicitacao::find($id);
 
-        if($solicitacao){
+        if ($solicitacao) {
             $solicitacao->status = 1;
             $solicitacao->save();
-
-
         }
 
 
         return redirect()->back();
     }
-    public function reabrirSolicitacao( $id)
+    public function reabrirSolicitacao($id)
     {
         $solicitacao = Solicitacao::find($id);
 
-        if($solicitacao){
+        if ($solicitacao) {
             $solicitacao->status = 0;
             $solicitacao->save();
-
-
         }
 
 
         return redirect()->back();
     }
-    public function atualizarStatus(Request $request )
+    public function atualizarStatus(Request $request)
     {
 
 
         $solicitacao = Solicitacao::find($request->id);
 
-        if($solicitacao){
+        if ($solicitacao) {
             $solicitacao->status = $request->status;
             $solicitacao->save();
-
-
         }
 
 
@@ -218,8 +208,9 @@ class SolicitacaoController extends Controller
         $solicitacao = Solicitacao::find($id);
 
 
-        if($solicitacao){
+        if ($solicitacao) {
 
+            $solicitacao->resposta()->delete();
             $imagePath = $solicitacao->foto;
 
             $solicitacao->delete();
@@ -227,9 +218,22 @@ class SolicitacaoController extends Controller
             if ($imagePath && file_exists($imagePath)) {
                 unlink($imagePath);
             }
-
         }
 
         return redirect()->route('dashboard');
+    }
+
+
+    public function solicitacoesManutencao($id)
+    {
+        $query = Solicitacao::query();
+
+        $query->where('condominio_id', $id);
+        $query->with('fotos', 'unidade', 'condominio');
+
+
+        $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        return Inertia('manutencao/AllSolicitacoes', compact('solicitacoes'));
     }
 }
