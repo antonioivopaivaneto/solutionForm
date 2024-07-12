@@ -252,13 +252,7 @@ function formatarNumero(telefone) {
                             </div>
                         </div>
                     </div>
-
-
-
-
                     <hr>
-
-
                     <div class="flex flex-row-reverse mx-5">
                         <div v-if="msgSucesso"
                             class="bg-green-100 border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
@@ -279,52 +273,46 @@ function formatarNumero(telefone) {
 
                     <div class="relative overflow-x-auto sm:rounded-lg p-5">
                         <div class="bg-white p-4 rounded shadow mb-4">
-                            <div class="grid grid-cols-2">
 
-                                <div class="">
-                                    <h1 class="font-extrabold text-gray-500 uppercase "> {{ solicitacao.assunto }}</h1>
-
-
-                                    <div class="font-bold text-gray-700">
-                                        {{ solicitacao.local }}
-                                    </div>
-                                    <div class="">
-
-                                        <div>
-                                            {{ solicitacao.solicitacao }}
-                                        </div>
-
-                                    </div>
-                                    <div class="font-bold text-gray-700">
-                                        {{ formatarData(solicitacao.created_at) }}
-                                    </div>
-
-                                </div>
-
-                                <div class="">
-                                    <h1 class="font-extrabold text-gray-500 uppercase ">Solicitante</h1>
-                                    <div class="font-bold text-gray-700">
-                                        {{ solicitacao.nome }}
-                                    </div>
-                                    <div class="font-bold text-gray-700">
-                                        <a class="cursor-pointer hover:underline"
-                                            :href="'mailto:' + solicitacao.email + '?subject=Referente a ' + solicitacao.assunto">
-                                            {{ solicitacao.email }}
-                                        </a>
-                                    </div>
-                                    <div>
-                                        <a class="cursor-pointer hover:underline text-green-700" target="_blank"
+                            <table class="border">
+                                <tr class="border ">
+                                    <td class="font-extrabold p-1">condominio:</td>
+                                    <td class="border  p-1"> {{ condominio.nome }}</td>
+                                    <td class="border w-ful text-center p-1 "> {{ solicitacao.assunto }}</td>
+                                </tr>
+                                <tr class="border ">
+                                    <td class="font-extrabold p-1">Nome:</td>
+                                    <td class="border p-1 "> {{ solicitacao.nome }}</td>
+                                    <td class="border text-center p-1 "> Mensagem</td>
+                                </tr>
+                                <tr class="border ">
+                                    <td class="font-extrabold p-1">Telefone:</td>
+                                    <td class="border p-1 "><a class="cursor-pointer hover:underline text-green-700" target="_blank"
                                             :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">
                                             {{ solicitacao.telefone }}
-                                        </a>
-                                    </div>
+                                        </a></td>
+                                        <td rowspan="4" style="width: 100%;" class="border w-96  text-center p-1 "> {{ solicitacao.solicitacao }}</td>
 
-                                </div>
-                            </div>
+                                </tr>
+                                <tr class="border ">
+                                    <td class="font-extra p-1">Emails:</td>
+                                    <td class="border p-1"> {{ solicitacao.email }}</td>
+                                </tr>
+                                <tr class="border ">
+                                    <td class="font-extra p-1">Unid:</td>
+                                    <td class="border p-1 "> {{ solicitacao.unidade.nome }}</td>
+                                </tr>
+                                <tr class="border ">
+                                    <td class="font-extra p-1">data e hora:</td>
+                                    <td class="border p-1"> {{ formatarData(solicitacao.created_at) }}
+                                    </td>
+                                </tr>
+                            </table>
 
 
-                            <div class="mt-3" v-if="solicitacao.fotos">
-                                <h1 class="font-extrabold text-gray-500 uppercase "> Fotos:</h1>
+
+
+                            <div class="mt-3 flex justify-end" v-if="solicitacao.fotos">
                                 <div class="flex flex-row">
                                     <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
                                         class="flex-shrink-0  mr-3">
@@ -340,13 +328,11 @@ function formatarNumero(telefone) {
                             </div>
 
                             <div>
-
-
-
-                                <div class="mt-5">
-                                    <div class="bg-gray-300 rounded p-5" v-for=" resposta in solicitacao.resposta" :key="resposta.id">
+                                <div class="mt-5" v-for=" resposta in solicitacao.resposta" :key="resposta.id">
+                                    <div class="bg-gray-100 rounded p-1 border border-gray-700 ">
                                         <div class="flex justify-between">
-                                            <h1 class="mb-5">Resposta: </h1>
+                                            <div class="font-extrabold">{{ resposta.user.name }}, {{ resposta.user.role
+                                                }}</div>
 
                                             <a @click="removerResposta(resposta.id)"
                                                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">
@@ -362,10 +348,10 @@ function formatarNumero(telefone) {
                                         </div>
 
 
-                                        <div class="" >
-                                            <div class="">{{ resposta.user.name }}, {{ resposta.user.role }}</div>
-                                            <div class="my-4">{{ resposta.descricao }}</div>
-                                            <div class="">{{ formatarData(resposta.created_at) }}</div>
+                                        <div class="">
+                                            <div class="">Resposta : </div>
+                                            <div class="my-2">{{ resposta.descricao }}</div>
+                                            <div class="flex justify-end">{{ formatarData(resposta.created_at) }}</div>
                                             <div class="mt-3" v-if="solicitacao.resposta.foto">
                                                 <strong>Fotos Resposta:</strong>
                                                 <div class="flex flex-row">
@@ -387,18 +373,19 @@ function formatarNumero(telefone) {
                                         </div>
 
                                     </div>
-                                    <div class="mt-3">
-                                        <h1 class="font-extrabold text-gray-500 uppercase "> Status:</h1>
-                                        <select v-model="solicitacao.status"
-                                            @change="atualizarStatus(solicitacao.id, $event.target.value)"
-                                            class="border-gray-300 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm">
-                                            <option :value="0" :selected="solicitacao.status == 0">Aberto</option>
-                                            <option :value="2" :selected="solicitacao.status == 2">Andamento</option>
-                                            <option :value="1" :selected="solicitacao.status == 1">Concluído</option>
-                                        </select>
-                                    </div>
 
 
+                                </div>
+
+                                <div class="mt-3">
+                                    <h1 class="font-extrabold text-gray-500 uppercase "> Status:</h1>
+                                    <select v-model="solicitacao.status"
+                                        @change="atualizarStatus(solicitacao.id, $event.target.value)"
+                                        class="border-gray-300 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm">
+                                        <option :value="0" :selected="solicitacao.status == 0">Aberto</option>
+                                        <option :value="2" :selected="solicitacao.status == 2">Andamento</option>
+                                        <option :value="1" :selected="solicitacao.status == 1">Concluído</option>
+                                    </select>
                                 </div>
 
 

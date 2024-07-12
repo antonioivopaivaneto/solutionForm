@@ -10,34 +10,24 @@
 
 <body class="font-sans antialiased " onload="window.print()">
 
-
     <div class="flex   ">
         <div class="">
             <h1 class="text-2xl font-bold uppercase  text-white bg-black p-5">Solicitação -
                 {{ $solicitacao->condominio->nome }} </h1>
-
             <div class="w-full  text-sm text-gray-800  border-r-2 border-l-2 border-b-2 border-black p-4">
                 <h2 class="text-gray-600 text-sm font-bold mb-4">HORÁRIO E LOCAL</h2>
-                <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->created_at->format('d/m/Y, H:i') }}
-                    <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->condominio->nome }}
-                    </div>
+                <div class="text-gray-800 text-sm font-semibold border-b-2">{{ $solicitacao->created_at->format('d/m/Y, H:i') }}
                     <h2 class="text-gray-600 text-sm font-bold mb-4 mt-5 uppercase">{{ $solicitacao->assunto }}</h2>
                         <div class="text-gray-800 text-sm font-semibold">{{ $solicitacao->solicitacao }}
                         </div>
-
-
-
                 </div>
-
 
                 <div class="mt-5">
                     <h2 class="text-gray-600 text-sm font-bold  uppercase ">Solicitante</h2>
                     <div class="font-semibold ">{{ $solicitacao->nome }}</div>
                     <div class="font-semibold"> {{ $solicitacao->unidade->nome }}</div>
                     <div class="font-semibold"> {{ $solicitacao->telefone }}</div>
-
                 </div>
-
 
             </div>
         </div>

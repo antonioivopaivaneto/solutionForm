@@ -43,7 +43,7 @@ class RespostaSolicitacaoController extends Controller
                 $fotoPath = $file->store('uploads');
                 $foto = new FotoResposta([
                     'foto' => $fotoPath,
-                    'solicitacao_id' => $resposta->id,
+                    'resposta_id' => $resposta->id,
                 ]);
                 $foto->save();
             }
