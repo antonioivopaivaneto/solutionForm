@@ -12,6 +12,17 @@ import {
   LinearScale,ArcElement,
 } from 'chart.js';
 import { Pie, Bar } from 'vue-chartjs';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
+import Multiselect from '@vueform/multiselect';
+import '@vueform/multiselect/themes/default.css';
+
+const props = defineProps({ condominios: Object });
+
+
+const condominios = props.condominios;
+
 
 
  const dataBar = {
@@ -62,12 +73,7 @@ const options = {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// Initialize showMore for each solicitacao
-onMounted(() => {
-    solicitacoes.data.forEach(solicitacao => {
-        solicitacao.showMore = false;
-    });
-});
+
 
 const msgSucesso = ref(false);
 
@@ -77,6 +83,17 @@ function formatarNumero(telefone) {
     return telefone.replace(/[-()\s]/g, '');
 }
 
+const Datas = ref();
+
+const onSelectUnidade = (value) => {
+    form.unidade = value;
+};
+
+// Converter o array de unidades para um formato adequado para o multiselect
+const condominiosFormatados = condominios.map(condominio => ({
+  value: condominio.id, // Usar o ID como valor
+  label: condominio.nome // Usar o nome como texto exibido
+}));
 </script>
 
 <template>
@@ -84,9 +101,19 @@ function formatarNumero(telefone) {
     <AuthenticatedLayout>
         <div class="py-1">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
-                <div class="w-80">
-                    <div class=" bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-                        Filtro:
+                <div class="">
+                    <div class=" flex gap-5 bg-white border border-gray-200 rounded-lg shadow-sm p-4">
+                     <div class="w-64">
+                        Condominio:  <multiselect v-model="value2" :searchable="true" :options="condominiosFormatados" placeholder="Selecione uma opção"
+    :custom-label="customLabel" @update:modelValue="onSelectUnidade">
+</multiselect>
+                     </div>
+                     <div class="">
+                        Data:  <VueDatePicker       format="dd/MM/yyyy" locale="pt-br" v-model="Datas" range></VueDatePicker>
+                     </div>
+                     <div class="mt-6">
+                     <PrimaryButton  >Buscar</PrimaryButton>
+                     </div>
 
                     </div>
 
@@ -104,7 +131,7 @@ function formatarNumero(telefone) {
                         <div class=" bg-gray-800 text-white p-2 rounded-t mb-2">
                             <h1>Andamentos</h1>
                         </div>
-                        <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center   ">
+                        <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center item mt-14   ">
                             <div class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
                                 <div class="">6</div>
                                 <div class="">Andamento</div>

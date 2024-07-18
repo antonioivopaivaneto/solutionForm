@@ -35,7 +35,7 @@ Route::post('/resposta/',[RespostaSolicitacaoController::class,'store'])->middle
 Route::get('/resposta/{id}',[RespostaSolicitacaoController::class,'show'])->middleware(['auth'])->name('resposta');
 Route::get('/historico',[DashboardController::class,'Historico'])->middleware(['auth', 'verified'])->name('historico');
 Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/relatorio',[DashboardController::class,'relatorio'])->middleware(['auth', 'verified'])->name('relatorio');
+Route::get('/relatorio/',[DashboardController::class,'relatorio'])->middleware(['auth', 'verified'])->name('relatorio');
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 

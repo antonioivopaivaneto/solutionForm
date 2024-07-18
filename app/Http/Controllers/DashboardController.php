@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Condominio;
 use App\Models\Solicitacao;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -91,8 +92,10 @@ class DashboardController extends Controller
     }
     public function relatorio()
     {
+        $condominios = Condominio::all();
 
-        return Inertia::render('Relatorio');
+
+        return Inertia::render('Relatorio',compact('condominios'));
     }
     public function historico()
     {
