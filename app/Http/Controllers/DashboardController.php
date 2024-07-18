@@ -15,21 +15,20 @@ class DashboardController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request )
+    public function index(Request $request)
     {
 
-        if(Auth::user()->role ==='manutence'){
+        if (Auth::user()->role === 'manutence') {
             return redirect()->route('condominios.manutencao');
-
         }
 
         $condominios = DB::table('solicitacoes')
-    ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
-    ->select('condominios.nome', DB::raw('count(*) as total'))
-    ->groupBy('condominios.nome')
-    ->orderByDesc('total')
-    ->limit(5)
-    ->get();
+            ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
+            ->select('condominios.nome', DB::raw('count(*) as total'))
+            ->groupBy('condominios.nome')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
 
         $assuntos = DB::table('solicitacoes')
@@ -39,53 +38,47 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
-       $moradores = DB::table('solicitacoes')
-    ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
-    ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
-    ->groupBy('unidades.nome', 'solicitacoes.nome')
-    ->orderByDesc('total')
-    ->limit(5)
-    ->get();
+        $moradores = DB::table('solicitacoes')
+            ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
+            ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
+            ->groupBy('unidades.nome', 'solicitacoes.nome')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
-      // Total de solicitações por status
-      $totalPorStatus = Solicitacao::select('status', DB::raw('count(*) as total'))
-      ->groupBy('status')
-      ->get();
-
-
-
-// Iniciando a consulta das solicitações
-$query = Solicitacao::query();
-
-// Aplicando filtro por status (aberto ou em andamento)
-$query->where(function ($query) {
-    $query->where('status', 0)
-          ->orWhere('status', 2);
-});
-
-// Carregando relacionamentos
-$query->with('fotos', 'unidade', 'condominio');
-
-// Verificando e aplicando filtros adicionais, se existirem
-if ($request->filtro && $request->order) {
-
-    $filtro = $request->filtro;
-    $order = $request->order;
-
-        $query->orderBy($filtro,$order);
-
-
-}
-
-if($request->pesquisa){
-    $query->where('nome', $request->pesquisa);
-
-}
+        // Total de solicitações por status
+        $totalPorStatus = Solicitacao::select('status', DB::raw('count(*) as total'))
+            ->groupBy('status')
+            ->get();
 
 
 
+        // Iniciando a consulta das solicitações
+        $query = Solicitacao::query();
 
-    $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
+        // Aplicando filtro por status (aberto ou em andamento)
+        $query->where(function ($query) {
+            $query->where('status', 0)
+                ->orWhere('status', 2);
+        });
+
+        // Carregando relacionamentos
+        $query->with('fotos', 'unidade', 'condominio');
+
+        // Verificando e aplicando filtros adicionais, se existirem
+        if ($request->filtro && $request->order) {
+
+            $filtro = $request->filtro;
+            $order = $request->order;
+
+            $query->orderBy($filtro, $order);
+        }
+
+        if ($request->pesquisa) {
+            $query->where('nome', $request->pesquisa);
+        }
+
+        $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
 
 
         return Inertia::render('Dashboard', [
@@ -96,12 +89,17 @@ if($request->pesquisa){
             'totalPorStatus' => $totalPorStatus
         ]);
     }
+    public function relatorio()
+    {
+
+        return Inertia::render('Relatorio');
+    }
     public function historico()
     {
 
         $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')->where('status', '=', 1)
-        ->with('fotos', 'unidade', 'condominio')
-        ->paginate(15);
+            ->with('fotos', 'unidade', 'condominio')
+            ->paginate(15);
         return Inertia::render('Historico', ['solicitacoes' => $solicitacoes]);
     }
 
@@ -170,5 +168,4 @@ if($request->pesquisa){
     {
         //
     }
-
 }

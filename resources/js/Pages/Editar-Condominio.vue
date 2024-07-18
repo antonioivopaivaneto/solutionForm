@@ -289,33 +289,37 @@ const copiarImagem = () => {
 
             <div class="flex flex-row ">
 
-                <div class=" max-w-md p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg sm:p-8 ">
+                <div class=" p-4 mx-auto bg-white border border-gray-200 rounded-lg shadow-lg ">
 
                     <Head title="Editar condominos" />
                     <h2 class="ml-7">QRCODE EXCLUSIVO</h2>
+                    <div class="flex">
 
-                    <figure class="qrcode" id="qrcode">
+                    <figure class="qrcode mx-auto text-center" id="qrcode">
                         <vue-qrcode id="qrcode" :value="urlQRCode" ref="qrcode" tag="svg" :options="{
                     errorCorrectionLevel: 'Q',
                     width: 300,
                 }"></vue-qrcode>
                         <img class="qrcode__image" src="./../../img/Camada 2.png" alt="Chen Fengyuan" />
                     </figure>
+                </div>
 
                     <div class="flex">
 
-                    <a :href="route('imprimir',condominio.id)"  class="ml-7">
-                        Imprimir
+                        <a  target="&_blank":href="route('imprimir', condominio.id)"
+                            class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
 
-                    </a>
-                    <PrimaryButton @click="downloadQRCode" class="ml-7">
-                        Download
+                            Imprimir
 
-                    </PrimaryButton>
-                    <PrimaryButton  @click="copiarImagem" class="ml-7">
-                        Copiar Link
+                        </a>
+                        <PrimaryButton @click="downloadQRCode" class="ml-1">
+                            Download
 
-                    </PrimaryButton>
+                        </PrimaryButton>
+                        <PrimaryButton @click="copiarImagem" class="ml-1">
+                            Copiar Link
+
+                        </PrimaryButton>
                     </div>
                 </div>
 
