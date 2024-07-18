@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Condominio;
 use App\Models\Solicitacao as ModelsSolicitacao;
 use App\Models\Unidade;
@@ -18,7 +19,7 @@ class CondominioController extends Controller
     public function index()
     {
 
-        $condominios = Condominio::with('solicitacoes','unidades')->orderBy('nome', 'asc')->paginate(10);
+        $condominios = Condominio::with('solicitacoes', 'unidades')->orderBy('nome', 'asc')->paginate(10);
 
 
         return Inertia('Condominios', compact('condominios'));
@@ -26,7 +27,7 @@ class CondominioController extends Controller
     public function condominiosManutencista()
     {
 
-        $condominios = Condominio::with('solicitacoesAbertas','unidades','solicitacoesFechada','solicitacoesAndamento')->orderBy('nome', 'asc')->paginate(10);
+        $condominios = Condominio::with('solicitacoesAbertas', 'unidades', 'solicitacoesFechada', 'solicitacoesAndamento')->orderBy('nome', 'asc')->paginate(10);
 
 
         return Inertia('manutencao/AllCondominios', compact('condominios'));
@@ -36,6 +37,19 @@ class CondominioController extends Controller
     {
         $condominio = Condominio::with('unidades')->find($condominio);
         return Inertia::render('Solicitacao-Condominio', compact('condominio'));
+        //
+    }
+
+    public function customPage($condominio)
+    {
+
+        $condominio = Condominio::with('unidades')->find($condominio);
+
+        $qrcodeUrl = route('solicitar',$condominio->id); // Substitua 'solicitacao.show' pela sua rota
+        $qrcode = QrCode::size(200)->generate($qrcodeUrl); // Ajuste o tamanho conforme necessário
+
+        return view('condominio.printpage', compact('condominio', 'qrcode'));
+
         //
     }
 
@@ -69,7 +83,7 @@ class CondominioController extends Controller
             'unidades' => 'required|string',
             'endereco' => 'required|string',
             'cnpj' => 'required|string|unique:condominios,cnpj',
-        ],[
+        ], [
             'nome.required' => 'O campo nome é obrigatório.',
             'nome.string' => 'O campo nome deve ser uma string.',
             'bloco.string' => 'O campo bloco deve ser uma string.',

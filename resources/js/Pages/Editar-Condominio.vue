@@ -304,6 +304,10 @@ const copiarImagem = () => {
 
                     <div class="flex">
 
+                    <a :href="route('imprimir',condominio.id)"  class="ml-7">
+                        Imprimir
+
+                    </a>
                     <PrimaryButton @click="downloadQRCode" class="ml-7">
                         Download
 

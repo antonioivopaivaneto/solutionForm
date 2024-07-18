@@ -35,6 +35,7 @@ Route::post('/resposta/',[RespostaSolicitacaoController::class,'store'])->middle
 Route::get('/resposta/{id}',[RespostaSolicitacaoController::class,'show'])->middleware(['auth'])->name('resposta');
 Route::get('/historico',[DashboardController::class,'Historico'])->middleware(['auth', 'verified'])->name('historico');
 Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/relatorio',[DashboardController::class,'relatorio'])->middleware(['auth', 'verified'])->name('relatorio');
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 
@@ -61,6 +62,7 @@ Route::delete('unidades/remover-massa/{unidades}', [UnidadeController::class,'de
 Route::delete('unidades/destroyAll/{condominio}', [UnidadeController::class,'destroyAll'])->name('unidades.destroyAll')->middleware(['auth']);
 Route::resource('unidades', UnidadeController::class)->middleware(['auth']);
 Route::get('/condominio/{id}/solicitacao', [CondominioController::class, 'solicitacao']);
+Route::get('/condominio/{id}/imprimir', [CondominioController::class, 'customPage'])->name('imprimir');
 Route::get('/condominios-manutencao', [CondominioController::class, 'condominiosManutencista'])->name('condominios.manutencao');
 
 require __DIR__.'/auth.php';

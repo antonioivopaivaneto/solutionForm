@@ -312,10 +312,10 @@ function formatarNumero(telefone) {
 
 
 
-                            <div class="mt-3 flex justify-end" v-if="solicitacao.fotos">
+                            <div class="mt-1 flex justify-end" v-if="solicitacao.fotos">
                                 <div class="flex flex-row">
                                     <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
-                                        class="flex-shrink-0  mr-3">
+                                        class="flex-shrink-0  ml-1">
                                         <a class="cursor-pointer" :href="folderImg + fotos.foto" target="_blank">
                                             <img :src="folderImg + fotos.foto" class="rounded-sm w-36 h-36  " alt="">
                                         </a>
