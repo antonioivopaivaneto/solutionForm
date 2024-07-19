@@ -107,26 +107,64 @@ class DashboardController extends Controller
         $dataFinal = $request->data[1];
 
         $respostas = Retorno::whereBetween('data',[$dataInicio,$dataFinal])->get();
+        $solicitacoes = Solicitacao::whereBetween('created_at',[$dataInicio,$dataFinal])->get();
+
         $canais = [
             'Email'=>0,
             'Whatsapp'=>0,
             'Telefone'=>0,
+        ];
+        $status = [
+            '0'=>0,
+            '1'=>0,
+            '2'=>0,
         ];
 
         foreach ($respostas as $resposta){
             if(isset($canais[$resposta->canal])){
                 $canais[$resposta->canal]++;
             }
+            if(isset($status[$resposta->status])){
+                $status[$resposta->status]++;
+            }
 
 
         }
+        foreach ($solicitacoes as $solicitacao){
 
-        //dd($canais);
+            if(isset($status[$solicitacao->status])){
+                $status[$solicitacao->status]++;
+            }
+
+        }
+
+        $assuntos = DB::table('solicitacoes')
+        ->select('assunto', DB::raw('count(*) as total'))
+        ->groupBy('assunto')
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get();
+
+        $locais = DB::table('solicitacoes')
+        ->select('local', DB::raw('count(*) as total'))
+        ->groupBy('local')
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get();
+
+        $unidades = DB::table('solicitacoes')
+        ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
+        ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
+        ->groupBy('unidades.nome', 'solicitacoes.nome')
+        ->orderByDesc('total')
+        ->limit(5)
+        ->get();
+
 
         $condominios = Condominio::all();
 
 
-        return Inertia::render('Relatorio',compact('condominios','respostas','canais'));
+        return Inertia::render('RelatorioCompleto',compact('locais','unidades','condominios','respostas','canais','status','assuntos'));
     }
     public function historico()
     {

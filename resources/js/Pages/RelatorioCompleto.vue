@@ -18,7 +18,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 
-const props = defineProps({ condominios: Object, canais: Array });
+const props = defineProps({ condominios: Object, canais: Array , status: Array,assuntos: Array,unidades:Array,locais:Array});
 
 
 const condominios = props.condominios;
@@ -34,14 +34,12 @@ const submit = () => {
 }
 
 const dataBar = {
-    labels: [
-
-    ],
+    labels:props.locais.map(item => item.local),
     datasets: [
         {
             label: 'Locais',
             backgroundColor: '#f87979',
-            data: []
+            data:props.locais.map(item => item.total)
         }
     ]
 }
@@ -52,11 +50,20 @@ const optionsBar = {
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 const data = {
-    labels: [],
+    labels: props.assuntos.map(item => item.assunto),
     datasets: [
         {
-            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16'],
-            data: [40, 20, 80, 10]
+            backgroundColor: ['#41B883', '#E46651', '#00D8FF', '#DD1B16', '#ff0'],
+            data: props.assuntos.map(item => item.total)
+        }
+    ]
+};
+const dataUnidades = {
+    labels: props.unidades.map(item => item.unidade_nome),
+    datasets: [
+        {
+            backgroundColor: ['#ff5733', '#c70039', '#900c3f', '#581845', '#28b463'],
+            data: props.unidades.map(item => item.total)
         }
     ]
 };
@@ -117,6 +124,9 @@ const form = useForm({
                     </div>
 
                 </div>
+
+
+
                 <div class="grid grid-cols-3 gap-5 mt-5">
                     <div class=" bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div class=" bg-gray-800 text-white p-2 rounded-t">
@@ -133,21 +143,22 @@ const form = useForm({
                         <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center item mt-14   ">
                             <div
                                 class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ status[2] }}</div>
                                 <div class="">Andamento</div>
                             </div>
                             <div
                                 class="bg-green-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ status[1] }}</div>
                                 <div class="">Finalizados</div>
                             </div>
                             <div
                                 class="bg-red-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ status[0] }}</div>
                                 <div class="">Aberto</div>
                             </div>
                         </div>
                     </div>
+
 
                     <div class=" bg-white border border-gray-200 rounded-lg shadow-sm">
                         <div class=" bg-gray-800 text-white p-2 rounded-t">
@@ -164,7 +175,7 @@ const form = useForm({
                             <h1>Unidades </h1>
                         </div>
                         <div>
-                            <Pie :data="data" :options="options" />
+                            <Pie :data="dataUnidades" :options="options" />
                         </div>
                     </div>
 
@@ -175,17 +186,17 @@ const form = useForm({
                         <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center item mt-14   ">
                             <div
                                 class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ canais.Email }}</div>
                                 <div class="">Email</div>
                             </div>
                             <div
                                 class="bg-green-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ canais.Whatsapp }}</div>
                                 <div class="">Whatsapp</div>
                             </div>
                             <div
                                 class="bg-red-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
-                                <div class="">0</div>
+                                <div class="">{{ canais.Telefone }}</div>
                                 <div class="">Telefone</div>
                             </div>
                         </div>
