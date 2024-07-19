@@ -17,20 +17,26 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
+import moment from 'moment';
 
-const props = defineProps({ condominios: Object, canais: Array , status: Array,assuntos: Array,unidades:Array,locais:Array});
+const props = defineProps({assunto:'',datas:Array, condominios: Object,condominio: Array, canais: Array , status: Array,assuntos: Array,unidades:Array,locais:Array});
 
 
 const condominios = props.condominios;
+const condominio = props.condominio;
 
 const submit = () => {
     form.data = Datas.value
-    router.post('/relatorioShow',form, {
+    router.get('/relatorioShow',form, {
         preserveScroll: true,
         onSuccess: () => {
 
         },
     })
+}
+
+const formatDate = (dateString) => {
+    return moment(dateString).format('D/M/YYYY');
 }
 
 const dataBar = {
@@ -135,6 +141,10 @@ const assuntosFormatados = props.assuntos.map(assunto => ({
                         </div>
 
                     </div>
+
+                    <h1 class="font-bold text-xl mt-2">{{ condominio.nome }}</h1>
+                    <h1 class="font-bold text-xl mt-2"> de {{formatDate( datas[0]) }} até {{formatDate(datas[1]) }}</h1>
+                    <h1 class="font-bold text-xl mt-2">{{ assunto }}</h1>
 
                 </div>
 

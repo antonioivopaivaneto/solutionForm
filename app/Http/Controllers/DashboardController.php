@@ -108,12 +108,13 @@ class DashboardController extends Controller
     }
     public function relatorioCompleto(Request $request)
     {
-        $condominioId = $request->solicitacao_id;
+        $condominioId = $request->condominio_id;
         $dataInicio = $request->data[0];
         $dataFinal = $request->data[1];
         $assunto = $request->assunto;
 
-        // Filtragem condicional para o assunto e condomínio
+        $datas = [$dataInicio, $dataFinal];
+                // Filtragem condicional para o assunto e condomínio
         $queryRespostas = Retorno::whereBetween('data', [$dataInicio, $dataFinal]);
 
         $querySolicitacoes = Solicitacao::whereBetween('created_at', [$dataInicio, $dataFinal]);
@@ -174,6 +175,7 @@ class DashboardController extends Controller
             ->get();
 
         $condominios = Condominio::all();
+        $condominio = Condominio::find($condominioId)->first();
 
         // Atualiza os dados do relatório com as respostas, canais, status e assuntos
         $canais = [
@@ -201,7 +203,12 @@ class DashboardController extends Controller
             }
         }
 
-        return Inertia::render('RelatorioCompleto', compact('locais', 'unidades', 'condominios', 'respostas', 'canais', 'status', 'assuntos'));
+        if($assunto==='' ){
+            $assunto ='Todos Assuntos';
+
+        }
+
+        return Inertia::render('RelatorioCompleto', compact('assunto','datas','condominio','locais', 'unidades', 'condominios', 'respostas', 'canais', 'status', 'assuntos'));
     }
 
 

@@ -25,7 +25,7 @@ const condominios = props.condominios;
 
 const submit = () => {
     form.data = Datas.value
-    router.post('/relatorioShow',form, {
+    router.get('/relatorioShow',form, {
         preserveScroll: true,
         onSuccess: () => {
 
