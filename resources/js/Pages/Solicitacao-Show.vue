@@ -191,7 +191,11 @@ function formatarNumero(telefone) {
     return telefone.replace(/[-()\s]/g, '');
 }
 </script>
+
+
+
 <template>
+
     <AuthenticatedLayout>
 
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
@@ -235,7 +239,8 @@ function formatarNumero(telefone) {
                                         </g>
                                     </svg>
                                 </a>
-                                <a target="&_Blank" :href="'/exportToPdf/' + solicitacao.id" class="mx-4">
+
+                                <button target="&_Blank" onclick="window.print()" class="mx-4">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                         style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
                                         <path
@@ -243,7 +248,7 @@ function formatarNumero(telefone) {
                                         </path>
                                         <path d="M14 10h4v2h-4z"></path>
                                     </svg>
-                                </a>
+                                </button>
                                 <a @click="remover(solicitacao.id)"
                                     class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -339,8 +344,7 @@ function formatarNumero(telefone) {
                                 <div class="mt-5" v-for=" resposta in solicitacao.resposta" :key="resposta.id">
                                     <div class="bg-gray-100 rounded p-1 border border-gray-700 ">
                                         <div class="flex justify-between">
-                                            <div class="font-extrabold">{{ resposta.user.name }}, {{ resposta.user.role
-                                                }}</div>
+                                            <div class="font-extrabold">{{ resposta.user.name }}</div>
 
                                             <a @click="removerResposta(resposta.id)"
                                                 class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">
@@ -360,11 +364,12 @@ function formatarNumero(telefone) {
                                             <div class="">Resposta : </div>
                                             <div class="my-2">{{ resposta.descricao }}</div>
                                             <div class="flex justify-end">{{ formatarData(resposta.created_at) }}</div>
-                                            <div class="mt-3" v-if="solicitacao.resposta.foto">
+                                            <div class="mt-3" >
                                                 <strong>Fotos Resposta:</strong>
                                                 <div class="flex flex-row">
-                                                    <span v-for="fotos in solicitacao.resposta.fotos" :key="fotos.id"
+                                                    <span v-for="fotos in solicitacao.resposta[0].fotos" :key="fotos.id"
                                                         class="flex-shrink-0  mr-3">
+
                                                         <a class="cursor-pointer" :href="folderImg + fotos.foto"
                                                             target="_blank">
                                                             <img :src="folderImg + fotos.foto"
