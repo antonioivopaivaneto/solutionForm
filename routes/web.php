@@ -30,12 +30,14 @@ Route::get('/', function () {
 });
 Route::post('novoUser', [UserController::class, 'store'])->middleware(['auth'])->name('novoUser');
 
+Route::delete('/retorno-delete/{id}',[SolicitacaoController::class,'Retornodestroy'])->middleware(['auth'])->name('retorno.destroy');
 Route::delete('/resposta-delete/{id}',[RespostaSolicitacaoController::class,'destroy'])->middleware(['auth'])->name('resposta.destroy');
 Route::post('/resposta/',[RespostaSolicitacaoController::class,'store'])->middleware(['auth'])->name('resposta.store');
 Route::get('/resposta/{id}',[RespostaSolicitacaoController::class,'show'])->middleware(['auth'])->name('resposta');
 Route::get('/historico',[DashboardController::class,'Historico'])->middleware(['auth', 'verified'])->name('historico');
 Route::get('/dashboard/',[DashboardController::class,'index'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/relatorio/',[DashboardController::class,'relatorio'])->middleware(['auth', 'verified'])->name('relatorio');
+Route::post('/relatorioShow/',[DashboardController::class,'relatorioCompleto'])->middleware(['auth', 'verified'])->name('relatorioShow');
 Route::get('/concluirSolicitacao/{id}',[SolicitacaoController::class,'concluirSolicitacao'])->middleware(['auth', 'verified'])->name('concluirSolicitacao');
 Route::get('/reabrirSolicitacao/{id}',[SolicitacaoController::class,'reabrirSolicitacao'])->middleware(['auth', 'verified'])->name('reabrirSolicitacao');
 
@@ -55,6 +57,7 @@ Route::middleware('auth')->group(function () {
 });
 Route::resource('condominios', CondominioController::class)->middleware(['auth']);
 
+Route::post('retorno',[ SolicitacaoController::class,'retorno'])->middleware(['auth'])->name('retorno');
 Route::put('atualizarStatus',[ SolicitacaoController::class,'atualizarStatus'])->middleware(['auth'])->name('atualizarStatus');
 Route::resource('solicitacao', SolicitacaoController::class)->middleware(['auth']);
 Route::get('solicitacoes-manutencao/{id}',[ SolicitacaoController::class,'solicitacoesManutencao'])->middleware(['auth'])->name('solicitacoes-manutencao');

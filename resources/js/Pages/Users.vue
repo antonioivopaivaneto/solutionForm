@@ -63,12 +63,10 @@ const remover = (id) => {
 }
 
 </script>
-
 <template>
     <AuthenticatedLayout>
-
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 ">
-            <div class="py-12 text-center">
+            <div class="py-2 text-center">
                 <div class="flex justify-between mb-3">
                     <Link @click="Back" class="px-4 py-2 cursor-pointer bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 0.8); transform: ; msFilter: ;">

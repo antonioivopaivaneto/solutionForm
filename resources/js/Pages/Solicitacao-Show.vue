@@ -9,7 +9,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import QrCode from 'qrcode';
 import { computed, ref } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
+import moment from 'moment';
 
+const formatDate = (dateString) => {
+    return moment(dateString).format('D/M/YYYY');
+}
 
 const props = defineProps({ condominio: Object, unidade: Object, solicitacao: Object });
 
@@ -107,9 +111,7 @@ const toggleShow = (solicitacao) => {
 
 }
 
-
 const urlQRCode = route('solicitar', props.condominio.id);
-
 
 const formatarData = (data) => {
     const options = {
@@ -134,7 +136,18 @@ const remover = (id) => {
 const removerResposta = (id) => {
     if (confirm("Deseja remover esta Resposta ? ")) {
 
-        router.delete(route('resposta.destroy', id), { preserveScroll: true })
+        router.delete('/resposta.destroy', id, {
+        onFinish: () => {
+            msgSucesso.value = true;
+        }
+    });
+    }
+
+}
+const removerRetorno = (id) => {
+    if (confirm("Deseja remover esta Retorno ? ")) {
+
+        router.delete(route('retorno.destroy', id), { preserveScroll: true })
     }
 
 }
@@ -181,9 +194,6 @@ function formatarNumero(telefone) {
 <template>
     <AuthenticatedLayout>
 
-
-
-
         <div class="max-w-8xl mx-auto sm:px-7 lg:px-9 mt-9">
             <div class="flex ">
                 <a @click="Back"
@@ -199,10 +209,6 @@ function formatarNumero(telefone) {
             <div class="py-12 ">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="flex justify-between">
-
-
-
-
                         <div class="">
                             <div class="pt-6 text-gray-900 uppercase font-bold ml-10">Condominio: {{ condominio.nome }}
                             </div>
@@ -253,7 +259,7 @@ function formatarNumero(telefone) {
                         </div>
                     </div>
                     <hr>
-                    <div class="flex flex-row-reverse mx-5">
+                    <div class="flex flex-row-reverse mx-5 fixed right-5 z-10">
                         <div v-if="msgSucesso"
                             class="bg-green-100 border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
                             role="alert">
@@ -287,11 +293,13 @@ function formatarNumero(telefone) {
                                 </tr>
                                 <tr class="border ">
                                     <td class="font-extrabold p-1">Telefone:</td>
-                                    <td class="border p-1 "><a class="cursor-pointer hover:underline text-green-700" target="_blank"
+                                    <td class="border p-1 "><a class="cursor-pointer hover:underline text-green-700"
+                                            target="_blank"
                                             :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">
                                             {{ solicitacao.telefone }}
                                         </a></td>
-                                        <td rowspan="4" style="width: 100%;" class="border w-96  text-center p-1 "> {{ solicitacao.solicitacao }}</td>
+                                    <td rowspan="4" style="width: 100%;" class="border w-96  text-center p-1 "> {{
+                    solicitacao.solicitacao }}</td>
 
                                 </tr>
                                 <tr class="border ">
@@ -312,7 +320,7 @@ function formatarNumero(telefone) {
 
 
 
-                            <div class="mt-1 flex justify-end" v-if="solicitacao.fotos">
+                            <div class="mt-1 flex " v-if="solicitacao.fotos">
                                 <div class="flex flex-row">
                                     <span v-for="fotos in solicitacao.fotos.slice(0, 3)" :key="fotos.id"
                                         class="flex-shrink-0  ml-1">
@@ -371,11 +379,37 @@ function formatarNumero(telefone) {
                                                 </div>
                                             </div>
                                         </div>
-
                                     </div>
 
 
                                 </div>
+
+                                <div class="mt-5" v-for=" retorno in solicitacao.retorno" :key="retorno.id">
+                                    <div class="bg-gray-100 rounded p-1 border border-gray-700 ">
+                                        <div class="flex justify-between">
+                                            <div class="flex-col">
+                                                <div class="">Responsavel pelo retorno: {{ retorno.user.name }}</div>
+                                                <div class="">Canal utilizado: {{ retorno.canal }}</div>
+                                                <div class="">Data retorno: {{ formatDate(retorno.data) }}</div>
+                                                <div class="">Observações: {{ retorno.descricao }}</div>
+
+                                            </div>
+
+                                            <a @click="removerRetorno(retorno.id)"
+                                                class="font-medium text-blue-600 dark:text-blue-500 hover:underline cursor-pointer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                    <path
+                                                        d="M5 20a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8h2V6h-4V4a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H3v2h2zM9 4h6v2H9zM8 8h9v12H7V8z">
+                                                    </path>
+                                                    <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
 
                                 <div class="mt-3">
                                     <h1 class="font-extrabold text-gray-500 uppercase "> Status:</h1>
@@ -389,26 +423,12 @@ function formatarNumero(telefone) {
                                 </div>
 
 
-
-
                             </div>
                         </div>
                     </div>
 
-
-
-
-
-
-
-
-
                 </div>
             </div>
         </div>
-
-
-
-
     </AuthenticatedLayout>
 </template>

@@ -1,11 +1,25 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
-import { onMounted, ref } from 'vue';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import { onMounted, reactive, ref } from 'vue';
+import Modal from '@/Components/Modal.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+
+const showModal = ref(false);
+const solicitacaoSelected = ref();
 
 
 
-defineProps({ solicitacoes: Array, condominios: Array, moradores: Array, assuntos: Array, totalPorStatus: Array, })
+defineProps({ solicitacoes: Array, users: Array, condominios: Array, moradores: Array, assuntos: Array, totalPorStatus: Array, })
+const form = useForm({
+    descricao: '',
+    canal: '',
+    responsavel: '',
+    data: '',
+    solicitacao_id: '',
+});
 
 
 const remover = (id) => {
@@ -48,20 +62,30 @@ const toggleShow = (solicitacao) => {
 
 }
 
-// Initialize showMore for each solicitacao
-onMounted(() => {
-    solicitacoes.data.forEach(solicitacao => {
-        solicitacao.showMore = false;
-    });
-});
-
 const msgSucesso = ref(false)
 
+const submit = () => {
+    form.solicitacao_id = solicitacaoSelected.value;
+    router.post('/retorno', form, {
+        onFinish: () => {
+            msgSucesso.value = true;
+            closeModal(); // Chama a função para fechar o modal
+            router.reload(); // Recarrega a página
+        }
+    });
+}
 const atualizarStatus = (solicitacaoId, novoStatus) => {
-    if (confirm("tem certeza de que deseja alterar o status desta solicitação? ")) {
+    solicitacaoSelected.value = solicitacaoId
+    if (novoStatus === '1') {
+        openModal()
+
+    } else if (confirm("tem certeza de que deseja alterar o status desta solicitação? ")) {
         router.put(route('atualizarStatus', { id: solicitacaoId }), { status: novoStatus }, { preserveScroll: true })
         msgSucesso.value = true
+
     }
+
+
 }
 
 
@@ -87,9 +111,9 @@ const getStatusLabel = (status) => {
 
 const orderArrow = ref(true);
 
-const filtro = (filtro,order) =>{
+const filtro = (filtro, order) => {
 
-    router.get(route('dashboard', {'filtro':filtro , 'order':order}))
+    router.get(route('dashboard', { 'filtro': filtro, 'order': order }))
 
     if (order === 'asc') {
         orderArrow.value = true;
@@ -101,13 +125,26 @@ const filtro = (filtro,order) =>{
 const pesquisaText = ref();
 
 
-const pesquisa = () =>{
+const pesquisa = () => {
 
 
 
-    router.get(route('dashboard', {'pesquisa':pesquisaText.value}),{ preserveScroll: true })
+    router.get(route('dashboard', { 'pesquisa': pesquisaText.value }), { preserveScroll: true })
 
 
+
+}
+
+
+const closeModal = () => {
+    showModal.value = false;
+    console.log(showModal.value)
+
+};
+
+const openModal = () => {
+    showModal.value = true;
+    console.log(showModal.value)
 
 }
 
@@ -121,7 +158,7 @@ const pesquisa = () =>{
 
 
 
-        <div class="py-12">
+        <div class="py-2">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="grid grid-cols-4 gap-5 ">
 
@@ -240,7 +277,7 @@ const pesquisa = () =>{
                                         <div class="flex-1 min-w-0 ms-4">
                                             <p class="text-sm font-medium text-gray-900 truncate dark:text-white">
 
-                                                {{  getStatusLabel(parseInt( total.status)) }}
+                                                {{ getStatusLabel(parseInt(total.status)) }}
                                             </p>
                                         </div>
                                         <div
@@ -266,9 +303,11 @@ const pesquisa = () =>{
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Lista de Solicitacoes por QRCode</div>
-                    <div class="flex flex-row-reverse mx-5">
+
+
+                    <div class="flex flex-row-reverse mx-5 fixed right-12">
                         <div v-if="msgSucesso"
-                            class="bg-green-100 border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
+                            class="bg-green-100  border mb-5 w-96 border-green-400 text-green-700 px-4 py-3 rounded relative"
                             role="alert">
                             <strong class="font-bold">Sucesso! </strong>
                             <span class="block sm:inline">
@@ -285,16 +324,13 @@ const pesquisa = () =>{
                     </div>
                     <div class=" overflow-x-auto sm:rounded-lg p-5 mr-5 ">
                         <div class="mb-5 w-80 ">
-                        <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
-                            Pesquisar por Morador
-                        </label>
-                        <input type="text"
-                        @keyup.enter="pesquisa()"
-                        v-model="pesquisaText"
-                            placeholder="Seu Nome "
-                            class="bg-gray-50 border w text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                            <label class="block text-gray-700 ml-1 text-sm font-bold mb-2" for="username">
+                                Pesquisar por Morador
+                            </label>
+                            <input type="text" @keyup.enter="pesquisa()" v-model="pesquisaText" placeholder="Seu Nome "
+                                class="bg-gray-50 border w text-gray-700  border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400  dark:focus:ring-blue-500 dark:focus:border-blue-500">
 
-                    </div>
+                        </div>
                         <table
                             class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
@@ -313,10 +349,23 @@ const pesquisa = () =>{
                                     </th>
                                     <th scope="col" class="px-4 py-3 flex gap-2">
 
-                                        <a>     Morador</a>
+                                        <a> Morador</a>
 
-                                        <svg v-if="orderArrow" @click="filtro('nome','asc')"   xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z"></path></svg>
-                                        <svg v-else  @click="filtro('nome','desc')"  xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
+                                        <svg v-if="orderArrow" @click="filtro('nome', 'asc')"
+                                            xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                            viewBox="0 0 24 24"
+                                            style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;">
+                                            <path
+                                                d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z">
+                                            </path>
+                                        </svg>
+                                        <svg v-else @click="filtro('nome', 'desc')" xmlns="http://www.w3.org/2000/svg"
+                                            width="10" height="10" viewBox="0 0 24 24"
+                                            style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;">
+                                            <path
+                                                d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z">
+                                            </path>
+                                        </svg>
                                     </th>
                                     <th scope="col" class="px-4 py-3">
                                         Email
@@ -326,9 +375,21 @@ const pesquisa = () =>{
                                     </th>
                                     <th scope="col" class="px-6 py-3 flex justify-center gap-2 cursor-pointer ">
 
-                                       <a @click="filtro('assunto')">Assunto</a>
-                                        <svg v-if="true"  xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z"></path></svg>
-                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;"><path d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z"></path></svg>
+                                        <a @click="filtro('assunto')">Assunto</a>
+                                        <svg v-if="true" xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                            viewBox="0 0 24 24"
+                                            style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;">
+                                            <path
+                                                d="M3 19h18a1.002 1.002 0 0 0 .823-1.569l-9-13c-.373-.539-1.271-.539-1.645 0l-9 13A.999.999 0 0 0 3 19z">
+                                            </path>
+                                        </svg>
+                                        <svg v-else xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                            viewBox="0 0 24 24"
+                                            style="fill: rgba(255, 255, 255, 1);transform: ;msFilter:;">
+                                            <path
+                                                d="M11.178 19.569a.998.998 0 0 0 1.644 0l9-13A.999.999 0 0 0 21 5H3a1.002 1.002 0 0 0-.822 1.569l9 13z">
+                                            </path>
+                                        </svg>
 
                                     </th>
                                     <th scope="col" class="px-6 py-3">
@@ -376,7 +437,7 @@ const pesquisa = () =>{
                                     <td class="px-6 py-4">
 
 
-                                            {{ solicitacao.local }}
+                                        {{ solicitacao.local }}
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.nome }}
@@ -388,7 +449,8 @@ const pesquisa = () =>{
                                     </td>
                                     <td class="px-6 py-4">
                                         <a class="cursor-pointer hover:underline text-green-700" target="&_blank"
-                                            :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">{{ solicitacao.telefone }}</a>
+                                            :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">{{
+                                        solicitacao.telefone }}</a>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.assunto }}
@@ -396,7 +458,8 @@ const pesquisa = () =>{
 
                                     <td class="text-center py-2">
 
-                                        <a class="hover:underline text-blue-800" :href="'/solicitacao/' + solicitacao.id">Ver</a>
+                                        <a class="hover:underline text-blue-800"
+                                            :href="'/solicitacao/' + solicitacao.id">Ver</a>
 
                                     </td>
                                     <td class="px-4 py-2">
@@ -443,6 +506,17 @@ const pesquisa = () =>{
                                                     </path>
                                                     <path d="M9 10h2v8H9zm4 0h2v8h-2z"></path>
                                                 </svg></a>
+
+                                            <a target="&_Blank" :href="'/exportToPdf/' + solicitacao.id" class="mx-4">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    viewBox="0 0 24 24"
+                                                    style="fill: rgba(0, 0, 0, 0.7);transform: ;msFilter:;">
+                                                    <path
+                                                        d="M19 7h-1V2H6v5H5c-1.654 0-3 1.346-3 3v7c0 1.103.897 2 2 2h2v3h12v-3h2c1.103 0 2-.897 2-2v-7c0-1.654-1.346-3-3-3zM8 4h8v3H8V4zm8 16H8v-4h8v4zm4-3h-2v-3H6v3H4v-7c0-.551.449-1 1-1h14c.552 0 1 .449 1 1v7z">
+                                                    </path>
+                                                    <path d="M14 10h4v2h-4z"></path>
+                                                </svg>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -457,20 +531,78 @@ const pesquisa = () =>{
                                 <span>{{ processarLabel(solicitacao.label) }}</span>
                             </a>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+        <div>
+            <Modal :show="showModal" @close="showModal">
+                <template v-slot>
+                    <div class="bg-gray-800 text-white p-2">
+                        <h2 class="text-lg font-medium">Finalizar Soliciticação</h2>
+                    </div>
+                    <div class="p-4">
+                        <form @submit.prevent="submit()">
+                            <div class="">
+                                <InputLabel for="resposta" value="Por onde foi feita a resposta?" />
+                                <select id="role"
+                                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    v-model="form.canal" required>
+                                    <option selected value="">Selecione</option>
+                                    <option value="Email">Email</option>
+                                    <option value="Whatsapp">Whatsapp</option>
+                                    <option value="Telefone">Telefone</option>
+                                </select>
 
+                            </div>
+                            <div class="">
+                                <InputLabel for="responsavel" value="Responsavel pelo retorno?" />
+                                <select id="responsavel"
+                                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                    v-model="form.responsavel" required>
+                                    <option selected value="">Selecione</option>
+                                    <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}
+                                    </option>
 
+                                </select>
 
+                            </div>
+                            <div>
+                                <InputLabel for="data" value="Data do Retorno" />
+                                <TextInput class="w-full" type="date" v-model="form.data"></TextInput>
+                                <InputError class="mt-2" :message="form.errors.descricao" />
+                            </div>
+                            <div>
+                                <InputLabel for="descricao" value="Observação" />
+                                <textarea id="descricao" rows="5"
+                                    class="mt-1 block w-full border-gray-300 focus:border-blue-700 focus:ring-blue-700 rounded-md shadow-sm"
+                                    v-model="form.descricao" required autofocus autocomplete="name"></textarea>
+                                <InputError class="mt-2" :message="form.errors.descricao" />
+                            </div>
 
+                            <div class="mb-5 mt-2">
+                            </div>
 
+                            <div class="mt-6 flex justify-end">
+                                <button
+                                    class=" mx-5 text-white bg-gray-500 hover:bg-gray-800 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-gray-500 dark:hover:bg-gray-700 dark:focus:ring-gray-800"
+                                    @click="closeModal">Fechar</button>
+
+                                <button type="submit"
+                                    class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                                    :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                                    Concluir
+                                </button>
+
+                            </div>
+                        </form>
 
 
 
                     </div>
-
-
-                </div>
-            </div>
+                </template>
+            </Modal>
         </div>
     </AuthenticatedLayout>
 </template>

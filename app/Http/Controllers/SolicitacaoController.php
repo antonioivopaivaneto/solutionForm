@@ -6,6 +6,7 @@ use App\Jobs\SendEmailQueueJob;
 use App\Mail\Solicitacao as MailSolicitacao;
 use App\Models\Condominio;
 use App\Models\Foto;
+use App\Models\Retorno;
 use App\Models\Solicitacao;
 use App\Models\Unidade;
 use Illuminate\Http\Request;
@@ -126,7 +127,7 @@ class SolicitacaoController extends Controller
      */
     public function show($id)
     {
-        $solicitacao = Solicitacao::where('id', $id)->with('fotos', 'unidade', 'condominio','resposta.user','resposta.fotos')->first();
+        $solicitacao = Solicitacao::where('id', $id)->with('fotos', 'unidade', 'condominio','resposta.user','resposta.fotos','retorno.user')->first();
 
 
         $unidade = Unidade::find($solicitacao->unidade_id);
@@ -194,6 +195,30 @@ class SolicitacaoController extends Controller
 
         return redirect()->back();
     }
+    public function retorno(Request $request)
+    {
+
+        $retorno = new Retorno([
+            'canal'  => $request->canal,
+            'data'  => $request->data,
+            'user_id'  => $request->responsavel,
+            'descricao'  => $request->descricao,
+            'solicitacao_id'  => $request->solicitacao_id,
+        ]);
+
+        $retorno->save();
+
+
+        $solicitacao = Solicitacao::find($request->solicitacao_id);
+
+        if ($solicitacao) {
+            $solicitacao->status = 1;
+            $solicitacao->save();
+        }
+
+        return to_route('dashboard');
+
+    }
 
     /**
      * Remove the specified resource from storage.
@@ -224,6 +249,16 @@ class SolicitacaoController extends Controller
     }
 
 
+    public function Retornodestroy($id)
+    {
+
+        $retorno = Retorno::find($id);
+        if ($retorno) {
+
+            $retorno->delete();
+        }
+        return redirect()->back();
+    }
     public function solicitacoesManutencao($id)
     {
         $query = Solicitacao::query();

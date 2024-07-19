@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Condominio;
+use App\Models\Retorno;
 use App\Models\Solicitacao;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -53,7 +55,6 @@ class DashboardController extends Controller
             ->get();
 
 
-
         // Iniciando a consulta das solicitações
         $query = Solicitacao::query();
 
@@ -80,6 +81,7 @@ class DashboardController extends Controller
         }
 
         $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
+        $users = User::all();
 
 
         return Inertia::render('Dashboard', [
@@ -87,7 +89,8 @@ class DashboardController extends Controller
             'condominios' => $condominios,
             'assuntos' => $assuntos,
             'moradores' => $moradores,
-            'totalPorStatus' => $totalPorStatus
+            'totalPorStatus' => $totalPorStatus,
+            'users' => $users,
         ]);
     }
     public function relatorio()
@@ -96,6 +99,34 @@ class DashboardController extends Controller
 
 
         return Inertia::render('Relatorio',compact('condominios'));
+    }
+    public function relatorioCompleto(Request $request)
+    {
+        $condominio = Condominio::find($request->solicitacao_id);
+        $dataInicio = $request->data[0];
+        $dataFinal = $request->data[1];
+
+        $respostas = Retorno::whereBetween('data',[$dataInicio,$dataFinal])->get();
+        $canais = [
+            'Email'=>0,
+            'Whatsapp'=>0,
+            'Telefone'=>0,
+        ];
+
+        foreach ($respostas as $resposta){
+            if(isset($canais[$resposta->canal])){
+                $canais[$resposta->canal]++;
+            }
+
+
+        }
+
+        //dd($canais);
+
+        $condominios = Condominio::all();
+
+
+        return Inertia::render('Relatorio',compact('condominios','respostas','canais'));
     }
     public function historico()
     {

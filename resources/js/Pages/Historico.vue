@@ -51,13 +51,9 @@ const Back = () => {
 
     <AuthenticatedLayout>
 
+        <div class="py-2">
 
-
-
-
-        <div class="py-12">
-
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="flex mb-3">
                     <a @click="Back"
                         class="px-4 py-2 cursor-pointer  bg-gray-500 hover:bg-gray-600 text-white rounded disabled:opacity-50 flex">
@@ -129,7 +125,8 @@ const Back = () => {
                                         {{ solicitacao.assunto }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ solicitacao.solicitacao }}
+                                        <a class="hover:underline text-blue-800" :href="'/solicitacao/' + solicitacao.id">Ver</a>
+
                                     </td>
                                     <td class="px-6 py-4 text-nowrap">
                                         {{ formatarData(solicitacao.created_at) }}

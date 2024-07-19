@@ -1,15 +1,15 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
 import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,ArcElement,
+    Chart as ChartJS,
+    Title,
+    Tooltip,
+    Legend,
+    BarElement,
+    CategoryScale,
+    LinearScale, ArcElement,
 } from 'chart.js';
 import { Pie, Bar } from 'vue-chartjs';
 import VueDatePicker from '@vuepic/vue-datepicker';
@@ -18,43 +18,49 @@ import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 
-const props = defineProps({ condominios: Object });
+const props = defineProps({ condominios: Object, canais: Array });
 
 
 const condominios = props.condominios;
 
+const submit = () => {
+    form.data = Datas.value
+    router.post('/relatorioShow',form, {
+        preserveScroll: true,
+        onSuccess: () => {
 
-
- const dataBar = {
-  labels: [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ],
-  datasets: [
-    {
-      label: 'Data One',
-      backgroundColor: '#f87979',
-      data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-    }
-  ]
+        },
+    })
 }
 
- const optionsBar = {
-  responsive: true,
-  maintainAspectRatio: false
+const dataBar = {
+    labels: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+    ],
+    datasets: [
+        {
+            label: 'Data One',
+            backgroundColor: '#f87979',
+            data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
+        }
+    ]
+}
+const optionsBar = {
+    responsive: true,
+    maintainAspectRatio: false
 }
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-
 
 const data = {
     labels: ['VueJs', 'EmberJs', 'ReactJs', 'AngularJs'],
@@ -73,11 +79,8 @@ const options = {
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
-
 const msgSucesso = ref(false);
 
-// Função para formatar o número de telefone
 function formatarNumero(telefone) {
     // Remove os traços e parênteses do número de telefone
     return telefone.replace(/[-()\s]/g, '');
@@ -88,12 +91,17 @@ const Datas = ref();
 const onSelectUnidade = (value) => {
     form.unidade = value;
 };
-
-// Converter o array de unidades para um formato adequado para o multiselect
 const condominiosFormatados = condominios.map(condominio => ({
-  value: condominio.id, // Usar o ID como valor
-  label: condominio.nome // Usar o nome como texto exibido
+    value: condominio.id, // Usar o ID como valor
+    label: condominio.nome // Usar o nome como texto exibido
 }));
+
+const form = useForm({
+    condominio_id: '',
+    data: '',
+
+});
+
 </script>
 
 <template>
@@ -103,17 +111,19 @@ const condominiosFormatados = condominios.map(condominio => ({
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="">
                     <div class=" flex gap-5 bg-white border border-gray-200 rounded-lg shadow-sm p-4">
-                     <div class="w-64">
-                        Condominio:  <multiselect v-model="value2" :searchable="true" :options="condominiosFormatados" placeholder="Selecione uma opção"
-    :custom-label="customLabel" @update:modelValue="onSelectUnidade">
-</multiselect>
-                     </div>
-                     <div class="">
-                        Data:  <VueDatePicker       format="dd/MM/yyyy" locale="pt-br" v-model="Datas" range></VueDatePicker>
-                     </div>
-                     <div class="mt-6">
-                     <PrimaryButton  >Buscar</PrimaryButton>
-                     </div>
+                        <div class="w-64">
+                            Condominio: <multiselect v-model="form.condominio_id" :searchable="true"
+                                :options="condominiosFormatados" placeholder="Selecione uma opção"
+                                :custom-label="customLabel" @update:modelValue="onSelectUnidade">
+                            </multiselect>
+                        </div>
+                        <div class="">
+                            Data: <VueDatePicker format="dd/MM/yyyy" locale="pt-br" v-model="Datas" range>
+                            </VueDatePicker>
+                        </div>
+                        <div class="mt-6">
+                            <PrimaryButton @click="submit()">Buscar</PrimaryButton>
+                        </div>
 
                     </div>
 
@@ -132,19 +142,21 @@ const condominiosFormatados = condominios.map(condominio => ({
                             <h1>Andamentos</h1>
                         </div>
                         <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center item mt-14   ">
-                            <div class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                            <div
+                                class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
                                 <div class="">6</div>
                                 <div class="">Andamento</div>
                             </div>
-                            <div class="bg-green-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                            <div
+                                class="bg-green-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
                                 <div class="">6</div>
                                 <div class="">Finalizados</div>
                             </div>
-                            <div class="bg-red-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                            <div
+                                class="bg-red-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
                                 <div class="">6</div>
                                 <div class="">Aberto</div>
                             </div>
-
                         </div>
                     </div>
 
@@ -156,7 +168,6 @@ const condominiosFormatados = condominios.map(condominio => ({
                             <Bar :data="dataBar" :options="optionsBar" />
                         </div>
                     </div>
-
                 </div>
                 <div class="grid grid-cols-3 gap-5 mt-5">
                     <div class=" bg-white border border-gray-200 rounded-lg shadow-sm">
@@ -168,9 +179,28 @@ const condominiosFormatados = condominios.map(condominio => ({
                         </div>
                     </div>
 
-
-
-
+                    <div class=" bg-white border border-gray-200 rounded-lg shadow-sm ">
+                        <div class=" bg-gray-800 text-white p-2 rounded-t mb-2">
+                            <h1>Canais de Respostas</h1>
+                        </div>
+                        <div class="grid grid-cols-3 gap-5 mx-2 h-36 flex-col justify-center item mt-14   ">
+                            <div
+                                class="bg-yellow-500 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                                <div class="">{{ canais.Email }}</div>
+                                <div class="">Email</div>
+                            </div>
+                            <div
+                                class="bg-green-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                                <div class="">{{ canais.Whatsapp }}</div>
+                                <div class="">Whatsapp</div>
+                            </div>
+                            <div
+                                class="bg-red-700 text-center text-white font-black p-2 rounded-sm flex flex-col justify-center">
+                                <div class="">{{ canais.Telefone }}</div>
+                                <div class="">Telefone</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

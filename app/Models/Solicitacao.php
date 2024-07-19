@@ -31,6 +31,9 @@ class Solicitacao extends Model
     public function resposta(){
         return $this->hasMany(RespostaSolicitacao::class,'solicitacao_id','id');
     }
+    public function retorno(){
+        return $this->hasMany(Retorno::class,'solicitacao_id','id');
+    }
 
     public function unidade()
     {
