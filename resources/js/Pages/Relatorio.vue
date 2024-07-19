@@ -18,7 +18,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
 
-const props = defineProps({ condominios: Object, canais: Array });
+const props = defineProps({ condominios: Object, canais: Array,assuntos:Array });
 
 
 const condominios = props.condominios;
@@ -84,10 +84,15 @@ const condominiosFormatados = condominios.map(condominio => ({
     value: condominio.id, // Usar o ID como valor
     label: condominio.nome // Usar o nome como texto exibido
 }));
+const assuntosFormatados = props.assuntos.map(assunto => ({
+    value: assunto.assunto, // Usar o ID como valor
+    label: assunto.assunto // Usar o nome como texto exibido
+}));
 
 const form = useForm({
     condominio_id: '',
     data: '',
+    assunto: '',
 
 });
 
@@ -103,6 +108,12 @@ const form = useForm({
                         <div class="w-64">
                             Condominio: <multiselect v-model="form.condominio_id" :searchable="true"
                                 :options="condominiosFormatados" placeholder="Selecione uma opção"
+                                :custom-label="customLabel" @update:modelValue="onSelectUnidade">
+                            </multiselect>
+                        </div>
+                        <div class="w-64">
+                            Assunto: <multiselect v-model="form.assunto" :searchable="true"
+                                :options="assuntosFormatados" placeholder="Selecione uma opção"
                                 :custom-label="customLabel" @update:modelValue="onSelectUnidade">
                             </multiselect>
                         </div>

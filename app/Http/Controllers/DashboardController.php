@@ -96,48 +96,6 @@ class DashboardController extends Controller
     public function relatorio()
     {
         $condominios = Condominio::all();
-
-
-        return Inertia::render('Relatorio',compact('condominios'));
-    }
-    public function relatorioCompleto(Request $request)
-    {
-        $condominio = Condominio::find($request->solicitacao_id);
-        $dataInicio = $request->data[0];
-        $dataFinal = $request->data[1];
-
-        $respostas = Retorno::whereBetween('data',[$dataInicio,$dataFinal])->get();
-        $solicitacoes = Solicitacao::whereBetween('created_at',[$dataInicio,$dataFinal])->get();
-
-        $canais = [
-            'Email'=>0,
-            'Whatsapp'=>0,
-            'Telefone'=>0,
-        ];
-        $status = [
-            '0'=>0,
-            '1'=>0,
-            '2'=>0,
-        ];
-
-        foreach ($respostas as $resposta){
-            if(isset($canais[$resposta->canal])){
-                $canais[$resposta->canal]++;
-            }
-            if(isset($status[$resposta->status])){
-                $status[$resposta->status]++;
-            }
-
-
-        }
-        foreach ($solicitacoes as $solicitacao){
-
-            if(isset($status[$solicitacao->status])){
-                $status[$solicitacao->status]++;
-            }
-
-        }
-
         $assuntos = DB::table('solicitacoes')
         ->select('assunto', DB::raw('count(*) as total'))
         ->groupBy('assunto')
@@ -145,27 +103,108 @@ class DashboardController extends Controller
         ->limit(5)
         ->get();
 
-        $locais = DB::table('solicitacoes')
-        ->select('local', DB::raw('count(*) as total'))
-        ->groupBy('local')
-        ->orderByDesc('total')
-        ->limit(5)
-        ->get();
 
+        return Inertia::render('Relatorio',compact('condominios','assuntos'));
+    }
+    public function relatorioCompleto(Request $request)
+    {
+        $condominioId = $request->solicitacao_id;
+        $dataInicio = $request->data[0];
+        $dataFinal = $request->data[1];
+        $assunto = $request->assunto;
+
+        // Filtragem condicional para o assunto e condomínio
+        $queryRespostas = Retorno::whereBetween('data', [$dataInicio, $dataFinal]);
+
+        $querySolicitacoes = Solicitacao::whereBetween('created_at', [$dataInicio, $dataFinal]);
+
+        if ($assunto) {
+            $querySolicitacoes->where('assunto', $assunto);
+            $queryLocais = DB::table('solicitacoes')
+                ->where('assunto', $assunto);
+        } else {
+            $queryLocais = DB::table('solicitacoes');
+        }
+
+        if ($condominioId) {
+            $querySolicitacoes->where('condominio_id', $condominioId);
+            $queryLocais->where('condominio_id', $condominioId);
+        }
+
+        $respostas = $queryRespostas->get();
+        $solicitacoes = $querySolicitacoes->get();
+
+        // Agrega os locais com base no filtro de assunto e condomínio
+        $locais = $queryLocais
+            ->select('local', DB::raw('count(*) as total'))
+            ->groupBy('local')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        // Agrega os assuntos com base no filtro de assunto e condomínio
+        $assuntos = DB::table('solicitacoes')
+            ->whereBetween('created_at', [$dataInicio, $dataFinal])
+            ->when($assunto, function ($query) use ($assunto) {
+                return $query->where('assunto', $assunto);
+            })
+            ->when($condominioId, function ($query) use ($condominioId) {
+                return $query->where('condominio_id', $condominioId);
+            })
+            ->select('assunto', DB::raw('count(*) as total'))
+            ->groupBy('assunto')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
+
+        // Agrega as unidades com base no filtro de assunto e condomínio
         $unidades = DB::table('solicitacoes')
-        ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
-        ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
-        ->groupBy('unidades.nome', 'solicitacoes.nome')
-        ->orderByDesc('total')
-        ->limit(5)
-        ->get();
-
+            ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
+            ->whereBetween('solicitacoes.created_at', [$dataInicio, $dataFinal])
+            ->when($assunto, function ($query) use ($assunto) {
+                return $query->where('solicitacoes.assunto', $assunto);
+            })
+            ->when($condominioId, function ($query) use ($condominioId) {
+                return $query->where('solicitacoes.condominio_id', $condominioId);
+            })
+            ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
+            ->groupBy('unidades.nome', 'solicitacoes.nome')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
         $condominios = Condominio::all();
 
+        // Atualiza os dados do relatório com as respostas, canais, status e assuntos
+        $canais = [
+            'Email' => 0,
+            'Whatsapp' => 0,
+            'Telefone' => 0,
+        ];
+        $status = [
+            '0' => 0,
+            '1' => 0,
+            '2' => 0,
+        ];
 
-        return Inertia::render('RelatorioCompleto',compact('locais','unidades','condominios','respostas','canais','status','assuntos'));
+        foreach ($respostas as $resposta) {
+            if (isset($canais[$resposta->canal])) {
+                $canais[$resposta->canal]++;
+            }
+            if (isset($status[$resposta->status])) {
+                $status[$resposta->status]++;
+            }
+        }
+        foreach ($solicitacoes as $solicitacao) {
+            if (isset($status[$solicitacao->status])) {
+                $status[$solicitacao->status]++;
+            }
+        }
+
+        return Inertia::render('RelatorioCompleto', compact('locais', 'unidades', 'condominios', 'respostas', 'canais', 'status', 'assuntos'));
     }
+
+
     public function historico()
     {
 
