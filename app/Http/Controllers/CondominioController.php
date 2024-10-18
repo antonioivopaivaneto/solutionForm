@@ -7,6 +7,7 @@ use App\Models\Condominio;
 use App\Models\Solicitacao as ModelsSolicitacao;
 use App\Models\Unidade;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CondominioController extends Controller
@@ -173,8 +174,13 @@ class CondominioController extends Controller
         // Busca o condomínio sem carregar as unidades
         $condominio = Condominio::findOrFail($id);
 
-        // Paginando as unidades do condomínio
-        $unidades = $condominio->unidades()->with('solicitacoes')->orderBy('nome', 'asc')->paginate(10); // 10 unidades por página
+      // Paginando as unidades do condomínio com ordenação natural
+    $unidades = $condominio->unidades()
+    ->with('solicitacoes')
+    ->orderBy(DB::raw('LENGTH(nome)'), 'asc')
+    ->orderBy('nome', 'asc')
+    ->paginate(10); // 10 unidades por página
+
 
         return Inertia('Editar-Condominio', compact('condominio', 'unidades'));
     }

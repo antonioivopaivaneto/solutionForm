@@ -14,8 +14,12 @@
 
             <div class="" v-if="!stepTree">
                 <h1 class="text-4xl text-gray-900 text-blue-900">
-                    {{ condominio.nome }}
-                    <b class="text-5xl">Faça</b> <br />Sua Solicitação
+                    <b class="text-5xl"> {{ condominio.nome }}</b>
+
+                </h1>
+                <h1 class="text-4xl text-gray-900 text-blue-900 mt-4">
+
+                   Faça Sua Solicitação
                 </h1>
 
                 <span>{{ Npasso }}º Passo</span>

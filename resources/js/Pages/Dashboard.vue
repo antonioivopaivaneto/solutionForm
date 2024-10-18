@@ -148,6 +148,16 @@ const openModal = () => {
 
 }
 
+const formatarStatus = (status) => {
+    if (status == 0) return 'Aberto';
+    if (status == 1) return 'Concluído';
+    if (status == 2) return 'Andamento';
+    return 'Desconhecido';
+
+}
+
+
+
 </script>
 
 <template>
@@ -443,14 +453,22 @@ const openModal = () => {
                                         {{ solicitacao.nome }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        <a class="cursor-pointer hover:underline"
-                                            :href="'mailto:' + solicitacao.email + '?subject=Referente a ' + solicitacao.assunto">{{
-                                        solicitacao.email }}</a>
+                                        <a class="cursor-pointer hover:underline" :href="'mailto:' + solicitacao.email + '?subject=Referente a ' + solicitacao.assunto
+                                            + '&body=Condomínio: ' + solicitacao.condominio.nome
+                                            + '%0A%0AMorador: ' + solicitacao.nome
+                                            + '%0A%0ASolicitação: ' + solicitacao.solicitacao
+                                            + '%0A%0AEmail: ' + solicitacao.email
+                                            + '%0A%0AUnidade: ' + solicitacao.unidade.nome
+                                            + '%0A%0AData e Hora: ' + formatarData(solicitacao.created_at)
+                                            + '%0A%0AStatus: ' + formatarStatus(solicitacao.status)">
+                                            {{ solicitacao.email }}
+                                        </a>
                                     </td>
+
                                     <td class="px-6 py-4">
                                         <a class="cursor-pointer hover:underline text-green-700" target="&_blank"
                                             :href="'https://wa.me/' + formatarNumero(solicitacao.telefone) + '?text=Referente ao assunto ' + solicitacao.assunto">{{
-                                        solicitacao.telefone }}</a>
+                                                solicitacao.telefone }}</a>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.assunto }}
