@@ -58,6 +58,8 @@ class UnidadeController extends Controller
           $qtdTotal = $request->input('qtd_total');
 
 
+
+
           $nomeBloco = $bloco ? "-" . $bloco : '';
           $nomeTorre = $torre ? $torre . "/" : '';
 
@@ -79,6 +81,8 @@ class UnidadeController extends Controller
 
 
 
+
+
                // Criar as unidades com base no formato fornecido e no número de andares
               foreach (range(1, $qtdAndares) as $andar) {
                   foreach ($unidades as $numeroUnidade) {
@@ -94,11 +98,16 @@ class UnidadeController extends Controller
                   }
               }
           } else {
+
+
                // Criar unidades sequenciais com base na quantidade total fornecida
-          $inicioUnidade = (int) $unidadesString; // Supondo que unidadesString é um único número aqui
-          foreach (range($inicioUnidade, $inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
+          $inicioUnidade = str_pad($unidadesString, strlen($unidadesString), '0', STR_PAD_LEFT);
+
+
+          foreach (range((int)$inicioUnidade, (int)$inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
+            $numeroUnidadeFormatado = str_pad($numeroUnidade, strlen($unidadesString), '0', STR_PAD_LEFT);
               Unidade::create([
-                  'nome' => "{$nomeTorre}UND.{$numeroUnidade}{$nomeBloco}",
+                  'nome' => "{$nomeTorre}UND.{$numeroUnidadeFormatado}{$nomeBloco}",
                   'bloco' => $bloco,
                   'andar' => '', // Calcular o andar
                   'torre' => $torre,

@@ -46,7 +46,7 @@ class CondominioController extends Controller
 
         $condominio = Condominio::with('unidades')->find($condominio);
 
-        $qrcodeUrl = route('solicitar',$condominio->id); // Substitua 'solicitacao.show' pela sua rota
+        $qrcodeUrl = route('solicitar', $condominio->id); // Substitua 'solicitacao.show' pela sua rota
         $qrcode = QrCode::size(200)->generate($qrcodeUrl); // Ajuste o tamanho conforme necessário
 
         return view('condominio.printpage', compact('condominio', 'qrcode'));
@@ -76,6 +76,7 @@ class CondominioController extends Controller
      */
     public function store(Request $request)
     {
+
         // Validação dos dados de entrada
         $request->validate([
             'nome' => 'required|string',
@@ -169,18 +170,24 @@ class CondominioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Request $request)
     {
         // Busca o condomínio sem carregar as unidades
         $condominio = Condominio::findOrFail($id);
 
-      // Paginando as unidades do condomínio com ordenação natural
-    $unidades = $condominio->unidades()
-    ->with('solicitacoes')
-    ->orderBy(DB::raw('LENGTH(nome)'), 'asc')
-    ->orderBy('nome', 'asc')
-    ->paginate(10); // 10 unidades por página
+        // Paginando as unidades do condomínio com ordenação natural
+        $query = $condominio->unidades()
+            ->with('solicitacoes');
 
+
+            if($request->pesquisaUnidade){
+                $query->where('nome', 'like', '%' . $request->pesquisaUnidade . '%');
+
+            }
+
+            $unidades = $query->orderBy(DB::raw('LENGTH(nome)'), 'asc')
+            ->orderBy('nome', 'asc')
+            ->paginate(10);
 
         return Inertia('Editar-Condominio', compact('condominio', 'unidades'));
     }

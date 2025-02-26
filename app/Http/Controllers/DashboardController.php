@@ -6,6 +6,7 @@ use App\Models\Condominio;
 use App\Models\Retorno;
 use App\Models\Solicitacao;
 use App\Models\User;
+use App\service\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -79,9 +80,26 @@ class DashboardController extends Controller
         if ($request->pesquisa) {
             $query->where('nome', $request->pesquisa);
         }
+        if ($request->pesquisaCondominio) {
+            $query->where('condominio_id', $request->pesquisaCondominio);
+        }
+        if ($request->pesquisaAssunto) {
+            $query->where('assunto', $request->pesquisaAssunto);
+        }
+        if ($request->pesquisaLocal) {
+            $query->where('local', $request->pesquisaLocal);
+        }
 
         $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
         $users = User::all();
+
+        $dashService = resolve(DashboardService::class);
+
+        $filtros = $dashService->getDadosFiltros();
+
+
+
+
 
 
         return Inertia::render('Dashboard', [
@@ -91,6 +109,7 @@ class DashboardController extends Controller
             'moradores' => $moradores,
             'totalPorStatus' => $totalPorStatus,
             'users' => $users,
+            'filtros' => $filtros,
         ]);
     }
     public function relatorio()
