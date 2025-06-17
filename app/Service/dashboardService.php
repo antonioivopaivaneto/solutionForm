@@ -14,11 +14,15 @@ class DashboardService {
 
         $assuntos = DB::table('solicitacoes')
         ->pluck('assunto')
-        ->unique();
+        ->filter()
+        ->unique()
+        ->values();
 
         $locais = DB::table('solicitacoes')
         ->pluck('local')
-        ->unique();
+        ->filter()
+        ->unique()
+        ->values();
 
         $data = [
             'condominios' => $condominios,

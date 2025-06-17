@@ -98,10 +98,6 @@ class DashboardController extends Controller
         $filtros = $dashService->getDadosFiltros();
 
 
-
-
-
-
         return Inertia::render('Dashboard', [
             'solicitacoes' => $solicitacoes,
             'condominios' => $condominios,

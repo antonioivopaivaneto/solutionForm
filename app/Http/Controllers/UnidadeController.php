@@ -37,88 +37,77 @@ class UnidadeController extends Controller
      */
     public function store(Request $request)
     {
-        $condominio = Condominio::where('id', $request->input('condominio_id'))->first();
-
-
-
-
-        $nome = $request->input('nome');
+        $condominio = Condominio::find($request->input('condominio_id'));
+    
         $bloco = $request->input('bloco');
         $torre = $request->input('torre');
-        $totalUnidades = $request->input('unidades');
-        $totalAndares = $request->input('andar');
-
-
-          // Captura dos parâmetros
-          $nome = $request->input('nome');
-          $bloco = $request->input('bloco');
-          $torre = $request->input('torre');
-          $unidadesString = $request->input('unidades');
-          $qtdAndares = (int) $request->input('qtd_andares');
-          $qtdTotal = $request->input('qtd_total');
-
-
-
-
-          $nomeBloco = $bloco ? "-" . $bloco : '';
-          $nomeTorre = $torre ? $torre . "/" : '';
-
-          if($qtdTotal === null){
-              // Verifica se o formato de unidades é um intervalo (101-104) ou unidades individuais (101;104)
-              if (strpos($unidadesString, '-') !== false) {
-                  // Se for um intervalo
-                  [$inicio, $fim] = explode('-', $unidadesString);
-                  $unidades = range((int)$inicio, (int)$fim);
-              } elseif (strpos($unidadesString, ';') !== false) {
-                  // Se forem unidades individuais
-                  $unidades = explode(';', $unidadesString);
-                  $unidades = array_map('intval', $unidades);
-              } else {
-                  // Se o formato for inválido
-                  return redirect()->back()->with('error', 'Formato de unidades inválido.');
-              }
-
-
-
-
-
-
-               // Criar as unidades com base no formato fornecido e no número de andares
-              foreach (range(1, $qtdAndares) as $andar) {
-                  foreach ($unidades as $numeroUnidade) {
-
-                    $unidadeComAndar = $andar . substr($numeroUnidade, -2);
-                      Unidade::create([
-                        'nome' => "{$nomeTorre}UND.{$unidadeComAndar}{$nomeBloco}",
-                          'bloco' => $bloco,
-                          'andar' => $andar,
-                          'torre' => $torre,
-                          'condominio_id' => $condominio->id,
-                      ]);
-                  }
-              }
-          } else {
-
-
-               // Criar unidades sequenciais com base na quantidade total fornecida
-          $inicioUnidade = str_pad($unidadesString, strlen($unidadesString), '0', STR_PAD_LEFT);
-
-
-          foreach (range((int)$inicioUnidade, (int)$inicioUnidade + $qtdTotal - 1) as $numeroUnidade) {
-            $numeroUnidadeFormatado = str_pad($numeroUnidade, strlen($unidadesString), '0', STR_PAD_LEFT);
-              Unidade::create([
-                  'nome' => "{$nomeTorre}UND.{$numeroUnidadeFormatado}{$nomeBloco}",
-                  'bloco' => $bloco,
-                  'andar' => '', // Calcular o andar
-                  'torre' => $torre,
-                  'condominio_id' => $condominio->id,
-              ]);
-          }
-      }
-
-        return redirect()->back();
+        $unidadesString = $request->input('unidades');
+        $qtdAndares = (int) $request->input('qtd_andares');
+        $qtdTotal = $request->input('qtd_total');
+    
+        $nomeBloco = $bloco ? "-" . $bloco : '';
+        $nomeTorre = $torre ? $torre . "/" : '';
+    
+        if ($qtdTotal === null) {
+            if (strpos($unidadesString, '-') !== false) {
+                [$inicio, $fim] = explode('-', $unidadesString);
+                $inicio = (int) $inicio;
+                $fim = (int) $fim;
+    
+                // Descobrir quantos dígitos tem o sufixo (ex: 1001 tem 4 dígitos, sufixo são os últimos 3)
+                $tamanhoTotal = strlen($inicio);
+                $tamanhoSufixo = $tamanhoTotal - 1; // considerando andar 1 dígito
+    
+                $unidades = [];
+                for ($i = $inicio; $i <= $fim; $i++) {
+                    // pega o sufixo: últimos N dígitos
+                    $numeroStr = (string)$i;
+                    $sufixo = substr($numeroStr, -$tamanhoSufixo);
+                    $unidades[] = $sufixo;
+                }
+            } elseif (strpos($unidadesString, ';') !== false) {
+                $unidades = explode(';', $unidadesString);
+            } else {
+                return redirect()->back()->with('error', 'Formato de unidades inválido.');
+            }
+    
+            foreach (range(1, $qtdAndares) as $andar) {
+                foreach ($unidades as $sufixo) {
+                    $sufixoPadded = str_pad($sufixo, 3, '0', STR_PAD_LEFT);
+                    $numeroCompleto = $andar . $sufixoPadded; // ex: 1 + 001 = 1001
+    
+                    Unidade::create([
+                        'nome' => "{$nomeTorre}UND.{$numeroCompleto}{$nomeBloco}",
+                        'bloco' => $bloco,
+                        'andar' => $andar,
+                        'torre' => $torre,
+                        'condominio_id' => $condominio->id,
+                    ]);
+                }
+            }
+        } else {
+            // Continua igual, para qtdTotal definido
+            $tamanho = strlen(trim($unidadesString));
+            $inicio = (int) $unidadesString;
+    
+            for ($i = $inicio; $i < $inicio + $qtdTotal; $i++) {
+                $numeroUnidade = str_pad($i, $tamanho, '0', STR_PAD_LEFT);
+    
+                Unidade::create([
+                    'nome' => "{$nomeTorre}UND.{$numeroUnidade}{$nomeBloco}",
+                    'bloco' => $bloco,
+                    'andar' => '',
+                    'torre' => $torre,
+                    'condominio_id' => $condominio->id,
+                ]);
+            }
+        }
+    
+        return redirect()->back()->with('success', 'Unidades criadas com sucesso!');
     }
-
+    
+    
+    
     /**
      * Display the specified resource.
      *

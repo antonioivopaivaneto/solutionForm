@@ -130,8 +130,6 @@ const filtro = (filtro, order) => {
     }
 };
 
-
-
 const pesquisaText = ref("");
 const pesquisaCond = ref("");
 const pesquisaAssunto = ref("");
@@ -151,8 +149,7 @@ onMounted(() => {
     }
 });
 
-const pesquisa = (search,valor) => {
-
+const pesquisa = (search, valor) => {
     router.get(route("dashboard", { [search]: valor }), {
         preserveScroll: true,
     });
@@ -174,6 +171,10 @@ const formatarStatus = (status) => {
     if (status == 2) return "Andamento";
     return "Desconhecido";
 };
+
+const isVideo = (url) => {
+    return url.match(/\.(mp4|mov|avi|mkv|webm)$/i);
+};
 </script>
 
 <template>
@@ -183,51 +184,10 @@ const formatarStatus = (status) => {
         <div class="py-2">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="grid grid-cols-4 gap-5">
-                    <div
-                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow- sm:p-8 dark:bg-gray-800 dark:border-gray-700"
-                    >
-                        <div class="flex items-center justify-between mb-4">
-                            <h5
-                                class="text-xl font-bold leading-none text-gray-900 dark:text-white"
-                            >
-                                <span class="text-4xl">Assuntos</span><br />
-                                mais Solicitados
-                            </h5>
-                        </div>
-                        <div class="flow-root">
-                            <ul
-                                role="list"
-                                class="divide-y divide-gray-200 dark:divide-gray-700"
-                            >
-                                <li class="py-3 sm:py-4">
-                                    <div
-                                        class="flex items-center"
-                                        v-for="assunto in assuntos"
-                                        :key="assunto.id"
-                                    >
-                                        <div class="flex-1 min-w-0 ms-4">
-                                            <p
-                                                class="text-sm font-medium text-gray-900 truncate dark:text-white"
-                                            >
-                                                {{ assunto.assunto }}
-                                            </p>
-                                        </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
-                                        >
-                                            {{ assunto.total }}
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
 
-                    <!-- outro-->
+                       <!-- outro-->
 
-                    <div
-                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
-                    >
+                <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
                             <h5
                                 class="text-xl font-bold leading-none text-white-900 dark:text-white"
@@ -249,7 +209,7 @@ const formatarStatus = (status) => {
                                     >
                                         <div class="flex-1 min-w-0 ms-4">
                                             <p
-                                                class="text-sm font-medium text-white truncate dark:text-white"
+                                                class="text-sm font-mediumtext-gray-900 truncate dark:text-white"
                                             >
                                                 {{ condominio.nome }}
                                             </p>
@@ -308,6 +268,49 @@ const formatarStatus = (status) => {
                         </div>
                     </div>
                     <!-- outro-->
+
+                    <div
+                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow- sm:p-8 dark:bg-gray-800 dark:border-gray-700"
+                    >
+
+                        <div class="flex items-center justify-between mb-4">
+                            <h5
+                                class="text-xl font-bold leading-none text-gray-900 dark:text-white"
+                            >
+                                <span class="text-4xl">Assuntos</span><br />
+                                mais Solicitados
+                            </h5>
+                        </div>
+                        <div class="flow-root">
+                            <ul
+                                role="list"
+                                class="divide-y divide-gray-200 dark:divide-gray-700"
+                            >
+                                <li class="py-3 sm:py-4">
+                                    <div
+                                        class="flex items-center"
+                                        v-for="assunto in assuntos"
+                                        :key="assunto.id"
+                                    >
+                                        <div class="flex-1 min-w-0 ms-4">
+                                            <p
+                                                class="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                            >
+                                                {{ assunto.assunto }}
+                                            </p>
+                                        </div>
+                                        <div
+                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                        >
+                                            {{ assunto.total }}
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
                     <!-- outro-->
 
                     <div
@@ -391,7 +394,7 @@ const formatarStatus = (status) => {
                             </span>
                         </div>
                     </div>
-                    <div class="overflow-x-auto sm:rounded-lg p-5 mr-5">
+                    <div class="overflow-x-auto sm:rounded-lg px-5 mr-5">
                         <div class="flex gap-5">
                             <div class="mb-5 w-80">
                                 <label
@@ -402,7 +405,9 @@ const formatarStatus = (status) => {
                                 </label>
                                 <input
                                     type="text"
-                                    @keyup.enter="pesquisa('pesquisa',pesquisaText)"
+                                    @keyup.enter="
+                                        pesquisa('pesquisa', pesquisaText)
+                                    "
                                     v-model="pesquisaText"
                                     placeholder="Nome do Morador "
                                     class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -416,15 +421,18 @@ const formatarStatus = (status) => {
                                     Pesquisar Condominio
                                 </label>
                                 <select
-                                @change="pesquisa('pesquisaCondominio',pesquisaCond)"
+                                    @change="
+                                        pesquisa(
+                                            'pesquisaCondominio',
+                                            pesquisaCond
+                                        )
+                                    "
                                     type="text"
                                     v-model="pesquisaCond"
                                     placeholder="Seu Nome "
                                     class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-                                    <option value="" selected>
-                                        Selecione
-                                    </option>
+                                    <option value="" selected>Selecione</option>
 
                                     <option
                                         v-for="cond in filtros.condominios"
@@ -443,17 +451,18 @@ const formatarStatus = (status) => {
                                     Pesquisar Local
                                 </label>
                                 <select
-                                @change="pesquisa('pesquisaLocal',pesquisaLocais)"
-
+                                    @change="
+                                        pesquisa(
+                                            'pesquisaLocal',
+                                            pesquisaLocais
+                                        )
+                                    "
                                     type="text"
                                     v-model="pesquisaLocais"
                                     placeholder="Seu Nome "
                                     class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-
-                                <option value=""  selected>
-                                        Selecione
-                                    </option>
+                                    <option value="" selected>Selecione</option>
                                     <option
                                         v-for="local in filtros.locais"
                                         :key="local.id"
@@ -461,8 +470,7 @@ const formatarStatus = (status) => {
                                     >
                                         {{ local }}
                                     </option>
-
-                            </select>
+                                </select>
                             </div>
                             <div class="mb-5 w-80">
                                 <label
@@ -472,17 +480,18 @@ const formatarStatus = (status) => {
                                     Pesquisar Assunto
                                 </label>
                                 <select
-                                @change="pesquisa('pesquisaAssunto',pesquisaAssunto)"
-
+                                    @change="
+                                        pesquisa(
+                                            'pesquisaAssunto',
+                                            pesquisaAssunto
+                                        )
+                                    "
                                     type="text"
                                     v-model="pesquisaAssunto"
                                     placeholder="Seu Nome "
                                     class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-
-                                <option value=""  selected>
-                                        Selecione
-                                    </option>
+                                    <option value="" selected>Selecione</option>
                                     <option
                                         v-for="assunto in filtros.assuntos"
                                         :key="assunto.id"
@@ -490,10 +499,8 @@ const formatarStatus = (status) => {
                                     >
                                         {{ assunto }}
                                     </option>
-
-                            </select>
+                                </select>
                             </div>
-
                         </div>
                         <table
                             class="w-full rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400"
@@ -652,17 +659,15 @@ const formatarStatus = (status) => {
                                         {{ solicitacao.nome }}
                                     </td>
 
-                                    <td class="text-center py-2 ">
+                                    <td class="text-center py-2">
                                         <a
-                                            class="hover:underline text-blue-800  flex mx-auto justify-center items-center "
+                                            class="hover:underline text-blue-800 flex mx-auto justify-center items-center"
                                             :href="
                                                 '/solicitacao/' + solicitacao.id
                                             "
-                                            >
-
-
-                                            Ver Detalhes </a
                                         >
+                                            Ver Detalhes
+                                        </a>
                                     </td>
                                     <td class="px-6 py-4">
                                         {{ solicitacao.local }}
@@ -742,11 +747,24 @@ const formatarStatus = (status) => {
                                                     :href="fotos.foto"
                                                     target="_blank"
                                                 >
-                                                    <img
-                                                        :src="fotos.foto"
-                                                        class="rounded-sm w-10 h-10"
-                                                        alt=""
-                                                    />
+                                                    <template
+                                                        v-if="
+                                                            isVideo(fotos.foto)
+                                                        "
+                                                    >
+                                                        <div
+                                                            class="rounded-sm w-10 h-10 bg-gray-200 flex items-center justify-center text-sm font-semibold text-gray-700"
+                                                        >
+                                                            Vídeo
+                                                        </div>
+                                                    </template>
+                                                    <template v-else>
+                                                        <img
+                                                            :src="fotos.foto"
+                                                            class="rounded-sm w-10 h-10"
+                                                            alt=""
+                                                        />
+                                                    </template>
                                                 </a>
                                             </span>
                                             <span
