@@ -184,12 +184,16 @@ class CondominioController extends Controller
                 $query->where('nome', 'like', '%' . $request->pesquisaUnidade . '%');
 
             }
+                $totalUnidades = $query->count();
 
             $unidades = $query->orderBy(DB::raw('LENGTH(nome)'), 'asc')
             ->orderBy('nome', 'asc')
             ->paginate(10);
 
-        return Inertia('Editar-Condominio', compact('condominio', 'unidades'));
+        return Inertia('Editar-Condominio', compact('condominio', 'unidades','totalUnidades'))
+         ->with('filtros', [
+        'pesquisaUnidade' => $request->pesquisaUnidade,
+    ]);;
     }
 
     /**
