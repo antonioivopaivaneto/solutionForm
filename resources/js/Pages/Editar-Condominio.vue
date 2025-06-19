@@ -855,19 +855,20 @@ const copiarImagem = () => {
                         </div>
 
                         <div class="mt-4 flex gap-2 items-center">
-                            <a
-                                :href="uni.url + '&perPage=' + perPage"
-                                v-for="uni in unidades.links"
-                                :key="uni.label"
-                                class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
-                                :class="{ 'bg-blue-500': uni.active }"
-                            >
-                                <span>{{
-                                    uni.label
-                                        .replaceAll("&amp;laquo;", "")
-                                        .replaceAll("&amp;raquo;", "")
-                                }}</span>
-                            </a>
+<a
+  :href="uni.url + '&perPage=' + perPage"
+  v-for="uni in unidades.links"
+  :key="uni.label"
+  :class="[
+    'px-4 py-2 text-white rounded disabled:opacity-50',
+    Number(uni.label) === unidades.current_page ? 'bg-blue-500' : 'bg-gray-500'
+  ]"
+>
+  <span>{{
+    uni.label.replace(/&.*?;/g, '')
+  }}</span>
+</a>
+
                         </div>
                     </div>
                 </div>
