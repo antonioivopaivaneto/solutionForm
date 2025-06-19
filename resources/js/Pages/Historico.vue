@@ -15,7 +15,7 @@ const remover = (id) => {
 
 }
 const concluir = (id) => {
-    if (confirm("Essa solicitação entrara para o histórico, deseja concluir ? ")) {
+    if (confirm("Essa solicitação Saira do  histórico, deseja concluir ? ")) {
 
         router.get(route('reabrirSolicitacao', id), { preserveScroll: true })
     }

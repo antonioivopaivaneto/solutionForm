@@ -172,29 +172,65 @@ class CondominioController extends Controller
      */
     public function show($id, Request $request)
     {
-        // Busca o condomínio sem carregar as unidades
         $condominio = Condominio::findOrFail($id);
 
-        // Paginando as unidades do condomínio com ordenação natural
-        $query = $condominio->unidades()
+        $search = $request->pesquisaUnidade;
+        $perPage = $request->perPage ?? 10;
+        $bloco      = $request->bloco;
+        $torre      = $request->torre;
+        $andar      = $request->andar;
+
+        // Consulta das unidades com filtro
+        $query = Unidade::where('condominio_id', $id)
             ->with('solicitacoes');
 
+        if ($search) {
+            $query->where('nome', 'like', '%' . $search . '%');
+        }
+        if ($bloco) {
+            $query->where('bloco', $bloco);
+        }
 
-            if($request->pesquisaUnidade){
-                $query->where('nome', 'like', '%' . $request->pesquisaUnidade . '%');
+        if ($torre) {
+            $query->where('torre', $torre);
+        }
 
-            }
-                $totalUnidades = $query->count();
+        if ($andar) {
+            $query->where('andar', $andar);
+        }
 
-            $unidades = $query->orderBy(DB::raw('LENGTH(nome)'), 'asc')
+        $unidades = $query->orderBy(DB::raw('LENGTH(nome)'), 'asc')
             ->orderBy('nome', 'asc')
-            ->paginate(10);
+            ->paginate($perPage);
 
-        return Inertia('Editar-Condominio', compact('condominio', 'unidades','totalUnidades'))
-         ->with('filtros', [
-        'pesquisaUnidade' => $request->pesquisaUnidade,
-    ]);;
+        // Totais usando DB::raw em uma única query
+        $totais = DB::table('unidades')
+            ->selectRaw('
+            COUNT(*) as total_unidades,
+            COUNT(DISTINCT bloco) as total_blocos,
+            COUNT(DISTINCT torre) as total_torres,
+            COUNT(DISTINCT andar) as total_andares
+        ')
+            ->where('condominio_id', $id)
+            ->first();
+
+        return Inertia('Editar-Condominio', [
+            'condominio'     => $condominio,
+            'unidades'       => $unidades,
+            'totalUnidades'  => $totais->total_unidades,
+            'totalBlocos'    => $totais->total_blocos,
+            'totalTorres'    => $totais->total_torres,
+            'totalAndares'   => $totais->total_andares,
+            'filtros'        => [
+                'pesquisaUnidade' => $search,
+                'perPage' => $perPage,
+                 'bloco'           => $bloco,
+                'torre'           => $torre,
+                'andar'           => $andar,
+            ],
+        ]);
     }
+
 
     /**
      * Show the form for editing the specified resource.

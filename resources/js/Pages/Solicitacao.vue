@@ -21,6 +21,8 @@
 
             <form class="max-w-sm mx-auto fade">
 
+                aqui{{  }}
+
 
                 <img :src="header" v-if="!stepTree" class="transition w-80 mx-auto" alt="">
 
@@ -221,7 +223,7 @@ const assuntos = [
     'Reclamação',
     'Sugestão',
     'Elogio',
-    'Hall',
+    'Outro',
     'Estacionamento',
     'Portaria',
     'Limpeza',

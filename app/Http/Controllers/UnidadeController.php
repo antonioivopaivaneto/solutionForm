@@ -38,26 +38,26 @@ class UnidadeController extends Controller
     public function store(Request $request)
     {
         $condominio = Condominio::find($request->input('condominio_id'));
-    
+
         $bloco = $request->input('bloco');
         $torre = $request->input('torre');
         $unidadesString = $request->input('unidades');
         $qtdAndares = (int) $request->input('qtd_andares');
         $qtdTotal = $request->input('qtd_total');
-    
+
         $nomeBloco = $bloco ? "-" . $bloco : '';
         $nomeTorre = $torre ? $torre . "/" : '';
-    
+
         if ($qtdTotal === null) {
             if (strpos($unidadesString, '-') !== false) {
                 [$inicio, $fim] = explode('-', $unidadesString);
                 $inicio = (int) $inicio;
                 $fim = (int) $fim;
-    
+
                 // Descobrir quantos dígitos tem o sufixo (ex: 1001 tem 4 dígitos, sufixo são os últimos 3)
                 $tamanhoTotal = strlen($inicio);
                 $tamanhoSufixo = $tamanhoTotal - 1; // considerando andar 1 dígito
-    
+
                 $unidades = [];
                 for ($i = $inicio; $i <= $fim; $i++) {
                     // pega o sufixo: últimos N dígitos
@@ -70,12 +70,12 @@ class UnidadeController extends Controller
             } else {
                 return redirect()->back()->with('error', 'Formato de unidades inválido.');
             }
-    
+
             foreach (range(1, $qtdAndares) as $andar) {
                 foreach ($unidades as $sufixo) {
                     $sufixoPadded = str_pad($sufixo, 3, '0', STR_PAD_LEFT);
                     $numeroCompleto = $andar . $sufixoPadded; // ex: 1 + 001 = 1001
-    
+
                     Unidade::create([
                         'nome' => "{$nomeTorre}UND.{$numeroCompleto}{$nomeBloco}",
                         'bloco' => $bloco,
@@ -89,10 +89,10 @@ class UnidadeController extends Controller
             // Continua igual, para qtdTotal definido
             $tamanho = strlen(trim($unidadesString));
             $inicio = (int) $unidadesString;
-    
+
             for ($i = $inicio; $i < $inicio + $qtdTotal; $i++) {
                 $numeroUnidade = str_pad($i, $tamanho, '0', STR_PAD_LEFT);
-    
+
                 Unidade::create([
                     'nome' => "{$nomeTorre}UND.{$numeroUnidade}{$nomeBloco}",
                     'bloco' => $bloco,
@@ -102,24 +102,32 @@ class UnidadeController extends Controller
                 ]);
             }
         }
-    
+
         return redirect()->back()->with('success', 'Unidades criadas com sucesso!');
     }
-    
-    
-    
+
+
+
     /**
      * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id,Request $request)
     {
         // Paginando as unidades do condomínio
         $unidade = Unidade::find($id); // 10 unidades por página
+        $historico = $request->boolean('historico');
 
-        $solicitacoes = Solicitacao::where('unidade_id', $unidade->id)
+       $solicitacoes = Solicitacao::where('unidade_id', $unidade->id)
+        ->when($historico, function ($query) {
+            // Se for histórico, filtra status = 1
+            $query->where('status', 1);
+        }, function ($query) {
+            // Se não for histórico, filtra status = 0 ou 3
+            $query->whereIn('status', [0, 3]);
+        })
         ->with('fotos')
         ->orderByRaw('CASE WHEN status IS NULL OR status = 0 THEN 0 ELSE 1 END ASC')
         ->paginate(10);
@@ -127,7 +135,7 @@ class UnidadeController extends Controller
         // Busca o condomínio sem carregar as unidades
         $condominio = Condominio::find($unidade->condominio_id);
 
-        return Inertia('Solicitacao-Unidade', compact('condominio', 'unidade','solicitacoes'));
+        return Inertia('Solicitacao-Unidade', compact('condominio', 'unidade','solicitacoes', 'historico'));
     }
 
     /**

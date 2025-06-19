@@ -13,11 +13,15 @@ import SecondaryButton from "@/Components/SecondaryButton.vue";
 import { toPng } from "html-to-image";
 import validaCNPJ from "@/Helpers/validaCNPJ.js";
 import { Canvg } from "canvg";
+import DangerButton from "@/Components/DangerButton.vue";
 const props = defineProps({
     condominio: Object,
     unidades: Object,
     totalUnidades: Number,
     filtros: Object,
+    totalBlocos: Number,
+    totalTorres: Number,
+    totalAndares: Number,
 });
 
 const form = useForm({
@@ -72,7 +76,11 @@ const formRemove = useForm({
 
 const btnNameSaveOrEdit = ref("Editar");
 const editLine = ref(null);
-const pesquisaText = ref(props.filtros?.pesquisaUnidade ?? '');
+const pesquisaText = ref(props.filtros?.pesquisaUnidade ?? "");
+const perPage = ref(props.filtros?.perPage ?? 10);
+const torre = ref(props.filtros?.torre ?? "");
+const bloco = ref(props.filtros?.bloco ?? "");
+const andar = ref(props.filtros?.andar ?? "");
 const msgSucesso = ref(false);
 
 const editar = (unidade) => {
@@ -96,6 +104,26 @@ const editar = (unidade) => {
         formEditUnidade.andar = unidade.andar;
     }
 };
+
+watch(
+    () => perPage.value,
+    () => {
+        router.get(
+            route("condominios.show", props.condominio.id),
+            {
+                page: props.unidades.current_page,
+                perPage: perPage.value,
+                torre: torre.value,
+                bloco: bloco.value,
+                andar: andar.value,
+            },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    }
+);
 
 // Método para redirecionar para a página de solicitação do condomínio específico
 const redirectToSolicitacao = (id) => {
@@ -145,22 +173,27 @@ const removerTodas = (condominio) => {
 const remover = (id) => {
     if (unidadesSelecionadas.value.length > 0) {
         if (confirm("Deseja remover todas as unidades selecionadas? ")) {
-            formRemove.unidadesSelecionadas = unidadesSelecionadas.value;
-            formRemove.delete(
-                `/unidades/remover-massa/${unidadesSelecionadas.value.join(
-                    ","
-                )}`,
-                {
-                    preserveScroll: true,
-                }
-            );
-            selectAllChecked.value = false;
+            removeEmMassa();
+        } else if (confirm("Deseja remover esta unidade? ")) {
+            router.delete(route("unidades.destroy", id), {
+                preserveScroll: true,
+            });
         }
-    } else if (confirm("Deseja remover esta unidade? ")) {
-        router.delete(route("unidades.destroy", id), { preserveScroll: true });
-    }
 
-    msgSucesso.value = true;
+        msgSucesso.value = true;
+    }
+};
+
+const removeEmMassa = () => {
+    formRemove.unidadesSelecionadas = unidadesSelecionadas.value;
+    formRemove.delete(
+        `/unidades/remover-massa/${unidadesSelecionadas.value.join(",")}`,
+        {
+            preserveScroll: true,
+        }
+    );
+    selectAllChecked.value = false;
+    unidadesSelecionadas.value = [];
 };
 const selectAllcehckboxes = (event) => {
     const isChecked = event.target.checked;
@@ -231,6 +264,10 @@ const pesquisa = (search, valor) => {
         replace: true,
 
         [search]: valor,
+        torre: torre.value,
+        bloco: bloco.value,
+        andar: andar.value,
+        perPage: perPage.value,
     });
 };
 
@@ -458,7 +495,6 @@ const copiarImagem = () => {
                                 type="text"
                                 class="mt-1 block w-full"
                                 required
-
                                 autocomplete="name"
                             />
 
@@ -496,7 +532,6 @@ const copiarImagem = () => {
                                 class="mt-1 block w-full"
                                 v-model="formcond.endereco"
                                 required
-
                                 autocomplete="endereco"
                             />
                             <InputError
@@ -515,6 +550,27 @@ const copiarImagem = () => {
                             </PrimaryButton>
                         </div>
                     </form>
+
+                    <div
+                        class="flex justify-between font-bold text-gray-600 mt-2"
+                    >
+                        <div>
+                            <span class="text-2xl"> {{ totalUnidades }}</span>
+                            <span class="items-end"> Unidades</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl"> {{ totalTorres }}</span>
+                            <span class="items-end"> Torres</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl"> {{ totalBlocos }}</span>
+                            <span class="items-end"> Blocos</span>
+                        </div>
+                        <div>
+                            <span class="text-2xl"> {{ totalAndares }}</span>
+                            <span class="items-end"> Andares</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -524,21 +580,13 @@ const copiarImagem = () => {
                         Lista de unidades - Cond.{{ condominio.nome }}
                     </div>
 
-                    <div class="flex justify-between mx-5">
-                        <div class="">
-                            <SecondaryButton
-                                @click="removerTodas(condominio.id)"
-                                class=""
-                                >remover todas unidades
-                            </SecondaryButton>
-                        </div>
-
-                        <div class="flex items-center gap-2">
+                    <div class="flex mx-5">
+                        <div class="flex flex-col gap-2">
                             <label
-                                class="block text-gray-700 ml-1 text-sm font-bold mb-2"
+                                class="block text-gray-700 ml-1 text-sm font-bold"
                                 for="username"
                             >
-                                Unidade
+                                Nome da Unidade
                             </label>
                             <input
                                 type="text"
@@ -546,9 +594,63 @@ const copiarImagem = () => {
                                     pesquisa('pesquisaUnidade', pesquisaText)
                                 "
                                 v-model="pesquisaText"
-                                placeholder="Nome do Morador "
-                                class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                placeholder="Unidade "
+                                class="items-center bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                             />
+                        </div>
+                        <div class="flex flex-col gap-2 mx-2">
+                            <label
+                                class="block text-gray-700 ml-1 text-sm font-bold"
+                                for="torre"
+                            >
+                                Torre
+                            </label>
+                            <input
+                                type="text"
+                                @keyup.enter="pesquisa('torre', torre)"
+                                v-model="torre"
+                                placeholder="Torre "
+                                class="items-center bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            />
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <label
+                                class="block text-gray-700 ml-1 text-sm font-bold"
+                                for="username"
+                            >
+                                Bloco
+                            </label>
+                            <input
+                                type="text"
+                                @keyup.enter="pesquisa('bloco', bloco)"
+                                v-model="bloco"
+                                placeholder="Bloco "
+                                class="items-center bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            />
+                        </div>
+                        <div class="flex flex-col gap-2 mx-2">
+                            <label
+                                class="block text-gray-700 ml-1 text-sm font-bold"
+                                for="username"
+                            >
+                                andar
+                            </label>
+                            <input
+                                type="text"
+                                @keyup.enter="pesquisa('andar', andar)"
+                                v-model="andar"
+                                placeholder="andar "
+                                class="items-center bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                            />
+                        </div>
+
+                        <div class="flex justify-end items-end">
+                            <DangerButton
+                                v-if="unidadesSelecionadas.length > 0"
+                                @click="removeEmMassa()"
+                                class="font-medium text-white dark:text-white cursor-pointer items-end "
+                                >Remover Selecionados</DangerButton
+                            >
                         </div>
 
                         <div class="mx-5">
@@ -576,12 +678,6 @@ const copiarImagem = () => {
                                     </svg>
                                 </span>
                             </div>
-                        </div>
-
-                        <div
-                            class="flex flex-row-reverse font-bold text-gray-600 mt-2"
-                        >
-                            {{ totalUnidades }} Unidades
                         </div>
                     </div>
 
@@ -729,23 +825,38 @@ const copiarImagem = () => {
                             </tbody>
                         </table>
 
-                        <div
-                            class="text-left font-bold text-gray-600 mt-2 gap-1"
-                        >
-                            <label for="itemsPerPage">Total por página:</label>
-                            <select
-                                id="itemsPerPage"
-                                class="py-1 px-5 border border-gray-300 rounded text-xs"
+                        <div class="flex justify-between">
+                            <div
+                                class="text-left font-bold text-gray-600 mt-2 gap-1"
                             >
-                                <option :value="unidades.data.length">
-                                    {{ unidades.data.length }}
-                                </option>
-                            </select>
+                                <label for="itemsPerPage"
+                                    >Total por página:</label
+                                >
+                                <select
+                                    id="itemsPerPage"
+                                    v-model="perPage"
+                                    class="py-1 px-5 border border-gray-300 rounded text-xs"
+                                >
+                                    <option :value="5">5</option>
+                                    <option :value="10">10</option>
+                                    <option :value="25">25</option>
+                                    <option :value="50">50</option>
+                                    <option :value="100">100</option>
+                                </select>
+                            </div>
+
+                            <div class="mt-2">
+                                <DangerButton
+                                    @click="removerTodas(condominio.id)"
+                                    class=""
+                                    >remover todas unidades do Condominio
+                                </DangerButton>
+                            </div>
                         </div>
 
                         <div class="mt-4 flex gap-2 items-center">
                             <a
-                                :href="uni.url"
+                                :href="uni.url + '&perPage=' + perPage"
                                 v-for="uni in unidades.links"
                                 :key="uni.label"
                                 class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"

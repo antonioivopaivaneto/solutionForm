@@ -11,7 +11,9 @@ import { computed, ref } from 'vue';
 import VueQrcode from '@chenfengyuan/vue-qrcode';
 
 
-const props = defineProps({ condominio: Object, unidade: Object, solicitacoes: Object });
+const props = defineProps({ condominio: Object, unidade: Object, solicitacoes: Object,historico: Boolean });
+
+const historico = ref(props?.historico || false);
 
 const form = useForm({
     bloco: '',
@@ -145,6 +147,12 @@ const reabrir = (id) => {
     }
 
 }
+const pesquisa = (search, valor) => {
+    router.get(route("unidades.show",props.unidade.id), {
+        preserveScroll: true,
+        [search]: valor,
+    });
+};
 
 const Back = () => {
     window.history.back()
@@ -187,6 +195,21 @@ function formatarNumero(telefone) {
                     <div class="pt-6 text-gray-900 uppercase font-bold">Condominio: {{ condominio.nome }}</div>
                     <div class="pb-6 text-gray-900 uppercase font-bold">Lista de Solicitações por Unidade: {{
                     unidade.nome }}</div>
+                    <div class="p-6 text-gray-900 uppercase font-bold">
+                        Lista de Solicitacoes
+                        <div class="relative inline-block">
+                            <select
+                                @change="
+                                    pesquisa('historico', $event.target.value)
+                                "
+                                v-model="historico"
+                                class="appearance-none border-0 rounded-lg p-2 pr-8 bg-white text-gray-700"
+                            >
+                                <option value="false">Ativas</option>
+                                <option value="true">Histórico</option>
+                            </select>
+                        </div>
+                    </div>
 
 
                     <div class="flex flex-row-reverse mx-5">

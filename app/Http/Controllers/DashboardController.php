@@ -60,10 +60,17 @@ class DashboardController extends Controller
         $query = Solicitacao::query();
 
         // Aplicando filtro por status (aberto ou em andamento)
-        $query->where(function ($query) {
-            $query->where('status', 0)
-                ->orWhere('status', 2);
-        });
+
+        $historico = $request->historico ;
+        if ($historico === 'true') {
+            $query->where('status', 1);
+        } else {
+            $query->where(function ($query) {
+                $query->where('status', 0)
+                    ->orWhere('status', 2);
+            });
+        }
+
 
         // Carregando relacionamentos
         $query->with('fotos', 'unidade', 'condominio');
@@ -106,20 +113,21 @@ class DashboardController extends Controller
             'totalPorStatus' => $totalPorStatus,
             'users' => $users,
             'filtros' => $filtros,
+            'historico' => $historico,
         ]);
     }
     public function relatorio()
     {
         $condominios = Condominio::all();
         $assuntos = DB::table('solicitacoes')
-        ->select('assunto', DB::raw('count(*) as total'))
-        ->groupBy('assunto')
-        ->orderByDesc('total')
-        ->limit(5)
-        ->get();
+            ->select('assunto', DB::raw('count(*) as total'))
+            ->groupBy('assunto')
+            ->orderByDesc('total')
+            ->limit(5)
+            ->get();
 
 
-        return Inertia::render('Relatorio',compact('condominios','assuntos'));
+        return Inertia::render('Relatorio', compact('condominios', 'assuntos'));
     }
     public function relatorioCompleto(Request $request)
     {
@@ -129,7 +137,7 @@ class DashboardController extends Controller
         $assunto = $request->assunto;
 
         $datas = [$dataInicio, $dataFinal];
-                // Filtragem condicional para o assunto e condomínio
+        // Filtragem condicional para o assunto e condomínio
         $queryRespostas = Retorno::whereBetween('data', [$dataInicio, $dataFinal]);
 
         $querySolicitacoes = Solicitacao::whereBetween('created_at', [$dataInicio, $dataFinal]);
@@ -218,12 +226,11 @@ class DashboardController extends Controller
             }
         }
 
-        if($assunto==='' ){
-            $assunto ='Todos Assuntos';
-
+        if ($assunto === '') {
+            $assunto = 'Todos Assuntos';
         }
 
-        return Inertia::render('RelatorioCompleto', compact('assunto','datas','condominio','locais', 'unidades', 'condominios', 'respostas', 'canais', 'status', 'assuntos'));
+        return Inertia::render('RelatorioCompleto', compact('assunto', 'datas', 'condominio', 'locais', 'unidades', 'condominios', 'respostas', 'canais', 'status', 'assuntos'));
     }
 
 

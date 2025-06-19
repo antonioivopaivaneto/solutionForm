@@ -10,7 +10,7 @@ import TextInput from "@/Components/TextInput.vue";
 const showModal = ref(false);
 const solicitacaoSelected = ref();
 
-defineProps({
+const props = defineProps({
     solicitacoes: Array,
     users: Array,
     condominios: Array,
@@ -18,7 +18,11 @@ defineProps({
     assuntos: Array,
     totalPorStatus: Array,
     filtros: Array,
+    historico: Boolean,
 });
+
+const historico = ref(props?.historico || false);
+
 const form = useForm({
     descricao: "",
     canal: "",
@@ -38,6 +42,11 @@ const concluir = (id) => {
     if (
         confirm("Essa solicitação entrara para o histórico, deseja concluir ? ")
     ) {
+        router.get(route("concluirSolicitacao", id), { preserveScroll: true });
+    }
+};
+const reabrir = (id) => {
+    if (confirm("Essa solicitação sera reaberta, deseja concluir ? ")) {
         router.get(route("concluirSolicitacao", id), { preserveScroll: true });
     }
 };
@@ -150,8 +159,9 @@ onMounted(() => {
 });
 
 const pesquisa = (search, valor) => {
-    router.get(route("dashboard", { [search]: valor }), {
+    router.get(route("dashboard"), {
         preserveScroll: true,
+        [search]: valor,
     });
 };
 
@@ -184,10 +194,11 @@ const isVideo = (url) => {
         <div class="py-2">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="grid grid-cols-4 gap-5">
+                    <!-- outro-->
 
-                       <!-- outro-->
-
-                <div class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700">
+                    <div
+                        class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 dark:bg-gray-800 dark:border-gray-700"
+                    >
                         <div class="flex items-center justify-between mb-4">
                             <h5
                                 class="text-xl font-bold leading-none text-white-900 dark:text-white"
@@ -272,7 +283,6 @@ const isVideo = (url) => {
                     <div
                         class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow- sm:p-8 dark:bg-gray-800 dark:border-gray-700"
                     >
-
                         <div class="flex items-center justify-between mb-4">
                             <h5
                                 class="text-xl font-bold leading-none text-gray-900 dark:text-white"
@@ -309,7 +319,6 @@ const isVideo = (url) => {
                             </ul>
                         </div>
                     </div>
-
 
                     <!-- outro-->
 
@@ -365,7 +374,19 @@ const isVideo = (url) => {
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">
-                        Lista de Solicitacoes por QRCode
+                        Lista de Solicitacoes
+                        <div class="relative inline-block">
+                            <select
+                                @change="
+                                    pesquisa('historico', $event.target.value)
+                                "
+                                v-model="historico"
+                                class="appearance-none border-0 rounded-lg p-2 pr-8 bg-white text-gray-700"
+                            >
+                                <option value="false">Ativas</option>
+                                <option value="true">Histórico</option>
+                            </select>
+                        </div>
                     </div>
 
                     <div class="flex flex-row-reverse mx-5 fixed right-12">
@@ -887,7 +908,7 @@ const isVideo = (url) => {
                             </tbody>
                         </table>
 
-                        <div class="mt-4 flex gap-2 items-center">
+                        <div class="mt-4 flex gap-2 items-center mb-10">
                             <a
                                 :href="solicitacao.url"
                                 v-for="solicitacao in solicitacoes.links"
