@@ -26,13 +26,14 @@ class DashboardController extends Controller
             return redirect()->route('condominios.manutencao');
         }
 
-        $condominios = DB::table('solicitacoes')
-            ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
-            ->select('condominios.nome', DB::raw('count(*) as total'))
-            ->groupBy('condominios.nome')
-            ->orderByDesc('total')
-            ->limit(5)
-            ->get();
+       $condominios = DB::table('solicitacoes')
+    ->join('condominios', 'solicitacoes.condominio_id', '=', 'condominios.id')
+    ->select('condominios.id', 'condominios.nome', DB::raw('count(*) as total'))
+    ->groupBy('condominios.id', 'condominios.nome')
+    ->orderByDesc('total')
+    ->limit(5)
+    ->get();
+
 
 
         $assuntos = DB::table('solicitacoes')
@@ -61,7 +62,7 @@ class DashboardController extends Controller
 
         // Aplicando filtro por status (aberto ou em andamento)
 
-        $historico = $request->historico ;
+        $historico = $request->historico;
         if ($historico === 'true') {
             $query->where('status', 1);
         } else {
@@ -97,7 +98,7 @@ class DashboardController extends Controller
             $query->where('local', $request->pesquisaLocal);
         }
 
-        $solicitacoes = $query->orderBy('created_at', 'desc')->paginate(15);
+        $solicitacoes = $query->orderBy('created_at', 'desc')->with('retorno')->paginate(15);
         $users = User::all();
 
         $dashService = resolve(DashboardService::class);

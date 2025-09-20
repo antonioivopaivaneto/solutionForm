@@ -9,6 +9,7 @@ use App\Models\Foto;
 use App\Models\Retorno;
 use App\Models\Solicitacao;
 use App\Models\Unidade;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -132,7 +133,9 @@ class SolicitacaoController extends Controller
 
         $unidade = Unidade::find($solicitacao->unidade_id);
         $condominio = Condominio::find($solicitacao->condominio_id);
-        return Inertia::render('Solicitacao-Show', compact('solicitacao', 'condominio', 'unidade'));
+        $users = User::all();
+
+        return Inertia::render('Solicitacao-Show', compact('solicitacao', 'condominio', 'unidade','users'));
     }
 
     /**

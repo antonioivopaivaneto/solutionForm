@@ -165,6 +165,18 @@ const pesquisa = (search, valor) => {
     });
 };
 
+const pesquisaComposta = () => {
+    router.get(route("dashboard"), {
+        preserveScroll: true,
+        historico: historico.value,
+        pesquisa: pesquisaText.value,
+        pesquisaCondominio: pesquisaCond.value,
+        pesquisaAssunto: pesquisaAssunto.value,
+        pesquisaLocal: pesquisaLocais.value,
+    });
+};
+
+
 const closeModal = () => {
     showModal.value = false;
     console.log(showModal.value);
@@ -212,21 +224,21 @@ const isVideo = (url) => {
                                 role="list"
                                 class="divide-y divide-gray-200 dark:divide-gray-700"
                             >
-                                <li class="py-3 sm:py-4">
+                                <li class="py-3 sm:py-2">
                                     <div
                                         class="flex items-center"
                                         v-for="condominio in condominios"
                                         :key="condominio.id"
                                     >
-                                        <div class="flex-1 min-w-0 ms-4">
-                                            <p
-                                                class="text-sm font-mediumtext-gray-900 truncate dark:text-white"
+                                        <div class="flex-1 min-w-0 ms-4 cursor-pointer ">
+                                            <p @click="pesquisaCond = condominio.id; pesquisaComposta()"
+                                                class="hover:text-blue-300 text-sm font-mediumtext-gray-900 truncate dark:text-white"
                                             >
                                                 {{ condominio.nome }}
                                             </p>
                                         </div>
-                                        <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                        <div @change="pesquisaComposta()"
+                                            class=" cursor-pointer inline-flex hover:text-blue-300 items-center text-base font-semibold text-gray-900 dark:text-white"
                                         >
                                             {{ condominio.total }}
                                         </div>
@@ -373,15 +385,14 @@ const isVideo = (url) => {
         <div class="py-1">
             <div class="max-w-8xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900 uppercase font-bold">
+                    <div class="  p-6 text-gray-900 uppercase font-bold">
                         Lista de Solicitacoes
-                        <div class="relative inline-block">
+                        <div class="flex justify-center items-center">
                             <select
-                                @change="
-                                    pesquisa('historico', $event.target.value)
-                                "
+                                @change="pesquisaComposta()"
+
                                 v-model="historico"
-                                class="appearance-none border-0 rounded-lg p-2 pr-8 bg-white text-gray-700"
+                                class="text-xl appearance-none border-0 rounded-lg p-2 pr-8 bg-white text-gray-700"
                             >
                                 <option value="false">Ativas</option>
                                 <option value="true">Histórico</option>
@@ -630,6 +641,13 @@ const isVideo = (url) => {
                                     <th scope="col" class="px-6 py-3">
                                         data e hora
                                     </th>
+                                    <th
+
+                                        scope="col"
+                                        class="px-6 py-3"
+                                    >
+                                        Retorno
+                                    </th>
                                     <th scope="col" class="px-16">foto</th>
                                     <th scope="col" class="px-6 py-3">
                                         Status
@@ -643,7 +661,7 @@ const isVideo = (url) => {
                                 <tr
                                     v-for="solicitacao in solicitacoes.data"
                                     :key="solicitacao.id"
-                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap"
+                                    class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap "
                                     :class="{
                                         'font-extrabold ':
                                             solicitacao.status == 0,
@@ -652,7 +670,7 @@ const isVideo = (url) => {
                                 >
                                     <th
                                         scope="row"
-                                        class="px-6 py-4 font-medium"
+                                        class="px-6 py-2 font-medium"
                                     >
                                         <a
                                             class="hover:text-blue-600 underline"
@@ -664,7 +682,7 @@ const isVideo = (url) => {
                                             {{ solicitacao.condominio.nome }}
                                         </a>
                                     </th>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         <a
                                             class="hover:text-blue-600 underline"
                                             :href="
@@ -676,7 +694,7 @@ const isVideo = (url) => {
                                         </a>
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         {{ solicitacao.nome }}
                                     </td>
 
@@ -690,15 +708,15 @@ const isVideo = (url) => {
                                             Ver Detalhes
                                         </a>
                                     </td>
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         {{ solicitacao.local }}
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         {{ solicitacao.assunto }}
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         <a
                                             class="cursor-pointer hover:underline text-green-700"
                                             target="&_blank"
@@ -714,7 +732,7 @@ const isVideo = (url) => {
                                         >
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         <a
                                             class="cursor-pointer hover:underline"
                                             :href="
@@ -751,6 +769,21 @@ const isVideo = (url) => {
                                             formatarData(solicitacao.created_at)
                                         }}
                                     </td>
+                                    <td class="px-4 py-2"  >
+                                        <div v-if="solicitacao.retorno && solicitacao.retorno.length" class="text-center mx-auto">
+                                            <p>
+                                                <strong>Canal:</strong>
+                                                {{ solicitacao.retorno[solicitacao.retorno.length - 1].canal }}
+                                            </p>
+                                            <p>
+                                                <strong>Data:</strong>
+                                                {{ formatarData(solicitacao.retorno[solicitacao.retorno.length - 1].data) }}
+                                            </p>
+                                            </div>
+                                            <div v-else>
+                                            Sem retorno
+                                            </div></td>
+
                                     <td class="w-full border text-center">
                                         <div
                                             class="flex flex-row justify-center p-1"
@@ -803,7 +836,7 @@ const isVideo = (url) => {
                                         </div>
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="px-6 py-2">
                                         <select
                                             v-model="solicitacao.status"
                                             @change="
@@ -841,7 +874,7 @@ const isVideo = (url) => {
                                         </select>
                                     </td>
 
-                                    <td class="w-full py-4 mx-auto text-center">
+                                    <td class="w-full py-2 mx-auto text-center">
                                         <div class="flex gap-2 justify-center">
                                             <a
                                                 @click="remover(solicitacao.id)"
