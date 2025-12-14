@@ -240,4 +240,19 @@ public function store(Request $request, UnidadeNumeracaoService $service)
 
         return redirect()->back();
     }
+
+    public function updateMassa(Request $request)
+{
+    foreach ($request->unidades as $u) {
+        Unidade::where('id', $u['id'])->update([
+            'nome' => $u['nome'],
+            'torre' => $u['torre'],
+            'bloco' => $u['bloco'],
+            'andar' => $u['andar'],
+        ]);
+    }
+
+    return back()->with('success', 'Unidades atualizadas');
+}
+
 }

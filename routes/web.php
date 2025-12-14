@@ -61,6 +61,7 @@ Route::post('retorno',[ SolicitacaoController::class,'retorno'])->middleware(['a
 Route::put('atualizarStatus',[ SolicitacaoController::class,'atualizarStatus'])->middleware(['auth'])->name('atualizarStatus');
 Route::resource('solicitacao', SolicitacaoController::class)->middleware(['auth']);
 Route::get('solicitacoes-manutencao/{id}',[ SolicitacaoController::class,'solicitacoesManutencao'])->middleware(['auth'])->name('solicitacoes-manutencao');
+Route::put('/unidades/editar-massa', [UnidadeController::class, 'updateMassa']);
 Route::delete('unidades/remover-massa/{unidades}', [UnidadeController::class,'destroyMassa'])->middleware(['auth']);
 Route::delete('unidades/destroyAll/{condominio}', [UnidadeController::class,'destroyAll'])->name('unidades.destroyAll')->middleware(['auth']);
 Route::resource('unidades', UnidadeController::class)->middleware(['auth']);

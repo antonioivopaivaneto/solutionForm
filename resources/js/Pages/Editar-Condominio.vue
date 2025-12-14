@@ -52,6 +52,9 @@ const formEditUnidade = useForm({
     andar: "",
 });
 
+const mostrarModalConfirmacao = ref(false);
+const tipoRemocao = ref(null); // 'selecionados' | 'todas'
+
 const downloadQRCode = () => {
     const qrcodeElement = document.querySelector(".qrcode");
     toPng(qrcodeElement)
@@ -67,7 +70,46 @@ const downloadQRCode = () => {
 };
 
 const unidadesSelecionadas = ref([]);
+const editandoEmMassa = ref(false);
 
+const ativarEdicaoEmMassa = () => {
+    editandoEmMassa.value = true;
+
+    // Opcional: limpa edição individual
+    editLine.value = null;
+};
+
+const salvarEdicaoEmMassa = () => {
+    const payload = props.unidades.data
+        .filter((u) => unidadesSelecionadas.value.includes(u.id))
+        .map((u) => ({
+            id: u.id,
+            nome: u.nome,
+            torre: u.torre,
+            bloco: u.bloco,
+            andar: u.andar,
+        }));
+
+    router.put(
+        "/unidades/editar-massa",
+        {
+            unidades: payload,
+        },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                editandoEmMassa.value = false;
+                unidadesSelecionadas.value = [];
+                selectAllChecked.value = false;
+                msgSucesso.value = true;
+            },
+        }
+    );
+};
+
+const unidadeSelecionada = (id) => {
+    return unidadesSelecionadas.value.includes(id);
+};
 
 const selectAllChecked = ref(false);
 
@@ -297,6 +339,27 @@ const copiarImagem = () => {
                 "Erro ao copiar URL do QR Code para a área de transferência."
             );
         });
+};
+
+const confirmarRemoverSelecionados = () => {
+    tipoRemocao.value = "selecionados";
+    mostrarModalConfirmacao.value = true;
+};
+const confirmarRemoverTodas = () => {
+    tipoRemocao.value = "todas";
+    mostrarModalConfirmacao.value = true;
+};
+const executarRemocao = () => {
+    if (tipoRemocao.value === "selecionados") {
+        removeEmMassa();
+    }
+
+    if (tipoRemocao.value === "todas") {
+        removerTodas(props.condominio.id);
+    }
+
+    mostrarModalConfirmacao.value = false;
+    tipoRemocao.value = null;
 };
 </script>
 <template>
@@ -645,13 +708,23 @@ const copiarImagem = () => {
                             />
                         </div>
 
-                        <div class="flex justify-end items-end">
+                        <div class="flex justify-end items-end gap-2">
                             <DangerButton
                                 v-if="unidadesSelecionadas.length > 0"
-                                @click="removeEmMassa()"
-                                class="font-medium text-white dark:text-white cursor-pointer items-end "
-                                >Remover Selecionados</DangerButton
+                                @click="confirmarRemoverSelecionados"
                             >
+                                Remover Selecionados
+                            </DangerButton>
+
+                            <SecondaryButton
+                                v-if="
+                                    unidadesSelecionadas.length > 0 &&
+                                    !editandoEmMassa
+                                "
+                                @click="ativarEdicaoEmMassa"
+                            >
+                                Editar Selecionados
+                            </SecondaryButton>
                         </div>
 
                         <div class="mx-5">
@@ -741,9 +814,15 @@ const copiarImagem = () => {
                                     >
                                         <input
                                             class="bg-gray-50 text-center border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-200 dark:placeholder-gray-400 dark:text-gray-700 dark:focus:ring-gray-400 dark:focus:border-gray-400"
-                                            v-if="editLine === cond.id"
+                                            v-if="
+                                                (editandoEmMassa &&
+                                                    unidadeSelecionada(
+                                                        cond.id
+                                                    )) ||
+                                                editLine === cond.id
+                                            "
                                             type="text"
-                                            v-model="formEditUnidade.nome"
+                                            v-model="cond.nome"
                                         />
                                         <template v-else>
                                             <Link
@@ -759,9 +838,15 @@ const copiarImagem = () => {
                                         class="px-6 py-4 font-medium"
                                     >
                                         <input
-                                            v-if="editLine === cond.id"
+                                            v-if="
+                                                (editandoEmMassa &&
+                                                    unidadeSelecionada(
+                                                        cond.id
+                                                    )) ||
+                                                editLine === cond.id
+                                            "
                                             type="text"
-                                            v-model="formEditUnidade.torre"
+                                            v-model="cond.torre"
                                             class="text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-200 dark:placeholder-gray-400 dark:text-gray-700 dark:focus:ring-gray-400 dark:focus:border-gray-400"
                                         />
                                         <template v-else>
@@ -773,9 +858,15 @@ const copiarImagem = () => {
                                         class="px-6 py-4 font-medium"
                                     >
                                         <input
-                                            v-if="editLine === cond.id"
+                                            v-if="
+                                                (editandoEmMassa &&
+                                                    unidadeSelecionada(
+                                                        cond.id
+                                                    )) ||
+                                                editLine === cond.id
+                                            "
                                             type="text"
-                                            v-model="formEditUnidade.bloco"
+                                            v-model="cond.bloco"
                                             class="text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-200 dark:placeholder-gray-400 dark:text-gray-700 dark:focus:ring-gray-400 dark:focus:border-gray-400"
                                         />
                                         <template v-else>
@@ -787,9 +878,15 @@ const copiarImagem = () => {
                                         class="px-6 py-4 font-medium"
                                     >
                                         <input
-                                            v-if="editLine === cond.id"
+                                            v-if="
+                                                (editandoEmMassa &&
+                                                    unidadeSelecionada(
+                                                        cond.id
+                                                    )) ||
+                                                editLine === cond.id
+                                            "
                                             type="text"
-                                            v-model="formEditUnidade.andar"
+                                            v-model="cond.andar"
                                             class="text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 dark:bg-white dark:border-gray-200 dark:placeholder-gray-400 dark:text-gray-700 dark:focus:ring-gray-400 dark:focus:border-gray-400"
                                         />
                                         <template v-else>
@@ -846,32 +943,69 @@ const copiarImagem = () => {
                                 </select>
                             </div>
 
-                            <div class="mt-2">
-                                <DangerButton
-                                    @click="removerTodas(condominio.id)"
-                                    class=""
-                                    >remover todas unidades do Condominio
+                            <div class="mt-2 flex gap-2">
+                                <PrimaryButton
+                                    v-if="editandoEmMassa"
+                                    @click="salvarEdicaoEmMassa"
+                                >
+                                    Salvar Alterações
+                                </PrimaryButton>
+
+                                <DangerButton @click="confirmarRemoverTodas">
+                                    Remover todas unidades do Condomínio
                                 </DangerButton>
                             </div>
                         </div>
 
                         <div class="mt-4 flex gap-2 items-center">
-<a
-  :href="uni.url + '&perPage=' + perPage"
-  v-for="uni in unidades.links"
-  :key="uni.label"
-  :class="[
-    'px-4 py-2 text-white rounded disabled:opacity-50',
-    Number(uni.label) === unidades.current_page ? 'bg-blue-500' : 'bg-gray-500'
-  ]"
->
-  <span>{{
-    uni.label.replace(/&.*?;/g, '')
-  }}</span>
-</a>
-
+                            <a
+                                :href="uni.url + '&perPage=' + perPage"
+                                v-for="uni in unidades.links"
+                                :key="uni.label"
+                                :class="[
+                                    'px-4 py-2 text-white rounded disabled:opacity-50',
+                                    Number(uni.label) === unidades.current_page
+                                        ? 'bg-blue-500'
+                                        : 'bg-gray-500',
+                                ]"
+                            >
+                                <span>{{
+                                    uni.label.replace(/&.*?;/g, "")
+                                }}</span>
+                            </a>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div
+            v-if="mostrarModalConfirmacao"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+        >
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    Confirmação
+                </h2>
+
+                <p class="text-gray-600 mb-6">
+                    <span v-if="tipoRemocao === 'selecionados'">
+                        Tem certeza que deseja remover as unidades selecionadas?
+                    </span>
+                    <span v-else>
+                        Tem certeza que deseja remover <strong>TODAS</strong> as
+                        unidades deste condomínio?
+                    </span>
+                </p>
+
+                <div class="flex justify-end gap-3">
+                    <SecondaryButton @click="mostrarModalConfirmacao = false">
+                        Cancelar
+                    </SecondaryButton>
+
+                    <DangerButton @click="executarRemocao">
+                        Sim, remover
+                    </DangerButton>
                 </div>
             </div>
         </div>
