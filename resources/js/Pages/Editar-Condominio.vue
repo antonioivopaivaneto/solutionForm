@@ -68,6 +68,7 @@ const downloadQRCode = () => {
 
 const unidadesSelecionadas = ref([]);
 
+
 const selectAllChecked = ref(false);
 
 const formRemove = useForm({
@@ -442,7 +443,7 @@ const copiarImagem = () => {
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="mt-4">
+                            <!--<div class="mt-4">
                                 <InputLabel
                                     for="qtd_total"
                                     value="Quantidade Total"
@@ -463,7 +464,7 @@ const copiarImagem = () => {
                                     class="mt-2"
                                     :message="form.errors.qtd_total"
                                 />
-                            </div>
+                            </div>-->
                         </div>
                         <div>
                             Exemplo de nomeação:

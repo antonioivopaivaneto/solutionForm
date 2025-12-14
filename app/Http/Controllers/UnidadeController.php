@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Condominio;
 use App\Models\Solicitacao;
 use App\Models\Unidade;
+use App\Service\UnidadeNumeracaoService;
 use Illuminate\Http\Request;
 
 class UnidadeController extends Controller
@@ -98,7 +99,7 @@ private function extrairAndar(string $numeroCompleto, string $prefixo = ''): int
     }
 }
 
-public function store(Request $request)
+public function store(Request $request, UnidadeNumeracaoService $service)
 {
     $condominio = Condominio::find($request->input('condominio_id'));
 
@@ -118,7 +119,8 @@ public function store(Request $request)
             $prefixo = trim($prefixo);
         }
 
-        $numeros = $this->gerarNumeracaoUnidades($unidadesString, $qtdAndares);
+        //$numeros = $this->gerarNumeracaoUnidades($unidadesString, $qtdAndares);
+        $numeros = $service->gerarNumeracao($unidadesString, $qtdAndares);
 
         foreach ($numeros as $numeroCompleto) {
             Unidade::create([
