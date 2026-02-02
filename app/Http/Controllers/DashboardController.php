@@ -235,14 +235,44 @@ class DashboardController extends Controller
     }
 
 
-    public function historico()
-    {
+    public function historico(Request $request)
+{
+    $solicitacoes = Solicitacao::where('status', 1)
+        ->with('fotos', 'unidade', 'condominio')
 
-        $solicitacoes =  Solicitacao::orderBy('created_at', 'desc')->where('status', '=', 1)
-            ->with('fotos', 'unidade', 'condominio')
-            ->paginate(15);
-        return Inertia::render('Historico', ['solicitacoes' => $solicitacoes]);
-    }
+        ->when($request->condominio, function ($q) use ($request) {
+            $q->where('condominio_id', $request->condominio);
+        })
+
+        ->when($request->unidade, function ($q) use ($request) {
+            $q->whereHas('unidade', function ($u) use ($request) {
+                $u->where('nome', 'like', "%{$request->unidade}%");
+            });
+        })
+
+        ->when($request->morador, function ($q) use ($request) {
+            $q->where('nome', 'like', "%{$request->morador}%");
+        })
+
+        ->when($request->assunto, function ($q) use ($request) {
+            $q->where('assunto', $request->assunto);
+        })
+
+        ->when($request->data, function ($q) use ($request) {
+            $q->whereDate('created_at', $request->data);
+        })
+
+        ->orderBy('created_at', 'desc')
+        ->paginate(15)
+        ->withQueryString();
+
+    return Inertia::render('Historico', [
+        'solicitacoes' => $solicitacoes,
+        'condominios' => Condominio::select('id', 'nome')->get(),
+        'assuntos' => Solicitacao::select('assunto')->distinct()->pluck('assunto'),
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.

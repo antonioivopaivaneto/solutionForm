@@ -43,6 +43,24 @@ const processarLabel = (label) => {
 const Back = () => {
     window.history.back()
 }
+
+import { reactive } from 'vue'
+
+const filters = reactive({
+  condominio: '',
+  unidade: '',
+  morador: '',
+  assunto: '',
+  data: '',
+})
+
+const filtrar = () => {
+  router.get(route('historico'), filters, {
+    preserveState: true,
+    preserveScroll: true,
+  })
+}
+
 </script>
 
 <template>
@@ -68,7 +86,66 @@ const Back = () => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900 uppercase font-bold">Histórico  de Solicitacoes  Finalizada</div>
 
-                    <div class="p-10   shadow-md sm:rounded-lg">
+                    <div class="p-5  max-w-full  rounded-lg  ">
+  <form @submit.prevent="filtrar" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+
+    <!-- Condomínio -->
+    <select v-model="filters.condominio"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+>
+      <option value="">Condomínio</option>
+      <option v-for="c in condominios" :key="c.id" :value="c.id">
+        {{ c.nome }}
+      </option>
+    </select>
+
+    <!-- Unidade -->
+    <input
+      v-model="filters.unidade"
+      type="text"
+      placeholder="Unidade"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+    />
+
+    <!-- Morador -->
+    <input
+      v-model="filters.morador"
+      type="text"
+      placeholder="Morador"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+    />
+
+    <!-- Assunto -->
+    <select v-model="filters.assunto"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+>
+      <option value="">Assunto</option>
+      <option v-for="a in assuntos" :key="a" :value="a">
+        {{ a }}
+      </option>
+    </select>
+
+    <!-- Data -->
+    <input
+      v-model="filters.data"
+      type="date"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+    />
+
+    <!-- Botão -->
+    <button
+      class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">
+      Filtrar
+    </button>
+
+  </form>
+</div>
+
+
+                    <div class="px-5   shadow-md sm:rounded-lg">
                         <table class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
                                 <tr class="bg-gray-500 text-white text-nowrap">
