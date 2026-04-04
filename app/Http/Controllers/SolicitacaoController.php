@@ -11,6 +11,7 @@ use App\Models\Solicitacao;
 use App\Models\Unidade;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -96,12 +97,10 @@ class SolicitacaoController extends Controller
                 $foto->save();
             }
         }
-        //Mail::to('antonioivo.3@gmail.com')->cc('antonioivopaivaneto@gmail.com')->send(new MailSolicitacao($solicitacao));
+        //Mail::to($solicitacao->email)->send(new MailSolicitacao($solicitacao));
 
-        //$emails = ['antonioivo.3@gmail.com','sindico@solutionsindicancia.com.br'];
-        // dispatch(new SendEmailQueueJob($emails,$solicitacao->id ));
-
-
+        $emails = [$solicitacao->email];
+        SendEmailQueueJob::dispatch($emails, $solicitacao->id);
 
 
 

@@ -9,6 +9,7 @@ use App\Http\Controllers\RespostaSolicitacaoController;
 use App\Http\Controllers\SolicitacaoController;
 use App\Http\Controllers\UnidadeController;
 use App\Http\Controllers\UserController;
+use App\Jobs\SendEmailQueueJob;
 use App\Models\Solicitacao;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,8 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
+
 Route::post('novoUser', [UserController::class, 'store'])->middleware(['auth'])->name('novoUser');
 
 Route::delete('/retorno-delete/{id}',[SolicitacaoController::class,'Retornodestroy'])->middleware(['auth'])->name('retorno.destroy');

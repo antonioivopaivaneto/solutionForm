@@ -31,6 +31,7 @@ const form = useForm({
     unidades: "",
     qtd_andares: "",
     qtd_total: "",
+    tipo_numeracao: "auto",
     condominio_nome: props.condominio.nome, // Set initial value
     condominio_id: props.condominio.id, // Set initial value
     endereco: props.condominio.endereco, // Set initial value
@@ -103,7 +104,7 @@ const salvarEdicaoEmMassa = () => {
                 selectAllChecked.value = false;
                 msgSucesso.value = true;
             },
-        }
+        },
     );
 };
 
@@ -163,9 +164,9 @@ watch(
             {
                 preserveState: true,
                 replace: true,
-            }
+            },
         );
-    }
+    },
 );
 
 // Método para redirecionar para a página de solicitação do condomínio específico
@@ -184,7 +185,7 @@ const submit = (unidade) => {
     form.post("/unidades", {
         preserveScroll: true,
         onSuccess: () => {
-            (msgSucesso.value = true), form.reset();
+            ((msgSucesso.value = true), form.reset());
         },
     });
 };
@@ -194,7 +195,7 @@ const submitCond = (condominio) => {
     formcond.put("/condominios/" + condominio, {
         preserveScroll: true,
         onSuccess: () => {
-            (msgSucesso.value = true), formcond.reset();
+            ((msgSucesso.value = true), formcond.reset());
         },
     });
 };
@@ -233,7 +234,7 @@ const removeEmMassa = () => {
         `/unidades/remover-massa/${unidadesSelecionadas.value.join(",")}`,
         {
             preserveScroll: true,
-        }
+        },
     );
     selectAllChecked.value = false;
     unidadesSelecionadas.value = [];
@@ -285,7 +286,7 @@ watch(
         } else {
             form.qtd_total_disabled = false;
         }
-    }
+    },
 );
 
 watch(
@@ -297,7 +298,7 @@ watch(
         } else {
             form.qtd_andares_disabled = false;
         }
-    }
+    },
 );
 
 const pesquisa = (search, valor) => {
@@ -326,17 +327,17 @@ const copiarImagem = () => {
         .then(() => {
             console.log(
                 "URL do QR Code copiada para a área de transferência:",
-                urlQRCode
+                urlQRCode,
             );
             alert("URL do QR Code copiada para a área de transferência.");
         })
         .catch((error) => {
             console.error(
                 "Erro ao copiar URL do QR Code para a área de transferência:",
-                error
+                error,
             );
             alert(
-                "Erro ao copiar URL do QR Code para a área de transferência."
+                "Erro ao copiar URL do QR Code para a área de transferência.",
             );
         });
 };
@@ -377,8 +378,8 @@ const executarRemocao = () => {
                         viewBox="0 0 24 24"
                         style="
                             fill: rgba(255, 255, 255, 0.8);
-                            transform: ;
-                            msfilter: ;
+                            transform:;
+                            msfilter:;
                         "
                     >
                         <path
@@ -504,6 +505,24 @@ const executarRemocao = () => {
                                     :message="form.errors.password"
                                 />
                             </div>
+                        </div>
+                        <div class="mt-4">
+                            <InputLabel value="Tipo de Numeração" />
+                            <select
+                                v-model="form.tipo_numeracao"
+                                class="mt-1 block w-full border-gray-300 rounded-md"
+                            >
+                                <option value="auto">Automático</option>
+                                <option value="padrao">
+                                    Padrão (01, 11, 21)
+                                </option>
+                                <option value="sequencial">
+                                    Sequencial (01 até N)
+                                </option>
+                                <option value="condominio">
+                                    Condomínio (101, 201)
+                                </option>
+                            </select>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <!--<div class="mt-4">
@@ -817,7 +836,7 @@ const executarRemocao = () => {
                                             v-if="
                                                 (editandoEmMassa &&
                                                     unidadeSelecionada(
-                                                        cond.id
+                                                        cond.id,
                                                     )) ||
                                                 editLine === cond.id
                                             "
@@ -841,7 +860,7 @@ const executarRemocao = () => {
                                             v-if="
                                                 (editandoEmMassa &&
                                                     unidadeSelecionada(
-                                                        cond.id
+                                                        cond.id,
                                                     )) ||
                                                 editLine === cond.id
                                             "
@@ -861,7 +880,7 @@ const executarRemocao = () => {
                                             v-if="
                                                 (editandoEmMassa &&
                                                     unidadeSelecionada(
-                                                        cond.id
+                                                        cond.id,
                                                     )) ||
                                                 editLine === cond.id
                                             "
@@ -881,7 +900,7 @@ const executarRemocao = () => {
                                             v-if="
                                                 (editandoEmMassa &&
                                                     unidadeSelecionada(
-                                                        cond.id
+                                                        cond.id,
                                                     )) ||
                                                 editLine === cond.id
                                             "

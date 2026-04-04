@@ -102,7 +102,7 @@ private function extrairAndar(string $numeroCompleto, string $prefixo = ''): int
 public function store(Request $request, UnidadeNumeracaoService $service)
 {
     $condominio = Condominio::find($request->input('condominio_id'));
-
+    $tipo = $request->input('tipo_numeracao');
     $bloco = $request->input('bloco');
     $torre = $request->input('torre');
     $unidadesString = $request->input('unidades');
@@ -120,7 +120,7 @@ public function store(Request $request, UnidadeNumeracaoService $service)
         }
 
         //$numeros = $this->gerarNumeracaoUnidades($unidadesString, $qtdAndares);
-        $numeros = $service->gerarNumeracao($unidadesString, $qtdAndares);
+        $numeros = $service->gerarNumeracao($unidadesString, $qtdAndares, $tipo);
 
         foreach ($numeros as $numeroCompleto) {
             Unidade::create([

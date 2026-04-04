@@ -35,8 +35,7 @@ class Solicitacao extends Mailable
     {
         return new Envelope(
 
-            subject: 'Solicitacao Por QrCode',
-
+        subject: 'Nova Solicitação nº' . $this->solicitacao->id,
 
         );
     }

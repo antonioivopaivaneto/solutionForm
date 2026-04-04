@@ -542,6 +542,9 @@ const isVideo = (url) => {
                             >
                                 <tr class="bg-gray-500 text-white text-nowrap">
                                     <th scope="col" class="px-4 py-3">
+                                        ticket
+                                    </th>
+                                    <th scope="col" class="px-4 py-3">
                                         condominio
                                     </th>
                                     <th scope="col" class="px-4 py-3">
@@ -668,6 +671,9 @@ const isVideo = (url) => {
                                         'font-normal ': solicitacao.status == 1,
                                     }"
                                 >
+                                <td class="px-6 py-2">
+                                        {{ solicitacao.id }}
+                                    </td>
                                     <th
                                         scope="row"
                                         class="px-6 py-2 font-medium"
