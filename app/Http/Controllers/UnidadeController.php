@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Condominio;
 use App\Models\Solicitacao;
 use App\Models\Unidade;
-use App\Service\UnidadeNumeracaoService;
+use App\Service\Unidade\UnidadeNumeracaoService;
 use Illuminate\Http\Request;
 
 class UnidadeController extends Controller
@@ -36,68 +36,9 @@ class UnidadeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-private function gerarNumeracaoUnidades(string $entrada, int $qtd_andares): array
-{
-    $unidades = [];
 
-    $prefixo = '';
-    $faixa = $entrada;
 
-    if (strpos($entrada, '/') !== false) {
-        [$prefixo, $faixa] = explode('/', $entrada);
-    }
 
-    [$inicio, $fim] = explode('-', $faixa);
-
-    $prefixo = trim($prefixo);
-    $inicio = (int) trim($inicio);
-    $fim = (int) trim($fim);
-
-    if ($prefixo === '') {
-        // Caso sem prefixo, exemplo '01-04'
-        for ($andar = 1; $andar <= $qtd_andares; $andar++) {
-            for ($num = $inicio; $num <= $fim; $num++) {
-                $sufixo = str_pad((string)$num, 2, '0', STR_PAD_LEFT);
-                $numero = $andar . $sufixo; // ex: 1 + 01 = 101
-                $unidades[] = $numero;
-            }
-        }
-    } else {
-        // Caso com prefixo, exemplo '1/01-03' ou '10/01-04'
-        // Para formar o número, fazemos: prefixo * 100 + (andar -1)*10 + sufixo
-        $prefixoInt = (int)$prefixo;
-
-        for ($andar = 1; $andar <= $qtd_andares; $andar++) {
-            for ($num = $inicio; $num <= $fim; $num++) {
-                $sufixo = str_pad((string)$num, 2, '0', STR_PAD_LEFT);
-                $numero = ($prefixoInt * 100) + (($andar - 1) * 10) + (int)$sufixo;
-                $unidades[] = (string)$numero;
-            }
-        }
-    }
-
-    return $unidades;
-}
-
-private function extrairAndar(string $numeroCompleto, string $prefixo = ''): int
-{
-    $numeroCompleto = (string) $numeroCompleto;
-
-    if ($prefixo === '') {
-        // Sem prefixo, andar é o primeiro dígito (centena)
-        return (int) substr($numeroCompleto, 0, 1);
-    } else {
-        // Com prefixo, andar é o dígito imediatamente após o prefixo
-        $prefixoLength = strlen($prefixo);
-        $numeroLength = strlen($numeroCompleto);
-
-        if ($numeroLength > $prefixoLength) {
-            return (int) substr($numeroCompleto, $prefixoLength, 1);
-        } else {
-            return 0;
-        }
-    }
-}
 
 public function store(Request $request, UnidadeNumeracaoService $service)
 {
@@ -126,7 +67,7 @@ public function store(Request $request, UnidadeNumeracaoService $service)
             Unidade::create([
                 'nome' => "{$nomeTorre}UND.{$numeroCompleto}{$nomeBloco}",
                 'bloco' => $bloco,
-                'andar' => $this->extrairAndar($numeroCompleto, $prefixo),
+                'andar' => $service->extrairAndar($numeroCompleto, $unidadesString),
                 'torre' => $torre,
                 'condominio_id' => $condominio->id,
             ]);
