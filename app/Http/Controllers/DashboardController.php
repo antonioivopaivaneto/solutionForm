@@ -45,8 +45,8 @@ class DashboardController extends Controller
 
         $moradores = DB::table('solicitacoes')
             ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
-            ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
-            ->groupBy('unidades.nome', 'solicitacoes.nome')
+            ->select('unidades.id as unidade_id', 'unidades.nome as unidade_nome', DB::raw('count(*) as total'))
+            ->groupBy('unidades.id', 'unidades.nome')
             ->orderByDesc('total')
             ->limit(5)
             ->get();
@@ -97,7 +97,18 @@ class DashboardController extends Controller
         if ($request->pesquisaLocal) {
             $query->where('local', $request->pesquisaLocal);
         }
-
+        if ($request->pesquisaUnidade) {
+            $query->where('unidade_id', $request->pesquisaUnidade);
+        }
+        if ($request->has('pesquisaStatus') && $request->pesquisaStatus !== '') {
+            $query->where('status', $request->pesquisaStatus);
+        }
+        if ($request->pesquisaDataInicial) {
+            $query->whereDate('created_at', '>=', $request->pesquisaDataInicial);
+        }
+        if ($request->pesquisaDataFinal) {
+            $query->whereDate('created_at', '<=', $request->pesquisaDataFinal);
+        }
         $solicitacoes = $query->orderBy('created_at', 'desc')->with('retorno')->paginate(15);
         $users = User::all();
 
@@ -133,34 +144,62 @@ class DashboardController extends Controller
     public function relatorioCompleto(Request $request)
     {
         $condominioId = $request->condominio_id;
-        $dataInicio = $request->data[0];
-        $dataFinal = $request->data[1];
         $assunto = $request->assunto;
+        $dataInicio = $request->dataInicio;
+        $dataFinal = $request->dataFinal;
+
+        if (!$dataInicio && is_array($request->data) && isset($request->data[0])) {
+            $dataInicio = $request->data[0];
+        }
+        if (!$dataFinal && is_array($request->data) && isset($request->data[1])) {
+            $dataFinal = $request->data[1];
+        }
 
         $datas = [$dataInicio, $dataFinal];
         // Filtragem condicional para o assunto e condomínio
-        $queryRespostas = Retorno::whereBetween('data', [$dataInicio, $dataFinal]);
+        $aplicarFiltrosSolicitacao = function ($query, $prefixo = '') use ($condominioId, $assunto, $dataInicio, $dataFinal) {
+            $campo = fn ($nome) => $prefixo ? "{$prefixo}.{$nome}" : $nome;
 
-        $querySolicitacoes = Solicitacao::whereBetween('created_at', [$dataInicio, $dataFinal]);
+            if ($assunto) {
+                $query->where($campo('assunto'), $assunto);
+            }
+            if ($condominioId) {
+                $query->where($campo('condominio_id'), $condominioId);
+            }
+            if ($dataInicio) {
+                $query->whereDate($campo('created_at'), '>=', $dataInicio);
+            }
+            if ($dataFinal) {
+                $query->whereDate($campo('created_at'), '<=', $dataFinal);
+            }
+
+            return $query;
+        };
+
+        $queryRespostas = DB::table('retornos')
+            ->join('solicitacoes', 'retornos.solicitacao_id', '=', 'solicitacoes.id')
+            ->select('retornos.canal');
+
+        $querySolicitacoes = $aplicarFiltrosSolicitacao(Solicitacao::query());
 
         if ($assunto) {
-            $querySolicitacoes->where('assunto', $assunto);
-            $queryLocais = DB::table('solicitacoes')
-                ->where('assunto', $assunto);
-        } else {
-            $queryLocais = DB::table('solicitacoes');
+            $queryRespostas->where('solicitacoes.assunto', $assunto);
         }
-
         if ($condominioId) {
-            $querySolicitacoes->where('condominio_id', $condominioId);
-            $queryLocais->where('condominio_id', $condominioId);
+            $queryRespostas->where('solicitacoes.condominio_id', $condominioId);
+        }
+        if ($dataInicio) {
+            $queryRespostas->whereDate('retornos.data', '>=', $dataInicio);
+        }
+        if ($dataFinal) {
+            $queryRespostas->whereDate('retornos.data', '<=', $dataFinal);
         }
 
         $respostas = $queryRespostas->get();
         $solicitacoes = $querySolicitacoes->get();
 
         // Agrega os locais com base no filtro de assunto e condomínio
-        $locais = $queryLocais
+        $locais = $aplicarFiltrosSolicitacao(DB::table('solicitacoes'))
             ->select('local', DB::raw('count(*) as total'))
             ->groupBy('local')
             ->orderByDesc('total')
@@ -168,14 +207,7 @@ class DashboardController extends Controller
             ->get();
 
         // Agrega os assuntos com base no filtro de assunto e condomínio
-        $assuntos = DB::table('solicitacoes')
-            ->whereBetween('created_at', [$dataInicio, $dataFinal])
-            ->when($assunto, function ($query) use ($assunto) {
-                return $query->where('assunto', $assunto);
-            })
-            ->when($condominioId, function ($query) use ($condominioId) {
-                return $query->where('condominio_id', $condominioId);
-            })
+        $assuntos = $aplicarFiltrosSolicitacao(DB::table('solicitacoes'))
             ->select('assunto', DB::raw('count(*) as total'))
             ->groupBy('assunto')
             ->orderByDesc('total')
@@ -183,15 +215,11 @@ class DashboardController extends Controller
             ->get();
 
         // Agrega as unidades com base no filtro de assunto e condomínio
-        $unidades = DB::table('solicitacoes')
-            ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id')
-            ->whereBetween('solicitacoes.created_at', [$dataInicio, $dataFinal])
-            ->when($assunto, function ($query) use ($assunto) {
-                return $query->where('solicitacoes.assunto', $assunto);
-            })
-            ->when($condominioId, function ($query) use ($condominioId) {
-                return $query->where('solicitacoes.condominio_id', $condominioId);
-            })
+        $unidades = $aplicarFiltrosSolicitacao(
+                DB::table('solicitacoes')
+                    ->join('unidades', 'solicitacoes.unidade_id', '=', 'unidades.id'),
+                'solicitacoes'
+            )
             ->select('unidades.nome as unidade_nome', 'solicitacoes.nome as morador_nome', DB::raw('count(*) as total'))
             ->groupBy('unidades.nome', 'solicitacoes.nome')
             ->orderByDesc('total')
@@ -199,7 +227,7 @@ class DashboardController extends Controller
             ->get();
 
         $condominios = Condominio::all();
-        $condominio = Condominio::find($condominioId)->first();
+        $condominio = $condominioId ? Condominio::find($condominioId) : null;
 
         // Atualiza os dados do relatório com as respostas, canais, status e assuntos
         $canais = [
@@ -216,9 +244,6 @@ class DashboardController extends Controller
         foreach ($respostas as $resposta) {
             if (isset($canais[$resposta->canal])) {
                 $canais[$resposta->canal]++;
-            }
-            if (isset($status[$resposta->status])) {
-                $status[$resposta->status]++;
             }
         }
         foreach ($solicitacoes as $solicitacao) {
@@ -258,8 +283,12 @@ class DashboardController extends Controller
             $q->where('assunto', $request->assunto);
         })
 
-        ->when($request->data, function ($q) use ($request) {
-            $q->whereDate('created_at', $request->data);
+        ->when($request->dataInicial, function ($q) use ($request) {
+            $q->whereDate('created_at', '>=', $request->dataInicial);
+        })
+
+        ->when($request->dataFinal, function ($q) use ($request) {
+            $q->whereDate('created_at', '<=', $request->dataFinal);
         })
 
         ->orderBy('created_at', 'desc')

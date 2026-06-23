@@ -12,8 +12,6 @@ import {
     LinearScale, ArcElement,
 } from 'chart.js';
 import { Pie, Bar } from 'vue-chartjs';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
@@ -24,8 +22,7 @@ const props = defineProps({ condominios: Object, canais: Array,assuntos:Array })
 const condominios = props.condominios;
 
 const submit = () => {
-    form.data = Datas.value
-    router.get('/relatorioShow',form, {
+    router.get('/relatorioShow', filtrosPreenchidos(), {
         preserveScroll: true,
         onSuccess: () => {
 
@@ -75,8 +72,6 @@ function formatarNumero(telefone) {
     return telefone.replace(/[-()\s]/g, '');
 }
 
-const Datas = ref();
-
 const onSelectUnidade = (value) => {
     form.unidade = value;
 };
@@ -91,10 +86,22 @@ const assuntosFormatados = props.assuntos.map(assunto => ({
 
 const form = useForm({
     condominio_id: '',
-    data: '',
+    dataInicio: '',
+    dataFinal: '',
     assunto: '',
 
 });
+
+const filtrosPreenchidos = () => {
+    return Object.fromEntries(
+        Object.entries({
+            condominio_id: form.condominio_id,
+            assunto: form.assunto,
+            dataInicio: form.dataInicio,
+            dataFinal: form.dataFinal,
+        }).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+    );
+};
 
 </script>
 
@@ -117,9 +124,21 @@ const form = useForm({
                                 :custom-label="customLabel" @update:modelValue="onSelectUnidade">
                             </multiselect>
                         </div>
-                        <div class="">
-                            Data: <VueDatePicker format="dd/MM/yyyy" locale="pt-br" v-model="Datas" range>
-                            </VueDatePicker>
+                        <div class="w-48">
+                            Data inicial:
+                            <input
+                                v-model="form.dataInicio"
+                                type="date"
+                                class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            />
+                        </div>
+                        <div class="w-48">
+                            Data final:
+                            <input
+                                v-model="form.dataFinal"
+                                type="date"
+                                class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            />
                         </div>
                         <div class="mt-6">
                             <PrimaryButton @click="submit()">Buscar</PrimaryButton>

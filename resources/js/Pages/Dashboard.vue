@@ -143,6 +143,10 @@ const pesquisaText = ref("");
 const pesquisaCond = ref("");
 const pesquisaAssunto = ref("");
 const pesquisaLocais = ref("");
+const pesquisaUnidade = ref("");
+const pesquisaStatus = ref("");
+const pesquisaDataInicial = ref("");
+const pesquisaDataFinal = ref("");
 
 // Obter o valor da URL quando o componente carrega
 onMounted(() => {
@@ -156,24 +160,167 @@ onMounted(() => {
     if (queryParams.has("pesquisaAssunto")) {
         pesquisaAssunto.value = queryParams.get("pesquisaAssunto");
     }
+    if (queryParams.has("pesquisaUnidade")) {
+        pesquisaUnidade.value = queryParams.get("pesquisaUnidade");
+    }
+    if (queryParams.has("pesquisaStatus")) {
+        pesquisaStatus.value = queryParams.get("pesquisaStatus");
+    }
+    if (queryParams.has("pesquisaDataInicial")) {
+        pesquisaDataInicial.value = queryParams.get("pesquisaDataInicial");
+    }
+    if (queryParams.has("pesquisaDataFinal")) {
+        pesquisaDataFinal.value = queryParams.get("pesquisaDataFinal");
+    }
 });
 
 const pesquisa = (search, valor) => {
-    router.get(route("dashboard"), {
-        preserveScroll: true,
-        [search]: valor,
-    });
+    router.get(
+        route("dashboard"),
+        {
+            [search]: valor,
+        },
+        {
+            preserveScroll: true,
+        }
+    );
+};
+
+const adicionarFiltro = (filtros, chave, valor) => {
+    if (valor !== "" && valor !== null && valor !== undefined) {
+        filtros[chave] = valor;
+    }
+};
+
+const montarFiltros = (filtrosAtuais = {}) => {
+    const filtros = {
+        historico: historico.value,
+        pesquisa: pesquisaText.value,
+    };
+
+    adicionarFiltro(
+        filtros,
+        "pesquisaCondominio",
+        filtrosAtuais.pesquisaCondominio
+    );
+    adicionarFiltro(filtros, "pesquisaAssunto", filtrosAtuais.pesquisaAssunto);
+    adicionarFiltro(filtros, "pesquisaLocal", filtrosAtuais.pesquisaLocal);
+    adicionarFiltro(filtros, "pesquisaUnidade", filtrosAtuais.pesquisaUnidade);
+    adicionarFiltro(filtros, "pesquisaStatus", filtrosAtuais.pesquisaStatus);
+    adicionarFiltro(
+        filtros,
+        "pesquisaDataInicial",
+        filtrosAtuais.pesquisaDataInicial
+    );
+    adicionarFiltro(
+        filtros,
+        "pesquisaDataFinal",
+        filtrosAtuais.pesquisaDataFinal
+    );
+
+    return filtros;
+};
+
+const navegarComFiltros = (filtros) => {
+    router.get(
+        route("dashboard"),
+        filtros,
+        {
+            preserveScroll: true,
+        }
+    );
 };
 
 const pesquisaComposta = () => {
-    router.get(route("dashboard"), {
-        preserveScroll: true,
-        historico: historico.value,
-        pesquisa: pesquisaText.value,
-        pesquisaCondominio: pesquisaCond.value,
-        pesquisaAssunto: pesquisaAssunto.value,
-        pesquisaLocal: pesquisaLocais.value,
-    });
+    navegarComFiltros(
+        montarFiltros({
+            pesquisaCondominio: pesquisaCond.value,
+            pesquisaAssunto: pesquisaAssunto.value,
+            pesquisaLocal: pesquisaLocais.value,
+            pesquisaUnidade: pesquisaUnidade.value,
+            pesquisaStatus: pesquisaStatus.value,
+            pesquisaDataInicial: pesquisaDataInicial.value,
+            pesquisaDataFinal: pesquisaDataFinal.value,
+        })
+    );
+};
+
+const filtrarPorCondominio = (condominioId) => {
+    pesquisaCond.value = condominioId;
+    pesquisaAssunto.value = "";
+    pesquisaLocais.value = "";
+    pesquisaUnidade.value = "";
+    pesquisaStatus.value = "";
+    pesquisaDataInicial.value = "";
+    pesquisaDataFinal.value = "";
+
+    navegarComFiltros(
+        montarFiltros({
+            pesquisaCondominio: condominioId,
+        })
+    );
+};
+
+const filtrarPorUnidade = (unidadeId) => {
+    pesquisaCond.value = "";
+    pesquisaAssunto.value = "";
+    pesquisaLocais.value = "";
+    pesquisaUnidade.value = unidadeId;
+    pesquisaStatus.value = "";
+    pesquisaDataInicial.value = "";
+    pesquisaDataFinal.value = "";
+
+    navegarComFiltros(
+        montarFiltros({
+            pesquisaUnidade: unidadeId,
+        })
+    );
+};
+
+const filtrarPorAssunto = (assunto) => {
+    pesquisaCond.value = "";
+    pesquisaAssunto.value = assunto;
+    pesquisaLocais.value = "";
+    pesquisaUnidade.value = "";
+    pesquisaStatus.value = "";
+    pesquisaDataInicial.value = "";
+    pesquisaDataFinal.value = "";
+
+    navegarComFiltros(
+        montarFiltros({
+            pesquisaAssunto: assunto,
+        })
+    );
+};
+
+const filtrarPorStatus = (status) => {
+    pesquisaCond.value = "";
+    pesquisaAssunto.value = "";
+    pesquisaLocais.value = "";
+    pesquisaUnidade.value = "";
+    pesquisaStatus.value = status;
+    pesquisaDataInicial.value = "";
+    pesquisaDataFinal.value = "";
+    historico.value = parseInt(status) === 1 ? "true" : "false";
+
+    navegarComFiltros(
+        montarFiltros({
+            pesquisaStatus: status,
+        })
+    );
+};
+
+const limparFiltros = () => {
+    pesquisaText.value = "";
+    pesquisaCond.value = "";
+    pesquisaAssunto.value = "";
+    pesquisaLocais.value = "";
+    pesquisaUnidade.value = "";
+    pesquisaStatus.value = "";
+    pesquisaDataInicial.value = "";
+    pesquisaDataFinal.value = "";
+
+    navegarComFiltros(montarFiltros());
 };
 
 
@@ -196,6 +343,10 @@ const formatarStatus = (status) => {
 
 const isVideo = (url) => {
     return url.match(/\.(mp4|mov|avi|mkv|webm)$/i);
+};
+
+const maiusculo = (valor) => {
+    return valor ? String(valor).toUpperCase() : "";
 };
 </script>
 
@@ -231,13 +382,22 @@ const isVideo = (url) => {
                                         :key="condominio.id"
                                     >
                                         <div class="flex-1 min-w-0 ms-4 cursor-pointer ">
-                                            <p @click="pesquisaCond = condominio.id; pesquisaComposta()"
+                                            <p @click="
+                                                filtrarPorCondominio(
+                                                    condominio.id
+                                                )
+                                            "
                                                 class="hover:text-blue-300 text-sm font-mediumtext-gray-900 truncate dark:text-white"
                                             >
-                                                {{ condominio.nome }}
+                                                {{ maiusculo(condominio.nome) }}
                                             </p>
                                         </div>
-                                        <div @change="pesquisaComposta()"
+                                        <div
+                                            @click="
+                                                filtrarPorCondominio(
+                                                    condominio.id
+                                                )
+                                            "
                                             class=" cursor-pointer inline-flex hover:text-blue-300 items-center text-base font-semibold text-gray-900 dark:text-white"
                                         >
                                             {{ condominio.total }}
@@ -271,17 +431,27 @@ const isVideo = (url) => {
                                     <div
                                         class="flex items-center"
                                         v-for="morador in moradores"
-                                        :key="morador.id"
+                                        :key="morador.unidade_id"
                                     >
-                                        <div class="flex-1 min-w-0 ms-4">
+                                        <div class="flex-1 min-w-0 ms-4 cursor-pointer">
                                             <p
-                                                class="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                                @click="
+                                                    filtrarPorUnidade(
+                                                        morador.unidade_id
+                                                    )
+                                                "
+                                                class="hover:text-blue-300 text-sm font-medium text-gray-900 truncate dark:text-white"
                                             >
                                                 {{ morador.unidade_nome }}
                                             </p>
                                         </div>
                                         <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            @click="
+                                                filtrarPorUnidade(
+                                                    morador.unidade_id
+                                                )
+                                            "
+                                            class="cursor-pointer inline-flex hover:text-blue-300 items-center text-base font-semibold text-gray-900 dark:text-white"
                                         >
                                             {{ morador.total }}
                                         </div>
@@ -312,17 +482,27 @@ const isVideo = (url) => {
                                     <div
                                         class="flex items-center"
                                         v-for="assunto in assuntos"
-                                        :key="assunto.id"
+                                        :key="assunto.assunto"
                                     >
-                                        <div class="flex-1 min-w-0 ms-4">
+                                        <div class="flex-1 min-w-0 ms-4 cursor-pointer">
                                             <p
-                                                class="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                                @click="
+                                                    filtrarPorAssunto(
+                                                        assunto.assunto
+                                                    )
+                                                "
+                                                class="hover:text-blue-300 text-sm font-medium text-gray-900 truncate dark:text-white"
                                             >
                                                 {{ assunto.assunto }}
                                             </p>
                                         </div>
                                         <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            @click="
+                                                filtrarPorAssunto(
+                                                    assunto.assunto
+                                                )
+                                            "
+                                            class="cursor-pointer inline-flex hover:text-blue-300 items-center text-base font-semibold text-gray-900 dark:text-white"
                                         >
                                             {{ assunto.total }}
                                         </div>
@@ -354,11 +534,16 @@ const isVideo = (url) => {
                                     <div
                                         class="flex items-center"
                                         v-for="total in totalPorStatus"
-                                        :key="total.id"
+                                        :key="total.status"
                                     >
-                                        <div class="flex-1 min-w-0 ms-4">
+                                        <div class="flex-1 min-w-0 ms-4 cursor-pointer">
                                             <p
-                                                class="text-sm font-medium text-gray-900 truncate dark:text-white"
+                                                @click="
+                                                    filtrarPorStatus(
+                                                        total.status
+                                                    )
+                                                "
+                                                class="hover:text-blue-300 text-sm font-medium text-gray-900 truncate dark:text-white"
                                             >
                                                 {{
                                                     getStatusLabel(
@@ -368,7 +553,10 @@ const isVideo = (url) => {
                                             </p>
                                         </div>
                                         <div
-                                            class="inline-flex items-center text-base font-semibold text-gray-900 dark:text-white"
+                                            @click="
+                                                filtrarPorStatus(total.status)
+                                            "
+                                            class="cursor-pointer inline-flex hover:text-blue-300 items-center text-base font-semibold text-gray-900 dark:text-white"
                                         >
                                             {{ total.total }}
                                         </div>
@@ -427,7 +615,7 @@ const isVideo = (url) => {
                         </div>
                     </div>
                     <div class="overflow-x-auto sm:rounded-lg px-5 mr-5">
-                        <div class="flex gap-5">
+                        <div class="flex flex-wrap gap-5">
                             <div class="mb-5 w-80">
                                 <label
                                     class="block text-gray-700 ml-1 text-sm font-bold mb-2"
@@ -438,7 +626,7 @@ const isVideo = (url) => {
                                 <input
                                     type="text"
                                     @keyup.enter="
-                                        pesquisa('pesquisa', pesquisaText)
+                                        pesquisaComposta()
                                     "
                                     v-model="pesquisaText"
                                     placeholder="Nome do Morador "
@@ -453,12 +641,7 @@ const isVideo = (url) => {
                                     Pesquisar Condominio
                                 </label>
                                 <select
-                                    @change="
-                                        pesquisa(
-                                            'pesquisaCondominio',
-                                            pesquisaCond
-                                        )
-                                    "
+                                    @change="pesquisaComposta()"
                                     type="text"
                                     v-model="pesquisaCond"
                                     placeholder="Seu Nome "
@@ -471,7 +654,7 @@ const isVideo = (url) => {
                                         :key="cond.id"
                                         :value="cond.id"
                                     >
-                                        {{ cond.nome }}
+                                        {{ maiusculo(cond.nome) }}
                                     </option>
                                 </select>
                             </div>
@@ -483,12 +666,7 @@ const isVideo = (url) => {
                                     Pesquisar Local
                                 </label>
                                 <select
-                                    @change="
-                                        pesquisa(
-                                            'pesquisaLocal',
-                                            pesquisaLocais
-                                        )
-                                    "
+                                    @change="pesquisaComposta()"
                                     type="text"
                                     v-model="pesquisaLocais"
                                     placeholder="Seu Nome "
@@ -512,18 +690,15 @@ const isVideo = (url) => {
                                     Pesquisar Assunto
                                 </label>
                                 <select
-                                    @change="
-                                        pesquisa(
-                                            'pesquisaAssunto',
-                                            pesquisaAssunto
-                                        )
-                                    "
+                                    @change="pesquisaComposta()"
                                     type="text"
                                     v-model="pesquisaAssunto"
                                     placeholder="Seu Nome "
                                     class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 >
-                                    <option value="" selected>Selecione</option>
+                                    <option value="" selected>
+                                        Selecione
+                                    </option>
                                     <option
                                         v-for="assunto in filtros.assuntos"
                                         :key="assunto.id"
@@ -532,6 +707,46 @@ const isVideo = (url) => {
                                         {{ assunto }}
                                     </option>
                                 </select>
+                            </div>
+                            <div class="mb-5 w-48">
+                                <label
+                                    class="block text-gray-700 ml-1 text-sm font-bold mb-2"
+                                >
+                                    Data inicial
+                                </label>
+                                <input
+                                    type="date"
+                                    v-model="pesquisaDataInicial"
+                                    class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                />
+                            </div>
+                            <div class="mb-5 w-48">
+                                <label
+                                    class="block text-gray-700 ml-1 text-sm font-bold mb-2"
+                                >
+                                    Data final
+                                </label>
+                                <input
+                                    type="date"
+                                    v-model="pesquisaDataFinal"
+                                    class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                                />
+                            </div>
+                            <div class="mb-5 flex items-end gap-2">
+                                <button
+                                    type="button"
+                                    @click="pesquisaComposta"
+                                    class="px-4 py-2.5 text-sm font-semibold text-white bg-gray-600 rounded-xl hover:bg-gray-700"
+                                >
+                                    Buscar
+                                </button>
+                                <button
+                                    type="button"
+                                    @click="limparFiltros"
+                                    class="px-3 py-2.5 text-xs font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200"
+                                >
+                                    Limpar
+                                </button>
                             </div>
                         </div>
                         <table
@@ -947,7 +1162,9 @@ const isVideo = (url) => {
                             </tbody>
                         </table>
 
-                        <div class="mt-4 flex gap-2 items-center mb-10">
+                        <div class="flex justify-between ">
+
+                            <div class="mt-4 flex gap-2 items-center mb-10">
                             <a
                                 :href="solicitacao.url"
                                 v-for="solicitacao in solicitacoes.links"
@@ -960,6 +1177,15 @@ const isVideo = (url) => {
                                 }}</span>
                             </a>
                         </div>
+
+                        <div class="mt-4 ">
+                            {{ solicitacoes.total }} registros
+                        </div>
+
+
+                        </div>
+
+
                     </div>
                 </div>
             </div>

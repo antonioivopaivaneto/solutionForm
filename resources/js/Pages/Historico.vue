@@ -44,18 +44,49 @@ const Back = () => {
     window.history.back()
 }
 
-import { reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 
 const filters = reactive({
   condominio: '',
   unidade: '',
   morador: '',
   assunto: '',
-  data: '',
+  dataInicial: '',
+  dataFinal: '',
 })
 
+onMounted(() => {
+  const queryParams = new URLSearchParams(window.location.search)
+  filters.condominio = queryParams.get('condominio') || ''
+  filters.unidade = queryParams.get('unidade') || ''
+  filters.morador = queryParams.get('morador') || ''
+  filters.assunto = queryParams.get('assunto') || ''
+  filters.dataInicial = queryParams.get('dataInicial') || ''
+  filters.dataFinal = queryParams.get('dataFinal') || ''
+})
+
+const filtrosPreenchidos = () => {
+  return Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== '')
+  )
+}
+
 const filtrar = () => {
-  router.get(route('historico'), filters, {
+  router.get(route('historico'), filtrosPreenchidos(), {
+    preserveState: true,
+    preserveScroll: true,
+  })
+}
+
+const limparFiltros = () => {
+  filters.condominio = ''
+  filters.unidade = ''
+  filters.morador = ''
+  filters.assunto = ''
+  filters.dataInicial = ''
+  filters.dataFinal = ''
+
+  router.get(route('historico'), {}, {
     preserveState: true,
     preserveScroll: true,
   })
@@ -87,7 +118,7 @@ const filtrar = () => {
                     <div class="p-6 text-gray-900 uppercase font-bold">Histórico  de Solicitacoes  Finalizada</div>
 
                     <div class="p-5  max-w-full  rounded-lg  ">
-  <form @submit.prevent="filtrar" class="grid grid-cols-1 md:grid-cols-6 gap-4">
+  <form @submit.prevent="filtrar" class="grid grid-cols-1 md:grid-cols-7 gap-4">
 
     <!-- Condomínio -->
     <select v-model="filters.condominio"
@@ -129,17 +160,36 @@ const filtrar = () => {
 
     <!-- Data -->
     <input
-      v-model="filters.data"
+      v-model="filters.dataInicial"
       type="date"
+      title="Data inicial"
                                           class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
 
     />
 
     <!-- Botão -->
-    <button
-      class="bg-blue-600 hover:bg-blue-700 text-white rounded px-4 py-2">
-      Filtrar
-    </button>
+    <input
+      v-model="filters.dataFinal"
+      type="date"
+      title="Data final"
+                                          class="bg-gray-50 border w text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+
+    />
+
+    <div class="flex gap-2">
+      <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2">
+        Buscar
+      </button>
+
+      <button
+        type="button"
+        @click="limparFiltros"
+        class="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 rounded-xl px-3 py-2 text-xs font-semibold">
+        Limpar
+      </button>
+    </div>
 
   </form>
 </div>
@@ -147,7 +197,7 @@ const filtrar = () => {
 
                     <div class="px-5   shadow-md sm:rounded-lg">
                         <table class="w-full   rounded text-sm text-center text-gray-800 border-2 dark:border-gray-400 ">
-                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b-2 border-gray-500 ">
                                 <tr class="bg-gray-500 text-white text-nowrap">
                                     <th scope="col" class="px-6 py-3">
                                         condominio
@@ -183,7 +233,7 @@ const filtrar = () => {
 
 
                                 <tr v-for="solicitacao in solicitacoes.data" :key="solicitacao.id"
-                                class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap ">
+                                class="odd:bg-gray-200 border-b border-gray-00 text-gray-700 text-nowrap  ">
 
                                     <th scope="row" class="px-6 py-4 font-medium ">
                                         <a class="hover:text-blue-600 underline "
@@ -241,14 +291,23 @@ const filtrar = () => {
                             </tbody>
                         </table>
 
-                        <div class="mt-4 flex gap-2 items-center">
+                        <div class="flex justify-between items-center mt-4">
+                            <div class="mt-4 flex gap-2 items-center ">
                             <a :href="solicitacao.url" v-for="solicitacao in solicitacoes.links"
                                 :key="solicitacao.label"
-                                class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50"
+                                class="px-4 py-2 bg-gray-500 text-white rounded disabled:opacity-50 mb-10"
                                 :class="{ 'bg-gray-500': solicitacao.active }">
                                 <span>{{ processarLabel(solicitacao.label) }}</span>
                             </a>
                         </div>
+
+                            <div class="text-gray-700 text-sm">
+                              {{ solicitacoes.total }} registros
+                            </div>
+
+
+                        </div>
+
 
 
 

@@ -12,8 +12,6 @@ import {
     LinearScale, ArcElement,
 } from 'chart.js';
 import { Pie, Bar } from 'vue-chartjs';
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import Multiselect from '@vueform/multiselect';
 import '@vueform/multiselect/themes/default.css';
@@ -26,8 +24,7 @@ const condominios = props.condominios;
 const condominio = props.condominio;
 
 const submit = () => {
-    form.data = Datas.value
-    router.get('/relatorioShow',form, {
+    router.get('/relatorioShow', filtrosPreenchidos(), {
         preserveScroll: true,
         onSuccess: () => {
 
@@ -36,8 +33,25 @@ const submit = () => {
 }
 
 const formatDate = (dateString) => {
+    if (!dateString) return '';
     return moment(dateString).format('D/M/YYYY');
 }
+
+const periodoLabel = () => {
+    if (props.datas?.[0] && props.datas?.[1]) {
+        return `de ${formatDate(props.datas[0])} até ${formatDate(props.datas[1])}`;
+    }
+    if (props.datas?.[0]) {
+        return `a partir de ${formatDate(props.datas[0])}`;
+    }
+    if (props.datas?.[1]) {
+        return `até ${formatDate(props.datas[1])}`;
+    }
+    return 'Todo o período';
+}
+
+const condominioLabel = () => props.condominio?.nome || 'Todos condomínios';
+const assuntoLabel = () => props.assunto || 'Todos Assuntos';
 
 const dataBar = {
     labels:props.locais.map(item => item.local),
@@ -88,8 +102,6 @@ function formatarNumero(telefone) {
     return telefone.replace(/[-()\s]/g, '');
 }
 
-const Datas = ref();
-
 const onSelectUnidade = (value) => {
     form.unidade = value;
 };
@@ -99,11 +111,23 @@ const condominiosFormatados = condominios.map(condominio => ({
 }));
 
 const form = useForm({
-    condominio_id: '',
-    data: '',
-    assunto: '',
+    condominio_id: props.condominio?.id || '',
+    dataInicio: props.datas?.[0] || '',
+    dataFinal: props.datas?.[1] || '',
+    assunto: props.assunto === 'Todos Assuntos' ? '' : props.assunto,
 
 });
+
+const filtrosPreenchidos = () => {
+    return Object.fromEntries(
+        Object.entries({
+            condominio_id: form.condominio_id,
+            assunto: form.assunto,
+            dataInicio: form.dataInicio,
+            dataFinal: form.dataFinal,
+        }).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+    );
+};
 
 const assuntosFormatados = props.assuntos.map(assunto => ({
     value: assunto.assunto, // Usar o ID como valor
@@ -132,9 +156,21 @@ const assuntosFormatados = props.assuntos.map(assunto => ({
                                 :custom-label="customLabel" @update:modelValue="onSelectUnidade">
                             </multiselect>
                         </div>
-                        <div class="">
-                            Data: <VueDatePicker format="dd/MM/yyyy" locale="pt-br" v-model="Datas" range>
-                            </VueDatePicker>
+                        <div class="w-48">
+                            Data inicial:
+                            <input
+                                v-model="form.dataInicio"
+                                type="date"
+                                class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            />
+                        </div>
+                        <div class="w-48">
+                            Data final:
+                            <input
+                                v-model="form.dataFinal"
+                                type="date"
+                                class="bg-gray-50 border text-gray-700 border-gray-300 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                            />
                         </div>
                         <div class="mt-6">
                             <PrimaryButton @click="submit()">Buscar</PrimaryButton>
@@ -142,9 +178,14 @@ const assuntosFormatados = props.assuntos.map(assunto => ({
 
                     </div>
 
-                    <h1 class="font-bold text-xl mt-2">{{ condominio.nome }}</h1>
-                    <h1 class="font-bold text-xl mt-2"> de {{formatDate( datas[0]) }} até {{formatDate(datas[1]) }}</h1>
-                    <h1 class="font-bold text-xl mt-2">{{ assunto }}</h1>
+                    <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-4 mt-3">
+                        <div class="font-bold text-xl">Resultado da busca</div>
+                        <div class="text-gray-700 mt-1">
+                            Condomínio: {{ condominioLabel() }} |
+                            Período: {{ periodoLabel() }} |
+                            Assunto: {{ assuntoLabel() }}
+                        </div>
+                    </div>
 
                 </div>
 
